@@ -83,6 +83,19 @@ def run_demo_path(client, log=print) -> dict:
     assert any(s["state"] == "overdue" for s in steps), steps
     log("6 referral timeline with overdue marker")
 
+    # 7. family circle: invite a relative; declining reveals nothing; accepting grants no read by itself
+    inv = client.post("/api/invitations", headers=ha, json={"recipient_id": "synthetic-relative", "scope": "relationship_only"})
+    assert inv.status_code == 200, inv.text
+    declined = client.post(f"/api/invitations/{inv.json()['id']}/respond", headers=ho,
+                           json={"accepted": False, "scope": "relationship_only"})
+    inv2 = client.post("/api/invitations", headers=ha, json={"recipient_id": "synthetic-relative", "scope": "relationship_only"})
+    accepted = client.post(f"/api/invitations/{inv2.json()['id']}/respond", headers=ho,
+                           json={"accepted": True, "scope": "relationship_only"})
+    assert declined.status_code == accepted.status_code == 200
+    assert set(declined.json()) == set(accepted.json()) - {"never"}  # same shape: nothing extra is revealed
+    assert client.get("/api/me/pedigree", headers=ho).status_code == 403  # relatives cannot read a pedigree uninvited
+    log("7 invitation declined/accepted without disclosure")
+
     # 8. analyst aggregates are suppressed/noised
     dash = client.get("/api/analytics/dashboard", headers=hn)
     assert dash.status_code == 200 and "cells" in dash.json()
