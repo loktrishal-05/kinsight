@@ -22,7 +22,7 @@ export default function Understand() {
     <section className="space-y-4">
       <h1 className="text-2xl font-semibold">{t("quiz.title")}</h1>
       <p className="note">{t("quiz.intro")}</p>
-      {msg && <p className="card" role="status">{msg}</p>}
+      {msg && <p className="card" role="status" data-testid="quiz-msg">{msg}</p>}
       <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}>
         {quiz.data?.questions.map((q, qi) => {
           const opts = [...q.options.slice(qi % q.options.length), ...q.options.slice(0, qi % q.options.length)]; // mock only: vary position
