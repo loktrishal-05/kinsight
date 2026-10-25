@@ -204,7 +204,14 @@ def build() -> dict:
             "queue": queue(), "capacity": capacity(), "comprehension": comprehension()}
 
 
+def redteam() -> list[dict]:
+    """The 109-prompt red-team set, for the TypeScript assistant's parity test."""
+    return yaml.safe_load((ROOT / "tests/redteam/prompts.yaml").read_text(encoding="utf-8"))["prompts"]
+
+
 def main() -> None:
+    (ROOT / "web/tests/fixtures").mkdir(parents=True, exist_ok=True)
+    (ROOT / "web/tests/fixtures/redteam.json").write_text(json.dumps(redteam(), ensure_ascii=False, indent=1), encoding="utf-8")
     data = build()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

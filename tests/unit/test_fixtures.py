@@ -19,3 +19,8 @@ def test_scenarios_cover_every_tier_and_every_draft_verifies():
     for s in d["scenarios"]:
         assert set(s["explanations"]) == {"en/basic", "en/standard", "ar/basic", "ar/standard"}
         assert all(q["answer"] in [o["id"] for o in q["options"]] for q in s["quiz"]["en"])
+
+
+def test_assistant_redteam_fixture_matches_the_python_set():
+    committed = json.loads((ROOT / "web/tests/fixtures/redteam.json").read_text(encoding="utf-8"))
+    assert committed == ex.redteam() and len(committed) >= 100

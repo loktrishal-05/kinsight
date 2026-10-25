@@ -23,7 +23,8 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
     const terms = GLOSSARY.map((g) => ({ id: `g-${g.id}`, label: g.term[lang === "ar" ? "ar" : "en"], hint: t("palette.term"), run: go(`/learn#${g.id}`) }));
     const cases = MOCK ? api.scenarios().map((s) => ({ id: `s-${s.id}`, label: s.title[lang === "ar" ? "ar" : "en"], hint: t("palette.case"),
       run: () => { api.setScenario(s.id); router.push("/result"); onClose(); setTimeout(() => location.reload(), 50); } })) : [];
-    return [...pages, ...terms, ...cases];
+    const kin = { id: "kin", label: t("assistant.open"), hint: t("palette.page"), run: () => { window.dispatchEvent(new Event("kin:toggle")); onClose(); } };
+    return [kin, ...pages, ...terms, ...cases];
   }, [t, lang, router, onClose]);
 
   const list = all.filter((e) => e.label.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 9);

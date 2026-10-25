@@ -49,3 +49,18 @@ Gaps in the evidence: no public data on counselling wait times or on comprehensi
 7. Command palette (Ctrl or Cmd + K).
 
 Not built (needs people or infrastructure): reviewer sign-off, the volunteer study, real appointment booking, SMS/email reminders, real identity, in-region hosting, clinical validation.
+
+## 4. Voice and chat assistant (Kin) and service access
+
+- **Kin** floats on every page and has a full-page version at `/ask`. It is typed or spoken, in English or Arabic, and answers in the
+  language the person used (Arabic script wins; otherwise the interface language). It is deterministic and read-only: no model, no
+  server-side storage, no audio stored. It reads out only the person's own verified explanation, the glossary, the consent summary and
+  page links, and declines questions about other people, decisions, clinical advice, bulk data and attempts to change its rules.
+- **Voice** uses the browser's own speech recognition and speech synthesis (`ar-AE` / `en-US`). Missing support, a blocked microphone,
+  silence, or no installed voice for a language all degrade to text with a clear message.
+- **Checks:** `web/tests/assistant.test.ts` runs the same 109-prompt red-team set as the Python guard (parity), plus language and
+  consent behaviour; `web/e2e/assistant.spec.ts` drives chat and voice with stubbed speech APIs on desktop and phone (24 runs).
+  Real microphones and voices differ by browser and operating system, so a person should try it once on each target browser.
+- **Logo:** generated with Canva (an AI image), made transparent and used as the launcher, header and favicon (`web/public/kin-logo.png`).
+- **Finding services** (`/access`): generic service types in equal weight, with a hand-off stub that only records a request in the browser
+  session. It names no facility and claims no availability (challenge requirement 2).

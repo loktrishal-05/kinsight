@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession, type Persona } from "@/lib/session";
+import { AssistantLauncher } from "./Assistant";
 import CommandPalette from "./CommandPalette";
 import SettingsMenu from "./SettingsMenu";
 import { GROUPS } from "./nav";
@@ -109,6 +110,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <footer className={`border-t border-line pt-4 text-xs text-muted ${hero ? "mx-auto mt-0 max-w-5xl px-4 pb-8 sm:px-8" : "mt-12"}`}>{t("limits")}</footer>
         </main>
       </div>
+      <AssistantLauncher />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
     </div>
   );
