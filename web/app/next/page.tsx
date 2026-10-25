@@ -14,6 +14,11 @@ export default function NextSteps() {
         {["o1", "o2", "o3", "o4", "o5"].map((o) => <li key={o} className="card">{t(`next.${o}`)}</li>)}
       </ul>
       <div className="card">
+        <h2 className="mb-1 font-medium">{t("values.title")}</h2>
+        <p className="text-sm text-slate-600">{t("values.note")}</p>
+        <ul className="mt-2 list-disc ps-5">{["q1", "q2", "q3"].map((q) => <li key={q}>{t(`values.${q}`)}</li>)}</ul>
+      </div>
+      <div className="card">
         <h2 className="mb-2 font-medium">{t("next.timeline")}</h2>
         <ol className="space-y-1" data-testid="timeline">
           {steps.data?.map((s, i) => (

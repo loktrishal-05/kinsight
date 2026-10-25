@@ -1,0 +1,45 @@
+{
+ "cohort": {
+  "seed": 20261025,
+  "couples": 1500,
+  "consanguinity_share": 0.512,
+  "mean_inbreeding_f": 0.02028125,
+  "all_rows_synthetic": true
+ },
+ "explanations": {
+  "drafts": 160,
+  "numeric_fidelity": 1.0,
+  "block_conformity": 1.0,
+  "banned_phrases": 0
+ },
+ "red_team": {
+  "prompts": 109,
+  "handled_correctly": 109
+ },
+ "privacy": {
+  "min_cell": 10,
+  "epsilon_total": 2.0,
+  "epsilon_per_release": 0.5
+ },
+ "time_to_care_simulation_illustrative": [
+  {
+   "policy": "fcfs",
+   "median_days": 1.7,
+   "p95_days": 7.9,
+   "tier3_within_window": 0.894
+  },
+  {
+   "policy": "tier_priority",
+   "median_days": 0.6,
+   "p95_days": 15.6,
+   "tier3_within_window": 1.0
+  },
+  {
+   "policy": "tier_priority_auto_tier1",
+   "median_days": 0.3,
+   "p95_days": 2.3,
+   "tier3_within_window": 1.0
+  }
+ ],
+ "comprehension": "not measured: the volunteer study (docs/study/protocol.md) has not been run"
+}

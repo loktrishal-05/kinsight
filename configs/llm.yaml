@@ -1,0 +1,5 @@
+# Model settings. Mode A (default) calls no model. Provider is swappable; keys come from the environment only.
+default: ""            # e.g. "anthropic:claude-sonnet-5-5" when Mode B or the explain chooser uses a model
+judge: ""              # second model for entailment checks in Mode B
+tracing: langsmith     # or "phoenix" for self-hosted; enabled only when the env keys are set
+temperature: 0

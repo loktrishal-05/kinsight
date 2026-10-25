@@ -43,3 +43,11 @@ for (const lang of ["en", "ar"] as const) {
     });
   });
 }
+
+test("a third language loads from its message file alone", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => localStorage.setItem("ks_lang", "ur"));
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByTestId("fictional-banner")).toBeVisible();
+});

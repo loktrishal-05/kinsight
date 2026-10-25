@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { ReadAloud } from "@/components/Voice";
 import { useI18n } from "@/lib/i18n";
 
 export default function MyResult() {
@@ -24,7 +25,7 @@ export default function MyResult() {
       </ul>
       <p className="note">{t("result.carrierNote")}</p>
       <div className="card">
-        <h2 className="mb-2 font-medium">{t("result.explanation")}</h2>
+        <h2 className="mb-2 font-medium">{t("result.explanation")} <ReadAloud text={expl.data?.blocks.join(" ") ?? ""} /></h2>
         <div className="space-y-2" data-testid="explanation">
           {expl.data?.blocks.map((b, i) => <p key={i}>{b}</p>)}
         </div>

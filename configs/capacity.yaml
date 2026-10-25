@@ -1,7 +1,7 @@
 # Capacity simulator assumptions (illustrative; shown on screen next to every result)
 seed: 20261025
 weeks: 52
-arrivals_per_week: 20
+arrivals_per_week: 15
 tier_mix: { 1: 0.26, 2: 0.13, 3: 0.61 }   # roughly the demo cohort's mix
-counsellor_slots_per_week: 14
+counsellor_slots_per_week: 16
 service_window_days: 7

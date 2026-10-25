@@ -1,0 +1,17 @@
+[
+  {
+    "code": "en",
+    "label": "English",
+    "dir": "ltr"
+  },
+  {
+    "code": "ar",
+    "label": "العربية",
+    "dir": "rtl"
+  },
+  {
+    "code": "ur",
+    "label": "اردو (placeholder)",
+    "dir": "rtl"
+  }
+]

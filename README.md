@@ -16,6 +16,8 @@ Challenge 03. All people and results are fictional; no real genomes are used.
 - Architecture: docs/architecture.md; model card: docs/model_card.md; limitations: docs/limitations.md
 - Pilot plan: docs/pilot_plan.md; mini-study protocol: docs/study/protocol.md
 - Deviations / open questions / review log / rules delta: docs/DEVIATIONS.md, docs/OPEN_QUESTIONS.md, docs/REVIEWS.md, docs/RULES_DELTA.md
+- Scorecard: docs/SCORECARD.md (python scripts/scorecard.py); generated limitations: docs/limitations_generated.md
+- Final rules check: docs/RULES_CHECK.md; demo script: docs/demo_script.md
 - Data sources and licences: DATA_SOURCES.md
 
 ## Local run without Docker

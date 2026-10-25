@@ -9,7 +9,7 @@
 - Differential-privacy noise uses a budget ledger but suppression is deterministic, so this is not a claim of end-to-end formal privacy.
 - Audit chain detects modification, deletion and forks; detecting tail truncation needs an externally stored head hash (supported, not provisioned).
 - Demo authentication uses fictional personas and signed short-lived tokens; production would need real identity and in-region hosting.
-- Optional items (voice, private partner check, FHIR export, extra languages) are not built unless listed as done in `docs/PLAN.md`.
+- Optional items are built behind flags (`configs/flags.yaml`): voice depends on browser speech support; the partner check is an unaudited demo; FHIR export is a function with no route; the third language (Urdu) is an English-copy placeholder; Mode B needs an injected model and judge and is off.
 - Dependencies: Python 3.10+, LangGraph 1.x, FastAPI, SQLAlchemy 2, Next.js 14 (see lock files).
 - Copilot guard and red-team set (P5-4): keyword rules were tuned on the 109 prompts in tests/redteam/prompts.yaml, so a pass is a regression gate, not evidence of robustness. A model judge plus fresh adversarial prompts is needed before any real use.
 - Demo reset restores the case, quiz and referral state but keeps consent rows and the audit chain, so re-running the live demo flow on the same database fails on duplicate grants; use 'docker compose down -v' for a clean demo.

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { useI18n } from "@/lib/i18n";
+import { LANGUAGES, useI18n } from "@/lib/i18n";
 
 const NAV = [["home", "/"], ["result", "/result"], ["couple", "/couple"], ["understand", "/understand"], ["consents", "/consents"],
   ["family", "/family"], ["next", "/next"], ["ask", "/ask"], ["counsellor", "/counsellor"], ["analyst", "/analyst"], ["governance", "/governance"]];
@@ -14,8 +14,9 @@ export default function Shell({ children }: { children: ReactNode }) {
       <header className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link href="/" className="text-xl font-semibold text-accent">{t("app")}</Link>
         <div className="flex gap-2" role="group" aria-label={t("welcome.language")}>
-          <button className={lang === "en" ? "btn" : "btn-quiet"} aria-pressed={lang === "en"} onClick={() => setLang("en")}>English</button>
-          <button className={lang === "ar" ? "btn" : "btn-quiet"} aria-pressed={lang === "ar"} onClick={() => setLang("ar")}>العربية</button>
+          {LANGUAGES.map((l) => (
+            <button key={l.code} className={lang === l.code ? "btn" : "btn-quiet"} aria-pressed={lang === l.code} onClick={() => setLang(l.code)}>{l.label}</button>
+          ))}
           <button className="btn-quiet" aria-label={t("welcome.level")} onClick={() => setLevel(level === "basic" ? "standard" : "basic")}>
             {t(`level.${level}`)}
           </button>

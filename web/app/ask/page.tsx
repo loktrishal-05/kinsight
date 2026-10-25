@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { Speak } from "@/components/Voice";
 import { useI18n } from "@/lib/i18n";
 
 export default function Ask() {
@@ -20,6 +21,7 @@ export default function Ask() {
         setText("");
       }}>
         <input className="flex-1 rounded-md border border-slate-300 px-3 py-2" value={text} maxLength={2000} placeholder={t("ask.placeholder")} aria-label={t("ask.title")} onChange={(e) => setText(e.target.value)} />
+        <Speak onText={setText} />
         <button className="btn" disabled={!text.trim()}>{t("ask.send")}</button>
       </form>
     </section>

@@ -1,0 +1,29 @@
+# Neutral options explorer and values questions (P5-2). Placeholder wording pending reviewers (docs/REVIEWS.md).
+# No scores, no weights, no ordering signal: options are served in id order with identical fields.
+status: placeholder
+options:
+  - id: opt_counsellor
+    en: { title: "Talk with a genetic counsellor", text: "A counsellor can explain the result and answer questions. This is available at any time." }
+    ar: { title: "التحدث مع مستشار وراثي", text: "يمكن للمستشار شرح النتيجة والإجابة عن الأسئلة. هذا متاح في أي وقت." }
+  - id: opt_confirmatory
+    en: { title: "Confirmatory testing", text: "Further testing can clarify a result. A counsellor can explain what it involves." }
+    ar: { title: "الفحص التأكيدي", text: "يمكن لفحص إضافي توضيح النتيجة. يمكن للمستشار شرح ما يتضمنه." }
+  - id: opt_specialist
+    en: { title: "Specialist reproductive genetics service", text: "A specialist service can discuss the choices open to a couple." }
+    ar: { title: "خدمة متخصصة في وراثة الإنجاب", text: "يمكن لخدمة متخصصة مناقشة الخيارات المتاحة للزوجين." }
+  - id: opt_support
+    en: { title: "Support for families", text: "Support services can help families talk through what the result means for them." }
+    ar: { title: "دعم للعائلات", text: "يمكن لخدمات الدعم مساعدة العائلات على مناقشة معنى النتيجة بالنسبة لها." }
+  - id: opt_time
+    en: { title: "Take more time", text: "There is no deadline to decide. You can come back to this at any point." }
+    ar: { title: "أخذ وقت أطول", text: "لا يوجد موعد نهائي للقرار. يمكنكما العودة إلى هذا في أي وقت." }
+values_questions:   # reflective prompts for discussion with a counsellor; answers are never scored or sent anywhere
+  - id: vq_important
+    en: "What matters most to you when thinking about this result?"
+    ar: "ما الأهم بالنسبة لك عند التفكير في هذه النتيجة؟"
+  - id: vq_information
+    en: "What would you like to know more about before talking with your partner or family?"
+    ar: "ما الذي تودّ معرفة المزيد عنه قبل الحديث مع شريكك أو عائلتك؟"
+  - id: vq_support
+    en: "Who would you like to have with you when you talk with a counsellor?"
+    ar: "من تودّ أن يكون معك عندما تتحدث مع المستشار؟"

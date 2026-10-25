@@ -1,0 +1,10 @@
+# Feature flags (spec: every optional feature ships behind a flag). Core features are always on.
+mode_b_rewrite: false        # constrained rewrite with entailment judge (needs a model)
+options_explorer: true
+values_questions: true
+counsellor_brief_agent: true
+copilot: true
+voice: true                  # browser speech; falls back to text
+private_partner_check: false # unaudited PSI demo
+fhir_export: false           # function only; there is deliberately no export route
+extra_languages: true        # languages listed in web/messages/languages.json
