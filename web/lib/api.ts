@@ -12,7 +12,9 @@ export const ExplanationS = Fictional.extend({ blocks: z.array(z.string()), rele
 export const CoupleS = Fictional.extend({
   tier: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullish(),
   awaiting_counsellor: z.boolean().optional(),
-  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: z.number().nullable(), note_codes: z.array(z.string()) })).nullish(),
+  related: z.boolean().optional(),
+  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: z.number().nullable(),
+    note_codes: z.array(z.string()), formula_id: z.string().optional(), inheritance: z.string().optional(), inputs: z.record(z.number()).optional() })).nullish(),
 });
 export const ConsentS = Fictional.extend({ id: z.string(), grantee_id: z.string(), scope: z.string(), purpose: z.string(), expires_at: z.number(), revoked_at: z.number().nullable() });
 export const StepS = z.object({ state: z.string(), owner_id: z.string(), due_at: z.number(), overdue: z.boolean().optional() });
@@ -32,6 +34,8 @@ export type Step = z.infer<typeof StepS>;
 export type Quiz = z.infer<typeof QuizS>;
 export type Pedigree = z.infer<typeof PedigreeS>;
 
+export type QueueItem = { id: string; tier: number; status: string; due_at?: number; due_days?: number; language?: string; reading_level?: string;
+  age_band?: string; related?: boolean; conditions?: number; step?: string };
 export const setToken = (_t: string) => {};
 
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
@@ -51,7 +55,7 @@ export const api = {
   referral: (): Promise<Step[]> => impl.referral(),
   requestCounselling: (): Promise<unknown> => (MOCK ? mock.referralEvent("counselling_requested", "") : real.requestCounselling()),
   copilot: (t: string): Promise<{ text: string; refused?: boolean }> => impl.copilot(t),
-  queue: (): Promise<{ id: string; tier: number; status: string; due_at?: number }[]> => impl.queue(),
+  queue: (): Promise<QueueItem[]> => impl.queue(),
   brief: (id: string): Promise<string[]> => impl.brief(id),
   decide: (id: string, d: string): Promise<unknown> => impl.decide(id, d),
   referralEvent: (id: string, e: string, ev: string): Promise<unknown> => impl.referralEvent(id, e, ev),
@@ -61,4 +65,12 @@ export const api = {
   auditVerify: (tamper = false): Promise<{ valid: boolean }> => impl.auditVerify(tamper),
   policy: (): Promise<any> => impl.policy(),
   sources: (): Promise<any> => impl.sources(),
+  // Scenario picker, insight charts and the access trail are generated from the committed demo cohort in both modes.
+  scenarios: () => mock.scenarios(),
+  scenario: () => mock.scenario(),
+  setScenario: (id: string) => mock.setScenario(id),
+  insights: () => mock.insights(),
+  accessLog: (): Promise<{ when: number; who: string; what: string; outcome: string }[]> => mock.accessLog(),
+  advance: (days: number) => mock.advance(days),
+  resetDemo: () => mock.reset(),
 };

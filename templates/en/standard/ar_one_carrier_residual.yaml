@@ -7,7 +7,7 @@ slots:
   risk_affected_pct:
     source: finding.risk_affected
     format: percent0
-text: One of you carries a change in a gene linked to {condition_label}. No change was found in the other person, but no test finds everything. Taking this into account, the chance that a child is affected is about {risk_affected_pct} in each pregnancy.
+text: One of you carries a change in a gene linked to {condition_label}. No change was found in the other person, but no test finds everything. Taking this into account, the chance that a child is affected is estimated at {risk_affected_pct} in each pregnancy.
 must_include_ids:
 - carrier_not_disease
 - counsellor_available

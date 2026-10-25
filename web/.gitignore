@@ -5,3 +5,5 @@ next-env.d.ts
 e2e/shots
 shoot.mjs
 drawer.mjs
+
+.next-e2e

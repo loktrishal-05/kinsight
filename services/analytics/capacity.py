@@ -32,6 +32,7 @@ def simulate(policy: str, *, seed: int, weeks: int, arrivals_per_week: float, ti
             cases.append((w * 7 + rng.random() * 7, rng.choices(tiers, weights)[0]))
     cases.sort()
     waits: dict[int, list[float]] = {t: [] for t in tiers}
+    by_week: dict[int, list[float]] = {w: [] for w in range(weeks)}  # waits grouped by arrival week
     queue: list[tuple] = []
     i, slot_gap = 0, 7 / counsellors_slots_per_week
     t = 0.0
@@ -42,18 +43,22 @@ def simulate(policy: str, *, seed: int, weeks: int, arrivals_per_week: float, ti
             i += 1
             if policy == "tier_priority_auto_tier1" and tier == 1:
                 waits[1].append(0.0)  # handled automatically, uses no counsellor time
+                by_week[min(int(day // 7), weeks - 1)].append(0.0)
                 continue
             prio = day if policy == "fcfs" else (-tier, day)
             heapq.heappush(queue, (prio, day, tier))
         if queue:
             _, day, tier = heapq.heappop(queue)
             waits[tier].append(t - day)
+            by_week[min(int(day // 7), weeks - 1)].append(t - day)
         t += slot_gap
     allw = [w for ws in waits.values() for w in ws]
     t3 = waits.get(3, [])
     return {"policy": policy, "n": len(allw), "median_days": round(statistics.median(allw), 1),
             "p95_days": round(sorted(allw)[int(0.95 * (len(allw) - 1))], 1),
             "tier3_within_window": round(sum(w <= service_window_days for w in t3) / max(len(t3), 1), 3),
+            "weekly": [{"week": w, "served": len(v), "median_wait": round(statistics.median(v), 1) if v else None}
+                       for w, v in by_week.items()],
             "label": LABEL}
 
 

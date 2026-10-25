@@ -7,7 +7,7 @@ export const metadata = { title: "KinSight", description: "Fictional demo: inher
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body>
         <Providers>
           <Shell>{children}</Shell>

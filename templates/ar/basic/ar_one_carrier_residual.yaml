@@ -7,7 +7,7 @@ slots:
   risk_affected_pct:
     source: finding.risk_affected
     format: percent0
-text: أحدكما يحمل تغيرا في جين مرتبط بـ {condition_label}. لم نجد تغيرا لدى الآخر، لكن لا فحص يكشف كل شيء. فرصة أن يتأثر الطفل نحو {risk_affected_pct} في كل حمل.
+text: أحدكما يحمل تغيرا في جين مرتبط بـ {condition_label}. لم نجد تغيرا لدى الآخر، لكن لا فحص يكشف كل شيء. فرصة أن يتأثر الطفل تُقدَّر بـ {risk_affected_pct} في كل حمل.
 must_include_ids:
 - carrier_not_disease
 - counsellor_available

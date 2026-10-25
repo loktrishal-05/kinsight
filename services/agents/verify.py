@@ -80,6 +80,8 @@ def verify(draft: DraftExplanation, assessment: CoupleAssessment, panel: Panel, 
     errs += [f"forbidden: {x}" for x in forbidden & set(ids)]
     # every finding must be explained
     covered = {r.finding_index for r in draft.blocks if r.finding_index is not None}
+    if "residual_note" in ids:  # one summary block covers every residual (no-change) figure of a related couple
+        covered |= {i for i, f in enumerate(assessment.findings) if f.formula_id == "ar_both_not_detected"}
     errs += [f"coverage: finding {i} not explained" for i in range(len(assessment.findings)) if i not in covered]
     rendered = render_draft(draft, assessment, panel, templates)
     for r, rb in zip(draft.blocks, rendered):

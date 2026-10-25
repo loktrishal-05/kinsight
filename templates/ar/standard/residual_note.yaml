@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: بما أن بينكما قرابة، قد تبقى فرصة صغيرة جدا حتى عندما لا يُعثر على تغير لدى أي منكما. يمكن للمستشار شرح ما يعنيه ذلك.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -102,12 +102,19 @@ def select_blocks(assessment: CoupleAssessment, lang: str, level: str, templates
     tset = templates[(lang, level)]
     refs = [BlockRef(block_id="fictional_notice")]
     fs = assessment.findings
+    # Many tiny residual figures (related couple, no change found) are summarised once instead of listed one by one.
+    residual = [i for i, f in enumerate(fs) if f.formula_id == "ar_both_not_detected"]
+    summarise = len(residual) > 2 or (residual and len(residual) < len(fs))
     for i, f in enumerate(fs):
+        if summarise and i in residual:
+            continue
         for b in tset.values():
             w = b.applies_when
             fid = w.get("formula_id")
             if fid and f.formula_id in ([fid] if isinstance(fid, str) else fid):
                 refs.append(BlockRef(block_id=b.block_id, finding_index=i))
+    if summarise:
+        refs.append(BlockRef(block_id="residual_note"))
     if not fs:
         refs.append(BlockRef(block_id="no_findings"))
     else:
