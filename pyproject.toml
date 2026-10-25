@@ -17,3 +17,6 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["E9", "F", "I"]
+
+[tool.setuptools.packages.find]
+include = ["services*"]
