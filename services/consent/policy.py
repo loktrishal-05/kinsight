@@ -20,7 +20,8 @@ RESOURCE_FIELDS = {
     "audit": {"events"},
     "pedigree": {"relationships", "warnings"},
     "couple": {"tier", "shared_conditions", "findings", "engine_version"},
-    "case": {"status", "referral", "quiz", "brief"},
+    "case": {"id", "status", "tier", "due_at", "referral", "quiz", "brief"},
+    "queue": {"status"},
     "invitation": {"id", "scope", "status"},
     "aggregate": {"cells", "budget_remaining"},
     "governance": {"metadata"},
@@ -40,7 +41,7 @@ ROLE_RESOURCES = {
     },
     "partner": {"couple", "result", "invitation"},
     "relative": {"result", "pedigree", "case", "invitation"},
-    "counsellor": {"case", "result", "explanation", "pedigree", "couple"},
+    "counsellor": {"case", "queue", "result", "explanation", "pedigree", "couple"},
     "analyst": {"aggregate", "evaluation"},
     "auditor": {"audit", "governance", "evaluation"},
     "demo_operator": {"demo"},
@@ -54,10 +55,12 @@ SCOPES = {
         "engine_version",
         "brief",
         "referral",
+        "id",
+        "due_at",
     },
     "condition_findings": {"condition_id", "status", "panel_version", "findings"},
     "relationship_only": {"relationships", "warnings"},
-    "quiz_status": {"status", "quiz"},
+    "quiz_status": {"id", "status", "quiz"},
     "couple_pooling": {"tier", "shared_conditions", "findings", "engine_version"},
 }
 
@@ -147,7 +150,7 @@ def decide(
         decision = Decision(False, reason_code="fields_denied")
     elif resource.type == "couple" and not couple_readable(session, resource):
         decision = Decision(False, reason_code="pooling_or_release_required")
-    elif resource.type in {"aggregate", "governance", "evaluation", "demo"} or (
+    elif resource.type in {"aggregate", "governance", "evaluation", "demo", "queue"} or (
         resource.type == "audit" and actor.role == "auditor"
     ):
         decision = Decision(True, frozenset(fields), "role_metadata")

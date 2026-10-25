@@ -4,6 +4,7 @@ import hashlib
 import math
 import time
 
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from .audit import append_event
@@ -151,3 +152,22 @@ def respond(
         db.add(couple)
     db.flush()
     return couple
+
+
+def require_partner_agreement(db: Session, actor: Actor, a_id: str, b_id: str) -> None:
+    if actor.id not in {a_id, b_id}:
+        raise PermissionError("Partner agreement required")
+    invitation = db.scalar(
+        select(Invitation.id)
+        .where(
+            Invitation.status == "accepted",
+            Invitation.scope.in_(["couple_summary", "couple_tier_only"]),
+            or_(
+                (Invitation.sender_id == a_id) & (Invitation.recipient_id == b_id),
+                (Invitation.sender_id == b_id) & (Invitation.recipient_id == a_id),
+            ),
+        )
+        .limit(1)
+    )
+    if invitation is None:
+        raise PermissionError("Partner agreement required")

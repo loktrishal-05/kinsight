@@ -47,6 +47,7 @@ from services.consent.roles import PERSONAS
 from services.consent.settings import settings
 
 from .auth import Identity, issue_token, secret, verify_token
+from .backend import DemoBackend
 from .interfaces import Backend, Unavailable, UnwiredBackend
 from .schemas import (
     AggregateView,
@@ -84,13 +85,17 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         options["poolclass"] = StaticPool
     engine = create_engine(url, **options)
     sessions = sessionmaker(engine, expire_on_commit=False)
-    adapter = backend or UnwiredBackend()
+    demo = os.environ.get("KINSIGHT_DEMO") == "1"
+    adapter = backend or (DemoBackend() if demo else UnwiredBackend())
 
     @asynccontextmanager
     async def lifespan(app):
         secret("KINSIGHT_TOKEN_SECRET")
         secret("KINSIGHT_AUDIT_SALT")
         Base.metadata.create_all(engine)
+        if isinstance(adapter, DemoBackend):
+            with sessions() as seed_db:
+                adapter.seed(seed_db)
         yield
         engine.dispose()
 
@@ -323,6 +328,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     @app.get("/api/me/consents", response_model=list[ConsentView])
     async def consents(identity=Depends(roles("person")), db: Session = Depends(db_session)):
         own(db, identity, "consent", RESOURCE_FIELDS["consent"])
+        limit(db, identity)
         return [
             ConsentView.model_validate(
                 {field: getattr(row, field) for field in RESOURCE_FIELDS["consent"]}
@@ -408,6 +414,9 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         body: PedigreeInput, identity=Depends(roles("person")), db: Session = Depends(db_session)
     ):
         own(db, identity, "pedigree", RESOURCE_FIELDS["pedigree"])
+        for edge in body.relationships:
+            if edge.type == "partner_of":
+                sharing.require_partner_agreement(db, identity.actor, edge.a_id, edge.b_id)
         data = PedigreeView.model_validate(
             await adapter.invoke("edit_pedigree", identity.actor.id, body.model_dump(), db)
         )
@@ -451,6 +460,28 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         )
         return {**data.model_dump(include=set(decision.allowed_fields)), "is_synthetic": True}
 
+    @app.get("/api/cases/{id}/quiz")
+    async def quiz(id: Alias, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        case_check(db, identity, id, {"quiz"}, True)
+        data = await adapter.invoke("quiz", id, None, db)
+        return {**data, "is_synthetic": True}
+
+    @app.get("/api/analytics/capacity/simulation")
+    async def capacity_simulation(identity=Depends(roles("analyst")), db: Session = Depends(db_session)):
+        check(db, identity, ResourceRef("aggregate", "capacity"), RESOURCE_FIELDS["aggregate"])
+        return {**await adapter.invoke("capacity_simulation", "synthetic", None, db), "is_synthetic": True}
+
+    @app.post("/api/demo/advance-time", response_model=Status)
+    async def advance_time(
+        days: int = 1, identity=Depends(roles("demo_operator")), db: Session = Depends(db_session)
+    ):
+        check(db, identity, ResourceRef("demo", "advance-time"), {"status"})
+        if not 1 <= days <= 365:
+            raise HTTPException(422, "days must be 1 to 365")
+        data = Status.model_validate(await adapter.invoke("advance_time", "synthetic", {"days": days}, db))
+        db.commit()
+        return data
+
     @app.post("/api/cases/{id}/quiz/answers", response_model=Status)
     async def answers(
         id: Alias,
@@ -480,6 +511,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         "/api/counsellor/queue", response_model=list[CaseView], response_model_exclude_unset=True
     )
     async def queue(identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        check(db, identity, ResourceRef("queue", "assigned"), {"status"}, "counselling")
         # Only assigned metadata is enumerated; each item passes policy before backend access.
         ids = db.scalars(
             select(CaseAccess.id)
@@ -488,15 +520,20 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             .limit(50)
         ).all()
         output = []
+        fields = {"id", "status", "tier", "due_at"}
         for case_id in ids:
             try:
-                case_check(db, identity, case_id, {"status"}, True)
+                decision = case_check(db, identity, case_id, fields)
             except HTTPException:
                 continue
             data = CaseView.model_validate(await adapter.invoke("case_status", case_id, None, db))
-            case_check(db, identity, case_id, {"status"}, True)
-            output.append({"status": data.status, "is_synthetic": True})
-        return output
+            decision = case_check(db, identity, case_id, set(decision.allowed_fields))
+            output.append(
+                {**data.model_dump(include=set(decision.allowed_fields)), "is_synthetic": True}
+            )
+        return sorted(
+            output, key=lambda row: (-(row.get("tier") or 0), row.get("due_at") or float("inf"))
+        )
 
     @app.get(
         "/api/counsellor/cases/{id}/brief",
@@ -633,13 +670,17 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     ):
         own(db, identity, "result", RESOURCE_FIELDS["result"])
         limit(db, identity)
+        if isinstance(adapter, DemoBackend):
+            consents = [f"{c.scope}:{c.purpose}" for c in db.scalars(
+                select(Consent).where(Consent.grantor_id == identity.actor.id, Consent.revoked_at.is_(None)))]
+            payload = {**adapter.copilot(body.text, identity.actor.id, db, consents), "is_synthetic": True}
+            sharing.log_change(db, identity.actor, "copilot", payload["code"], secret("KINSIGHT_AUDIT_SALT"))
+            db.commit()
+        else:
+            payload = {"status": "unavailable", "is_synthetic": True,
+                       "message": "The copilot is not connected. No personal data was retrieved."}
 
         async def events():
-            payload = {
-                "status": "unavailable",
-                "is_synthetic": True,
-                "message": "The copilot is not connected. No personal data was retrieved.",
-            }
             yield f"event: message\ndata: {json.dumps(payload)}\n\n"
 
         return StreamingResponse(events(), media_type="text/event-stream")

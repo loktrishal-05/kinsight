@@ -97,16 +97,19 @@ class Explanation(Fictional):
     released: Literal[True]
 
 
-class Relationship(StrictModel):
+class RelationshipInput(StrictModel):
     a_id: Alias
     b_id: Alias
     type: Literal["parent_of", "partner_of"]
     confidence: Literal["known", "reported", "uncertain"]
+
+
+class Relationship(RelationshipInput):
     confirmed: bool = False
 
 
 class PedigreeInput(StrictModel):
-    relationships: Annotated[list[Relationship], Field(max_length=200)]
+    relationships: Annotated[list[RelationshipInput], Field(max_length=200)]
 
 
 class PedigreeView(Fictional):
@@ -141,17 +144,6 @@ class Chat(StrictModel):
     text: Annotated[str, Field(min_length=1, max_length=2000)]
 
 
-class Finding(StrictModel):
-    condition_id: Alias
-    inheritance: Literal["AR", "XLR"]
-    status_a: Literal["carrier", "not_detected", "uncertain"]
-    status_b: Literal["carrier", "not_detected", "uncertain"]
-    formula_id: Alias
-    inputs: dict[str, float]
-    risk_affected: Annotated[float, Field(ge=0, le=1)] | None
-    note_codes: list[Alias]
-
-
 class CoupleFinding(StrictModel):
     condition_id: Alias
     risk_affected: Annotated[float, Field(ge=0, le=1)] | None
@@ -172,7 +164,10 @@ class ReferralStep(StrictModel):
 
 
 class CaseView(Fictional):
+    id: Alias | None = None
     status: Alias | None = None
+    tier: Literal[1, 2, 3] | None = None
+    due_at: float | None = None
     referral: list[ReferralStep] | None = None
     quiz: list[Alias] | None = None
     brief: list[Alias] | None = None

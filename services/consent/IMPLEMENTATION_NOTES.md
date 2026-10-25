@@ -51,5 +51,8 @@ API, and privacy tests (plus a new privacy config).
 - Environment: `.git` is read-only and outbound package/Git access is blocked.
   The initial environment lacked API dependencies, but compatible cached wheels
   were found and extracted into the OS temporary directory for test execution.
-  `make` is unavailable and scripts/demo.py is absent from this clone. Task commits
-  and pushes must be performed in a writable Git checkout by the integrator.
+  While work was in progress the shared environment acquired FastAPI 0.162.0,
+  SQLAlchemy 2.0.55 and the upstream demo script; the final checks use the normal
+  Python environment. `make` is unavailable, so its exact underlying command,
+  `python scripts/demo.py`, is used instead. Task commits and pushes must be
+  performed in a writable Git checkout by the integrator.

@@ -29,7 +29,12 @@ class FictionalBackend:
         if operation == "brief":
             return {"brief": ["synthetic-reviewed-block"]}
         if operation == "case_status":
-            return {"status": "awaiting_counsellor"}
+            return {
+                "id": subject,
+                "status": "awaiting_counsellor",
+                "tier": 3,
+                "due_at": 1800000000.0,
+            }
         if operation == "aggregate_counts":
             return {"fictional_group_a": 30, "fictional_group_b": 40}
         if operation in {"evaluation", "eval_run"}:
@@ -128,7 +133,10 @@ ROUTES = [
     ("GET", "/api/me/pedigree", {"person_a", "person_b"}, 200),
     ("PUT", "/api/me/pedigree", {"person_a", "person_b"}, 200),
     ("GET", "/api/couples/{id}/assessment", {"partner_a", "partner_b"}, 200),
+    ("GET", "/api/cases/{id}/quiz", {"person_a", "person_b"}, 200),
     ("POST", "/api/cases/{id}/quiz/answers", {"person_a", "person_b"}, 200),
+    ("GET", "/api/analytics/capacity/simulation", {"analyst"}, 200),
+    ("POST", "/api/demo/advance-time", {"demo_operator"}, 200),
     ("GET", "/api/cases/{id}/referral", {"person_a", "person_b", "counsellor"}, 200),
     ("GET", "/api/counsellor/queue", {"counsellor"}, 200),
     ("GET", "/api/counsellor/cases/{id}/brief", {"counsellor"}, 200),
@@ -261,6 +269,115 @@ def test_next_read_after_revoke_and_no_compute_before_pooling(api):
     assert backend.calls == []
 
 
+def test_tier_only_consent_projects_fields_and_expiry_blocks_next_read(api):
+    client, app, backend, tokens = api
+    with app.state.sessions() as db:
+        consent = db.scalar(
+            select(Consent).where(
+                Consent.grantor_id == "synthetic-b", Consent.scope == "couple_summary"
+            )
+        )
+        consent.scope = "couple_tier_only"
+        consent.fields = ["tier"]
+        consent_id = consent.id
+        db.commit()
+    response = client.get("/api/couples/couple/assessment", headers=tokens["partner_a"])
+    assert response.status_code == 200
+    assert response.json() == {"tier": 1, "is_synthetic": True}
+    with app.state.sessions() as db:
+        db.get(Consent, consent_id).expires_at = time.time() - 1
+        db.commit()
+    backend.calls.clear()
+    assert (
+        client.get("/api/couples/couple/assessment", headers=tokens["partner_a"]).status_code == 403
+    )
+    assert backend.calls == []
+
+
+def test_policy_itself_blocks_unpooled_and_unreleased_couples(api):
+    from services.consent.policy import ResourceRef, decide
+
+    client, app, backend, tokens = api
+    with app.state.sessions() as db:
+        couple = db.get(Couple, "couple")
+        couple.released = False
+        decision = decide(
+            PERSONAS["partner_a"],
+            ResourceRef("couple", "couple", "synthetic-b", owner_viewed=True),
+            "couple_planning",
+            {"tier"},
+            session=db,
+            audit_salt=b"synthetic-only-audit-salt-32-bytes",
+        )
+        assert not decision.allowed
+        couple.released = True
+        pooling = db.scalar(
+            select(Consent).where(
+                Consent.grantor_id == "synthetic-b", Consent.scope == "couple_pooling"
+            )
+        )
+        pooling.revoked_at = time.time()
+        decision = decide(
+            PERSONAS["partner_a"],
+            ResourceRef("couple", "couple", "synthetic-b", owner_viewed=True),
+            "couple_planning",
+            {"tier"},
+            session=db,
+            audit_salt=b"synthetic-only-audit-salt-32-bytes",
+        )
+        assert not decision.allowed
+        db.commit()
+    assert (
+        client.get("/api/couples/couple/assessment", headers=tokens["partner_a"]).status_code == 403
+    )
+    assert backend.calls == []
+
+
+def test_rate_limit_does_not_block_revocation(api):
+    from services.consent.models import RateWindow
+    from services.consent.settings import settings
+
+    client, app, _, tokens = api
+    assert client.get("/api/me/consents", headers=tokens["person_b"]).status_code == 200
+    with app.state.sessions() as db:
+        row = db.scalar(select(RateWindow))
+        row.requests = settings().rate_limit_requests
+        consent_id = db.scalar(select(Consent.id).where(Consent.grantor_id == "synthetic-b"))
+        db.commit()
+    assert client.get("/api/me/consents", headers=tokens["person_b"]).status_code == 429
+    assert (
+        client.post(f"/api/me/consents/{consent_id}/revoke", headers=tokens["person_b"]).status_code
+        == 200
+    )
+
+
+def test_queue_returns_only_assigned_consented_fields(api):
+    client, app, _, tokens = api
+    with app.state.sessions() as db:
+        grant = db.scalar(
+            select(Consent).where(
+                Consent.grantee_id == "synthetic-counsellor", Consent.scope == "couple_summary"
+            )
+        )
+        grant.fields = ["brief", "referral", "id", "tier", "due_at"]
+        db.commit()
+    response = client.get("/api/counsellor/queue", headers=tokens["counsellor"])
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "id": "case",
+            "status": "awaiting_counsellor",
+            "tier": 3,
+            "due_at": 1800000000.0,
+            "is_synthetic": True,
+        }
+    ]
+    with app.state.sessions() as db:
+        db.get(CaseAccess, "case").assigned_to = "other-counsellor"
+        db.commit()
+    assert client.get("/api/counsellor/queue", headers=tokens["counsellor"]).json() == []
+
+
 def test_strict_inputs_and_deletion(api):
     client, app, _backend, tokens = api
     response = client.post("/api/auth/persona", json={"persona": "person_a", "role": "auditor"})
@@ -272,6 +389,23 @@ def test_strict_inputs_and_deletion(api):
     )
     assert response.status_code == 422
     assert '"input"' not in response.text  # invalid input value is not echoed back
+    edge = {
+        "a_id": "synthetic-a",
+        "b_id": "synthetic-b",
+        "type": "partner_of",
+        "confidence": "known",
+    }
+    response = client.put(
+        "/api/me/pedigree",
+        headers=tokens["person_a"],
+        json={"relationships": [{**edge, "confirmed": True}]},
+    )
+    assert response.status_code == 422
+    response = client.put(
+        "/api/me/pedigree", headers=tokens["person_a"], json={"relationships": [edge]}
+    )
+    assert response.status_code == 403
+    assert _backend.calls == []
     assert client.delete("/api/me", headers=tokens["person_a"]).status_code == 200
     assert client.get("/api/me", headers=tokens["person_a"]).status_code == 404
     with app.state.sessions() as db:
