@@ -27,7 +27,8 @@ def test_no_banned_or_stigmatising_phrases_in_any_user_text():
     for lang, t in texts():
         low = t.lower()
         for p in W["banned"][lang] + W["stigma"][lang]:
-            assert p not in low, (lang, p, t)
+            # whole-word match, so a short Arabic term is not found inside an unrelated longer word (e.g. in "notification")
+            assert not re.search(rf"(?<![\w]){re.escape(p)}(?![\w])", low), (lang, p, t)
 
 
 def test_carrier_status_never_called_positive_or_negative():
