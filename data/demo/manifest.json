@@ -1,0 +1,23 @@
+{
+ "achieved_consanguinity_share": 0.512,
+ "config_hash": "176904320df49560",
+ "counts": {
+  "couples": 1500,
+  "persons": 16678,
+  "relationships": 27564,
+  "screening_results": 90000,
+  "sim_truth": 90000
+ },
+ "engine_config_hash": "c39ba233668310c1",
+ "is_synthetic": true,
+ "mean_inbreeding_f": 0.02028125,
+ "panel_version": "2026.1-demo",
+ "seed": 20261025,
+ "sha256": {
+  "couples": "17a5140aabf7c9e655829a7b35af622012731e39eb25bb91e0be5225ff898136",
+  "persons": "18081ae74e26d614afe1f97c3ba445f6a45e3c059893a9209326591e86ff9f29",
+  "relationships": "6a69b690696ff5b8f044bd620af1447065e9f54b186ef9fd211027c2ce71a624",
+  "screening_results": "7b42c2d29793bd81c825ba1d0d3c9d25d09b4da2ceb85bf7645d3f630ca76d1f",
+  "sim_truth": "4212fb17a7848e39d95f2545a6a4871e38dcaf0dae316e4cb8f6e0432f2ddc64"
+ }
+}
