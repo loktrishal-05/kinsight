@@ -17,6 +17,7 @@ REFUSALS = {
           "يمكن لمستشار وراثي مناقشة ذلك معك.",
 }
 MAX_LEN = 2000
+BIDI = {0x200E: None, 0x200F: None}  # direction marks
 
 # (code, patterns). Order matters: injection and bulk checks come first.
 RULES: list[tuple[str, re.Pattern]] = [(c, re.compile(p, re.IGNORECASE)) for c, p in [
@@ -50,7 +51,7 @@ class Answer:
 
 
 def _norm(text: str) -> str:
-    return unicodedata.normalize("NFKC", text)[:MAX_LEN].replace("‏", "").replace("‎", "")
+    return unicodedata.normalize("NFKC", text)[:MAX_LEN].translate(BIDI)
 
 
 def answer(text: str, lang: str, own_blocks: list[str], glossary: dict, consents: list[str]) -> Answer:
