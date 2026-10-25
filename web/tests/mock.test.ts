@@ -19,7 +19,7 @@ test("couple figure waits for both partners, then (tier 3) for the counsellor, t
   expect((await mock.couple()).tier).toBeNull();
   await mock.login("person_b"); await mock.grantPooling();
   expect((await mock.couple()).awaiting_counsellor).toBe(true);
-  await mock.decide("approve");
+  await mock.decide("demo-case", "approve");
   const c = await mock.couple();
   expect(c.findings?.[0].risk_affected).toBe(0.25);
 });
@@ -37,7 +37,7 @@ test("a result that is not clear gives no figure", async () => {
   mock.setScenario("s5");
   await mock.login("person_a"); await mock.grantPooling();
   await mock.login("person_b"); await mock.grantPooling();
-  await mock.decide("approve");
+  await mock.decide("demo-case", "approve");
   expect((await mock.couple()).findings?.[0].risk_affected).toBeNull();
 });
 
@@ -51,7 +51,8 @@ test("one wrong answer re-explains, a second failure offers a counsellor, never 
 });
 
 test("closing a referral without evidence is refused", async () => {
-  await expect(mock.referralEvent("closed", "")).rejects.toThrow();
+  await expect(mock.referralEvent("demo-case", "closed", "")).rejects.toThrow();
+  await expect(mock.referralEvent("demo-case", "closed", "evidence-1")).resolves.toEqual({});
 });
 
 test("revoking pooling removes the couple figure at once", async () => {

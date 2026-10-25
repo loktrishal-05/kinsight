@@ -104,8 +104,8 @@ export const mock = {
     const q = DATA.queue.find((x) => x.id === id);
     return [`tier_${q?.tier ?? 2}`, ...(q?.related ? ["related_partners"] : []), "quiz", "open"];
   },
-  async decide(d: string) { if (d === "approve" || d === "edit") { S.released = true; save(); } return {}; },
-  async referralEvent(event: string, evidence: string) {
+  async decide(_case: string, d: string) { if (d === "approve" || d === "edit") { S.released = true; save(); } return {}; },
+  async referralEvent(_case: string, event: string, evidence: string) {
     if (event === "closed" && !evidence) throw new Error("evidence");
     S.steps.push({ state: event, owner_id: "counsellor", due_at: now() + 14 * day });
     if (event === "counselling_requested") S.counselling = true;

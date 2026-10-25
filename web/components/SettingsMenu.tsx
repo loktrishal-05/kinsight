@@ -13,8 +13,9 @@ export default function SettingsMenu() {
   useEffect(() => {
     const close = (e: MouseEvent) => { if (box.current && !box.current.contains(e.target as Node)) setOpen(false); };
     const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("mousedown", close); document.addEventListener("keydown", esc);
-    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+    const shut = () => setOpen(false);
+    document.addEventListener("mousedown", close); document.addEventListener("keydown", esc); window.addEventListener("demo:close-overlays", shut);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); window.removeEventListener("demo:close-overlays", shut); };
   }, []);
   const seg = <T extends string | number>(label: string, value: T, opts: [T, string][], on: (v: T) => void) => (
     <div>
@@ -32,11 +33,11 @@ export default function SettingsMenu() {
   );
   return (
     <div ref={box} className="relative">
-      <button className="btn-quiet h-9 w-9 px-0" aria-label={t("settings.title")} aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button className="btn-quiet h-9 w-9 px-0" data-demo="settings" aria-label={t("settings.title")} aria-expanded={open} onClick={() => setOpen(!open)}>
         <Settings aria-hidden className="h-[18px] w-[18px]" />
       </button>
       {open && (
-        <div role="dialog" aria-label={t("settings.title")} className="absolute end-0 top-11 z-40 w-72 space-y-4 rounded-2xl border border-line bg-surface p-4 shadow-lift">
+        <div role="dialog" aria-label={t("settings.title")} data-demo="settings-panel" className="absolute end-0 top-11 z-40 w-72 space-y-4 rounded-2xl border border-line bg-surface p-4 shadow-lift">
           <h2 className="text-sm font-bold">{t("settings.title")}</h2>
           {seg(t("settings.theme"), prefs.theme, [["light", t("settings.light")], ["dark", t("settings.dark")], ["system", t("settings.system")]], (v) => set({ theme: v }))}
           {seg(t("settings.text"), prefs.text, [[0, "A"], [1, "A+"], [2, "A++"]], (v) => set({ text: v as 0 | 1 | 2 }))}

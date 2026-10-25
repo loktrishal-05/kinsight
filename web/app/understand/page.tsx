@@ -26,12 +26,12 @@ export default function Understand() {
     <section className="space-y-6">
       <PageHeader title={t("quiz.title")} lead={t("quiz.intro")} />
       {msg && (
-        <p className="note" role="status" data-testid="quiz-msg">
+        <p className="note" role="status" data-testid="quiz-msg" data-demo="quiz-msg" data-ok={msg.ok}>
           {msg.ok ? <CheckCircle2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0" /> : <Heart aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />}
           <span>{msg.text}</span>
         </p>
       )}
-      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}>
+      <form data-demo="quiz" className="space-y-4" onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}>
         {quiz.data?.questions.map((q, qi) => {
           const opts = [...q.options.slice(qi % q.options.length), ...q.options.slice(0, qi % q.options.length)]; // mock only: vary position
           return (
@@ -43,7 +43,7 @@ export default function Understand() {
               <div className="space-y-2">
                 {opts.map((o) => (
                   <label key={o.id} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3.5 py-2.5 text-sm transition-colors hover:bg-brand-50 ${answers[q.id] === o.id ? "border-brand-600 bg-brand-50" : "border-line"}`}>
-                    <input type="radio" className="h-4 w-4 accent-[#106b68]" name={q.id} checked={answers[q.id] === o.id}
+                    <input type="radio" data-opt={o.id} className="h-4 w-4 accent-[#106b68]" name={q.id} checked={answers[q.id] === o.id}
                       onChange={() => setAnswers({ ...answers, [q.id]: o.id })} />
                     {o.text}
                   </label>
@@ -53,7 +53,7 @@ export default function Understand() {
           );
         })}
         <div className="flex flex-wrap items-center gap-4">
-          <button className="btn" disabled={done < total}>{t("quiz.submit")}</button>
+          <button className="btn" data-demo="quiz-submit" disabled={done < total}>{t("quiz.submit")}</button>
           <span className="text-sm text-muted tabular-nums" aria-live="polite">{done} / {total} {t("quiz.progress")}</span>
         </div>
       </form>

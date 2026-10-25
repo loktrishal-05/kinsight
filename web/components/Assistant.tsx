@@ -142,14 +142,14 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
           {chips.slice(0, 3).map((c) => <li key={c} className="shrink-0"><button className="btn-quiet btn-sm font-normal" onClick={() => send(c)}>{c}</button></li>)}
         </ul>
       )}
-      <form className="flex items-center gap-2 border-t border-line p-3" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
+      <form data-demo="kin-form" className="flex items-center gap-2 border-t border-line p-3" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
         <button type="button" onClick={toggleMic} disabled={!hasSpeech && !listening} aria-pressed={listening}
           aria-label={listening ? t("assistant.stopListening") : t("assistant.speak")} title={hasSpeech ? t("assistant.speak") : t("assistant.noMic")}
           className={`relative grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors ${listening ? "border-brand-600 bg-brand-600 text-onbrand" : "border-line bg-surface text-ink hover:bg-brand-50"} disabled:opacity-50`}>
           {listening && <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-brand-600/40" />}
           {hasSpeech ? <Mic aria-hidden className="relative h-4 w-4" /> : <MicOff aria-hidden className="relative h-4 w-4" />}
         </button>
-        <input ref={input} className="field flex-1" dir="auto" value={text} maxLength={2000} lang={BCP47[micLang]}
+        <input ref={input} data-demo="kin-input" className="field flex-1" dir="auto" value={text} maxLength={2000} lang={BCP47[micLang]}
           onChange={(e) => setText(e.target.value)} placeholder={listening ? t("assistant.listening") : t("assistant.placeholder")} aria-label={t("assistant.placeholder")} />
         {speaking
           ? <button type="button" className="btn-quiet h-10 w-10 px-0" aria-label={t("assistant.stopSpeaking")} onClick={() => { stopSpeaking(); setSpeaking(false); }}><Square aria-hidden className="h-4 w-4" /></button>
@@ -167,18 +167,20 @@ export function AssistantLauncher() {
   useEffect(() => {
     const toggle = () => setOpen((o) => !o);
     const key = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key === "/") { e.preventDefault(); toggle(); } if (e.key === "Escape") setOpen(false); };
+    const show = () => setOpen(true), hide = () => setOpen(false);
     window.addEventListener("kin:toggle", toggle); window.addEventListener("keydown", key);
-    return () => { window.removeEventListener("kin:toggle", toggle); window.removeEventListener("keydown", key); };
+    window.addEventListener("kin:open", show); window.addEventListener("demo:close-overlays", hide);
+    return () => { window.removeEventListener("kin:toggle", toggle); window.removeEventListener("keydown", key); window.removeEventListener("kin:open", show); window.removeEventListener("demo:close-overlays", hide); };
   }, []);
   if (path === "/ask") return null;
   return (
     <div data-noprint className="fixed bottom-4 end-4 z-40 flex flex-col items-end gap-3">
       {open && (
-        <div role="dialog" aria-label={t("assistant.title")} className="h-[min(34rem,calc(100vh-7rem))] w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line shadow-lift">
+        <div role="dialog" aria-label={t("assistant.title")} data-demo="kin-panel" className="h-[min(34rem,calc(100vh-7rem))] w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line shadow-lift">
           <AssistantPanel mode="float" onClose={() => setOpen(false)} />
         </div>
       )}
-      <button onClick={() => setOpen(!open)} aria-expanded={open} aria-label={t("assistant.open")} title={`${t("assistant.open")} (Ctrl /)`}
+      <button onClick={() => setOpen(!open)} data-demo="kin" aria-expanded={open} aria-label={t("assistant.open")} title={`${t("assistant.open")} (Ctrl /)`}
         className="group relative grid h-16 w-16 place-items-center rounded-full border border-line bg-surface shadow-lift transition-transform hover:-translate-y-0.5">
         <KinLogo size={52} />
         {!open && <span aria-hidden className="pointer-events-none absolute inset-0 animate-ping rounded-full border-2 border-brand-500/40 [animation-iteration-count:3]" />}

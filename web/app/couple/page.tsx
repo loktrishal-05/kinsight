@@ -20,17 +20,17 @@ export default function CoupleView() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("couple.title")} lead={t("couple.lead")} action={c?.tier ? <TierChip tier={c.tier} /> : undefined} />
-      <Steps labels={[t("couple.s1"), t("couple.s2"), t("couple.s3")]} current={step} />
+      <div data-demo="steps"><Steps labels={[t("couple.s1"), t("couple.s2"), t("couple.s3")]} current={step} /></div>
       {!c?.tier && (
         <div className="card flex flex-wrap items-center justify-between gap-4">
           <p className="max-w-read">{t("couple.waiting")}</p>
-          <button className="btn" onClick={() => grant.mutate()}><Users aria-hidden className="h-4 w-4" />{t("couple.pooling")}</button>
+          <button className="btn" data-demo="share" onClick={() => grant.mutate()}><Users aria-hidden className="h-4 w-4" />{t("couple.pooling")}</button>
         </div>
       )}
       {c?.awaiting_counsellor && <Notice>{t("couple.tier3")}</Notice>}
       {released && !c?.findings?.length && <Notice>{t("couple.noFindings")}</Notice>}
       {c?.findings?.map((f) => (
-        <article key={f.condition_id} className="card grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
+        <article key={f.condition_id} data-demo="finding" className="card grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="space-y-3">
             <h2 className="text-lg font-semibold">{lang === "ar" && f.label_ar ? f.label_ar : f.label ?? f.condition_id}</h2>
             {f.risk_affected !== null ? (

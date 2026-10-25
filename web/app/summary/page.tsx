@@ -18,7 +18,7 @@ export default function Summary() {
       <PageHeader title={t("summary.title")} lead={t("summary.lead")}
         action={<button className="btn" data-noprint onClick={() => window.print()}><Printer aria-hidden className="h-4 w-4" />{t("summary.print")}</button>} />
       <p className="note">{t("banner")}</p>
-      <div className="card space-y-3">
+      <div className="card space-y-3" data-demo="summary">
         <h2 className="text-lg font-semibold">{t("summary.found")}</h2>
         <ul>{results.data?.map((r) => (
           <li key={r.condition_id} className="row"><span>{lang === "ar" && r.label_ar ? r.label_ar : r.label ?? r.condition_id}</span><StatusChip status={r.status} /></li>

@@ -18,17 +18,17 @@ export default function Learn() {
       <PageHeader title={t("learn.title")} lead={t("learn.lead")} />
 
       <div className="card grid gap-8 md:grid-cols-2">
-        <div className="space-y-3">
+        <div className="space-y-3" data-demo="learn-inherit">
           <h2 className="text-lg font-semibold">{t("learn.inherit.t")}</h2>
           <p className="text-sm text-muted">{t("learn.inherit.d")}</p>
           <Punnett affected={0.25} carrier={0.5} />
           <p className="text-xs text-muted">{t("learn.inherit.note")}</p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3" data-demo="learn-chance">
           <h2 className="text-lg font-semibold">{t("learn.chance.t")}</h2>
           <p className="text-sm text-muted">{t("learn.chance.d")}</p>
           <div role="group" aria-label={t("learn.chance.t")} className="seg w-fit">
-            {[0.25, 0.5, 0.01].map((r) => <button key={r} aria-pressed={risk === r} onClick={() => setRisk(r)}>{r === 0.01 ? "1 / 100" : r === 0.25 ? "1 / 4" : "1 / 2"}</button>)}
+            {[0.25, 0.5, 0.01].map((r) => <button key={r} data-demo={r === 0.01 ? "chance-small" : r === 0.5 ? "chance-half" : "chance-quarter"} aria-pressed={risk === r} onClick={() => setRisk(r)}>{r === 0.01 ? "1 / 100" : r === 0.25 ? "1 / 4" : "1 / 2"}</button>)}
           </div>
           <IconArray risk={risk} />
           <p className="text-xs text-muted">{t("learn.chance.note")}</p>
@@ -52,10 +52,10 @@ export default function Learn() {
           <h2 className="text-lg font-semibold">{t("learn.glossary")}</h2>
           <label className="relative block w-full max-w-xs">
             <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input className="field ps-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("learn.search")} aria-label={t("learn.search")} />
+            <input data-demo="glossary-search" className="field ps-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("learn.search")} aria-label={t("learn.search")} />
           </label>
         </div>
-        <dl className="card-flush divide-y divide-line">
+        <dl data-demo="glossary" className="card-flush divide-y divide-line">
           {terms.map((g) => (
             <div key={g.id} id={g.id} className="scroll-mt-28 px-5 py-4">
               <dt className="font-semibold">{g.term[l]}</dt>

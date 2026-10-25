@@ -1,5 +1,6 @@
 "use client";
-import { ArrowDown, ArrowRight, BookOpenText, Check, FileText, Lock, MessagesSquare, Route, UserRoundCheck } from "lucide-react";
+import { ArrowDown, ArrowRight, BookOpenText, Check, FileText, Lock, MessagesSquare, PlayCircle, Route, UserRoundCheck } from "lucide-react";
+import { useDemo } from "@/lib/demo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,11 +23,12 @@ export default function Welcome() {
   const { persona, choose } = useSession();
   const router = useRouter();
   const [scenario, setScenario] = useState("s3");
+  const demo = useDemo();
   useEffect(() => setScenario(api.scenario()), []);
   const l = lang === "ar" ? "ar" : "en";
   return (
     <div>
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[#04191a] via-[#0a3f3e] to-[#13283f] text-deepfg">
+      <section data-demo="hero" className="relative isolate overflow-hidden bg-gradient-to-br from-[#04191a] via-[#0a3f3e] to-[#13283f] text-deepfg">
         <FamilyTreeArt />
         <div className="relative mx-auto flex min-h-[min(80vh,46rem)] max-w-5xl flex-col justify-center gap-7 px-4 py-16 sm:px-8">
           <p className="animate-rise inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
@@ -38,6 +40,11 @@ export default function Welcome() {
             <a href="#start" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-[#0a3f3e] shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-50">
               {t("hero.cta")}<ArrowDown aria-hidden className="h-4 w-4" />
             </a>
+            {demo.available && (
+              <button onClick={() => demo.start()} data-testid="demo-start" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-500 px-6 text-sm font-bold text-white shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-600">
+                <PlayCircle aria-hidden className="h-5 w-5" />{t("demo.start")}
+              </button>
+            )}
             <Link href="/learn" className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/30 px-6 text-sm font-semibold text-white transition hover:bg-white/10">{t("hero.learn")}</Link>
           </div>
           <ul className="animate-rise mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-deepfg/80 [animation-delay:.4s]">
@@ -47,7 +54,7 @@ export default function Welcome() {
       </section>
 
       <div className="mx-auto max-w-5xl space-y-14 px-4 py-12 sm:px-8">
-        <section aria-labelledby="how">
+        <section aria-labelledby="how" data-demo="how">
           <h2 id="how" className="text-xl font-bold">{t("how.title")}</h2>
           <ol className="relative mt-6 grid gap-6 sm:grid-cols-5 sm:gap-4">
             <span aria-hidden className="absolute start-4 top-4 hidden h-0.5 w-[calc(100%-2rem)] bg-line sm:block" />
@@ -69,7 +76,7 @@ export default function Welcome() {
             {MOCK && (
               <div>
                 <p className="eyebrow-free mb-2">{t("welcome.cases")}</p>
-                <ul className="card-flush divide-y divide-line" role="radiogroup" aria-label={t("welcome.cases")}>
+                <ul data-demo="cases" className="card-flush divide-y divide-line" role="radiogroup" aria-label={t("welcome.cases")}>
                   {api.scenarios().map((s) => (
                     <li key={s.id}>
                       <button role="radio" aria-checked={scenario === s.id} onClick={() => { api.setScenario(s.id); setScenario(s.id); }}
@@ -87,7 +94,7 @@ export default function Welcome() {
                 </ul>
               </div>
             )}
-            <div className={MOCK ? "" : "lg:col-span-2"}>
+            <div className={MOCK ? "" : "lg:col-span-2"} data-demo="personas">
               {GROUPS.map((g) => (
                 <div key={g.label} className="mb-6 last:mb-0">
                   <p className="eyebrow-free mb-2">{t(g.label)}</p>

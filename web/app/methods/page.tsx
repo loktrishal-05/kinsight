@@ -43,7 +43,7 @@ export default function Methods() {
         </ol>
       </div>
 
-      <div className="card-flush">
+      <div className="card-flush" data-demo="formulas">
         <h2 className="border-b border-line px-5 py-3 text-lg font-semibold">{t("methods.formulas")}</h2>
         <ul className="divide-y divide-line">
           {FORMULAS.map((f) => (

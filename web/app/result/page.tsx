@@ -15,7 +15,7 @@ export default function MyResult() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("result.title")} lead={t("result.lead")} />
-      <div className="card-flush">
+      <div className="card-flush" data-demo="results">
         {results.isLoading && <p className="p-5 text-muted">{t("loading")}</p>}
         <ul className="px-5">
           {results.data?.map((r) => (
@@ -27,7 +27,7 @@ export default function MyResult() {
         </ul>
       </div>
       <Notice>{t("result.carrierNote")}</Notice>
-      <div className="card">
+      <div className="card" data-demo="explanation">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">{t("result.explanation")}</h2>
           <ReadAloud text={expl.data?.blocks.join(" ") ?? ""} />
@@ -37,7 +37,7 @@ export default function MyResult() {
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <button className="btn" disabled={talk.isSuccess} onClick={() => talk.mutate()}>
+        <button className="btn" data-demo="talk" disabled={talk.isSuccess} onClick={() => talk.mutate()}>
           {talk.isSuccess ? <CheckCircle2 aria-hidden className="h-4 w-4" /> : <MessageSquareText aria-hidden className="h-4 w-4" />}
           {talk.isSuccess ? t("result.talkDone") : t("result.talk")}
         </button>

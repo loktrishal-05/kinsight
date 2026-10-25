@@ -25,3 +25,17 @@ Every commit message starts with its task id. Push to `main` after every finishe
 4. P4 screens/dashboards/simulator, demo-path test
 5. P5 only after P4 exits (flags); P6 docs, fresh-clone test
 Scope rule: if P4 slips, drop P5.
+
+## Paused 2026-10-26 (guided demo work) - resume here when the user says "continue"
+Done and committed: guided auto-demo (`web/lib/demoScript.ts` 42 narrated steps, `web/lib/demo.tsx` runtime, `web/components/DemoOverlay.tsx`
+spotlight + captions + controls). Start it from the hero "Watch the guided demo", the top-bar Demo button, Ctrl+K, or `/?demo=1` (`?demo=ar` for Arabic).
+Verified in fast mode (localStorage `ks_demo_fast=1`): all 42 steps run and every action logs success in `window.__demoLog`.
+The demo found and fixed a real bug: in fixture mode, counsellor Approve and referral buttons passed arguments in the wrong order.
+
+Still to do:
+1. Add `web/e2e/demo.spec.ts`: fast mode, start from the hero, wait for `demo-done`, assert `__demoLog` contains every action note
+   (counsellor:approved, close:refused, couple:released, quiz:reexplain, quiz:passed, consent:revoked, kin:arabic, theme:dark, audit:tamper-detected, demo:done),
+   plus pause/next/prev/stop controls and an Arabic (`?demo=ar`) run. Then run the full Playwright suite (previously 44 passing).
+2. Visual check at normal speed on desktop and phone (caption card must not cover the spotlight target on phone; consider moving it to the top when the target is low).
+3. Narration voice (speaker toggle) check with stubbed speechSynthesis; the e2e for this is not written yet.
+4. Update docs/RESEARCH.md and the README with how to run the demo; commit, push, watch CI.

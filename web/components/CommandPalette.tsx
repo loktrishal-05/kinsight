@@ -24,14 +24,15 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
     const cases = MOCK ? api.scenarios().map((s) => ({ id: `s-${s.id}`, label: s.title[lang === "ar" ? "ar" : "en"], hint: t("palette.case"),
       run: () => { api.setScenario(s.id); router.push("/result"); onClose(); setTimeout(() => location.reload(), 50); } })) : [];
     const kin = { id: "kin", label: t("assistant.open"), hint: t("palette.page"), run: () => { window.dispatchEvent(new Event("kin:toggle")); onClose(); } };
-    return [kin, ...pages, ...terms, ...cases];
+    const tour = { id: "demo", label: t("demo.start"), hint: t("palette.page"), run: () => { onClose(); window.dispatchEvent(new Event("demo:start")); } };
+    return [tour, kin, ...pages, ...terms, ...cases];
   }, [t, lang, router, onClose]);
 
   const list = all.filter((e) => e.label.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 9);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 grid place-items-start bg-ink/40 p-4 pt-[12vh] backdrop-blur-sm" onMouseDown={onClose} data-noprint>
-      <div role="dialog" aria-modal="true" aria-label={t("palette.title")} className="mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-surface shadow-lift"
+      <div role="dialog" aria-modal="true" aria-label={t("palette.title")} data-demo="palette-dialog" className="mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-surface shadow-lift"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === "Escape") onClose();
@@ -41,7 +42,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
         }}>
         <div className="flex items-center gap-3 border-b border-line px-4">
           <Search aria-hidden className="h-4 w-4 text-muted" />
-          <input ref={input} value={q} onChange={(e) => { setQ(e.target.value); setI(0); }} placeholder={t("palette.placeholder")} aria-label={t("palette.title")}
+          <input ref={input} data-demo="palette-input" value={q} onChange={(e) => { setQ(e.target.value); setI(0); }} placeholder={t("palette.placeholder")} aria-label={t("palette.title")}
             className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted/70" />
           <kbd className="rounded border border-line px-1.5 text-[10px] text-muted">Esc</kbd>
         </div>

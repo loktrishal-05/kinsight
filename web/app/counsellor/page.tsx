@@ -41,7 +41,7 @@ export default function Counsellor() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("counsellor.title")} lead={t("counsellor.lead")} />
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t("counsellor.workload")}>
+      <dl data-demo="workload" className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t("counsellor.workload")}>
         {[[t("counsellor.open"), count((r) => r.status !== "closed")], [t("tier.3"), count((r) => r.tier === 3 && r.status !== "closed")],
           [t("counsellor.waiting"), count((r) => r.status === "awaiting_counsellor")], [t("next.overdue"), count((r) => (r.due_days ?? 0) < 0 && r.status !== "closed")]].map(([k, v]) => (
           <div key={String(k)} className="rounded-xl border border-line bg-surface px-4 py-3">
@@ -50,14 +50,14 @@ export default function Counsellor() {
         ))}
       </dl>
 
-      <div className="card-flush">
+      <div className="card-flush" data-demo="queue">
         <div className="flex flex-wrap items-center gap-3 border-b border-line p-3">
           <label className="relative block min-w-[10rem] flex-1">
             <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input className="field ps-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("counsellor.search")} aria-label={t("counsellor.search")} />
           </label>
           <div role="group" aria-label={t("counsellor.tier")} className="seg">
-            {[0, 3, 2, 1].map((x) => <button key={x} aria-pressed={tier === x} onClick={() => setTier(x)}>{x === 0 ? t("counsellor.all") : `${t("counsellor.tier")} ${x}`}</button>)}
+            {[0, 3, 2, 1].map((x) => <button key={x} data-demo={x ? `tier-${x}` : "tier-all"} aria-pressed={tier === x} onClick={() => setTier(x)}>{x === 0 ? t("counsellor.all") : `${t("counsellor.tier")} ${x}`}</button>)}
           </div>
           <select className="field w-44" value={status} onChange={(e) => setStatus(e.target.value)} aria-label={t("counsellor.status")}>
             <option value="">{t("counsellor.status")}: {t("counsellor.all")}</option>
@@ -91,7 +91,7 @@ export default function Counsellor() {
       {current && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center gap-3"><h2 className="text-lg font-semibold" dir="ltr">{current.id}</h2><TierChip tier={current.tier} /></div>
-          <div className="card">
+          <div className="card" data-demo="brief">
             <h3 className="mb-3 font-semibold">{t("counsellor.brief")}</h3>
             <ul className="list-disc space-y-1 ps-5">{brief.data?.map((b, i) => <li key={i}>{brief_(b)}</li>)}</ul>
           </div>
@@ -99,19 +99,19 @@ export default function Counsellor() {
             <>
               <div className="card flex flex-wrap items-center gap-2">
                 <h3 className="me-auto font-semibold">{t("counsellor.decision")}</h3>
-                <button className="btn" onClick={() => decide.mutate("approve")}><Check aria-hidden className="h-4 w-4" />{t("counsellor.approve")}</button>
+                <button className="btn" data-demo="approve" onClick={() => decide.mutate("approve")}><Check aria-hidden className="h-4 w-4" />{t("counsellor.approve")}</button>
                 <button className="btn-quiet" onClick={() => decide.mutate("edit")}><Pencil aria-hidden className="h-4 w-4" />{t("counsellor.edit")}</button>
                 <button className="btn-quiet" onClick={() => decide.mutate("hold")}><Pause aria-hidden className="h-4 w-4" />{t("counsellor.hold")}</button>
               </div>
-              <div className="card space-y-4">
+              <div className="card space-y-4" data-demo="referral">
                 <h3 className="font-semibold">{t("counsellor.referral")}</h3>
                 <Journey current={steps.data?.[steps.data.length - 1]?.state ?? "result_released"} overdue={steps.data?.[steps.data.length - 1]?.overdue} />
                 <label className="block text-sm font-medium">
                   <span className="block">{t("counsellor.evidence")}</span>
                   <input className="field mt-1 max-w-sm" value={evidence} onChange={(e) => setEvidence(e.target.value)} />
                 </label>
-                <div className="flex flex-wrap gap-2">{STATES.map((s) => <button key={s} className="btn-quiet btn-sm" onClick={() => event.mutate(s)}>{td(`state.${s}`)}</button>)}</div>
-                {err && <div role="alert"><Notice>{err}</Notice></div>}
+                <div className="flex flex-wrap gap-2">{STATES.map((s) => <button key={s} data-demo={s === "closed" ? "close-case" : undefined} className="btn-quiet btn-sm" onClick={() => event.mutate(s)}>{td(`state.${s}`)}</button>)}</div>
+                {err && <div role="alert" data-demo="close-refused"><Notice>{err}</Notice></div>}
               </div>
             </>
           )}

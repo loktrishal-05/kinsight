@@ -14,7 +14,7 @@ export default function NextSteps() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("next.title")} lead={t("next.lead")} />
-      <div className="card">
+      <div className="card" data-demo="journey">
         <h2 className="mb-4 text-lg font-semibold">{t("journey.title")}</h2>
         <Journey current={last?.state ?? "result_released"} overdue={last?.overdue} />
         <p className="mt-4 text-sm text-muted">{t("journey.note")}</p>

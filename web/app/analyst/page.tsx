@@ -38,7 +38,7 @@ export default function Analyst() {
       <PageHeader title={t("analyst.title")} lead={t("analyst.lead")} />
       <Notice>{t("analyst.suppressed")} {t("analyst.budget")}: <b className="tabular-nums">{dash.data?.budget_remaining}</b></Notice>
 
-      <div className="card space-y-3">
+      <div className="card space-y-3" data-demo="tiers">
         <h2 className="text-lg font-semibold">{t("analyst.tiers")}</h2>
         <div className="flex h-4 overflow-hidden rounded-full bg-sunk" role="img" aria-label={tiers.map(([k, n]) => `${t(`tier.${k}`)}: ${n}`).join(", ")}>
           {tiers.map(([k, n]) => <span key={k} style={{ width: `${(100 * n) / total}%`, background: `rgb(var(--b${k === 1 ? 200 : k === 2 ? 500 : 700}))` }} />)}
@@ -49,7 +49,7 @@ export default function Analyst() {
         <p className="text-xs text-muted">{t("analyst.cohortNote").replace("{n}", String(d.cohort.couples)).replace("{r}", String(Math.round(d.cohort.related_share * 100)))}</p>
       </div>
 
-      <div className="card">
+      <div className="card" data-demo="burden">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">{t("analyst.burden")}</h2>
           <button className="btn-quiet btn-sm" onClick={() => setAll(!all)}>{all ? t("analyst.top10") : t("analyst.all30")}</button>
@@ -67,7 +67,7 @@ export default function Analyst() {
         </ul>
       </div>
 
-      <div className="card">
+      <div className="card" data-demo="weekly">
         <h2 className="mb-1 text-lg font-semibold">{t("analyst.weekly")}</h2>
         <p className="mb-3 text-sm text-muted">{t("analyst.weeklyNote")}</p>
         <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={t("analyst.weekly")} style={{ direction: "ltr" }}>
@@ -80,7 +80,7 @@ export default function Analyst() {
         <p className="flex flex-wrap gap-4 text-xs text-muted"><span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-brand-600" />{t("analyst.waitLine")}</span><span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-brand-100" />{t("analyst.servedBars")}</span></p>
       </div>
 
-      <div className="card">
+      <div className="card" data-demo="heatmap">
         <h2 className="mb-1 text-lg font-semibold">{t("analyst.comp")}</h2>
         <p className="mb-3 text-sm text-muted">{d.comprehension.label}</p>
         <div className="overflow-x-auto">
@@ -102,12 +102,12 @@ export default function Analyst() {
           <span className={`chip ${d.comprehension.gap_points <= d.comprehension.target_gap_points ? "bg-brand-50 text-brand-800" : "bg-unsure-bg text-unsure-fg"}`}>{d.comprehension.gap_points <= d.comprehension.target_gap_points ? t("analyst.within") : t("analyst.above")}</span></p>
       </div>
 
-      <div className="card space-y-4">
+      <div className="card space-y-4" data-demo="capacity">
         <h2 className="text-lg font-semibold">{t("analyst.capacity")}</h2>
         <Notice>{t("analyst.illustrative")}</Notice>
         <label className="block text-sm font-medium">
           {t("analyst.slots")}: <b className="tabular-nums" dir="ltr">{slots}</b>
-          <input type="range" min={8} max={24} step={2} value={slots} onChange={(e) => setSlots(+e.target.value)} className="mt-2 block w-full max-w-md accent-[rgb(var(--b600))]" />
+          <input type="range" data-demo="slots" min={8} max={24} step={2} value={slots} onChange={(e) => setSlots(+e.target.value)} className="mt-2 block w-full max-w-md accent-[rgb(var(--b600))]" />
         </label>
         <ul className="space-y-3">
           {grid.map((g) => (

@@ -18,7 +18,7 @@ export default function Consents() {
         <div className="card flex items-center gap-3 text-muted"><ShieldCheck aria-hidden className="h-5 w-5 text-brand-600" />{t("consent.none")}</div>
       )}
       {!!list.data?.length && (
-        <ul className="card-flush px-5">
+        <ul data-demo="consents" className="card-flush px-5">
           {list.data.map((c) => (
             <li key={c.id} className="row flex-wrap">
               <div className="min-w-0">
@@ -27,7 +27,7 @@ export default function Consents() {
               </div>
               {c.revoked_at
                 ? <span className="chip bg-clear-bg text-clear-fg"><CircleOff aria-hidden className="h-3.5 w-3.5" />{t("consent.revoked")}</span>
-                : <button className="btn-quiet btn-sm" onClick={() => revoke.mutate(c.id)}>{t("consent.revoke")}</button>}
+                : <button className="btn-quiet btn-sm" data-demo="revoke-first" onClick={() => revoke.mutate(c.id)}>{t("consent.revoke")}</button>}
             </li>
           ))}
         </ul>

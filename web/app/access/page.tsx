@@ -22,7 +22,7 @@ export default function Access() {
     <section className="space-y-6">
       <PageHeader title={t("access.title")} lead={t("access.lead")} />
       <Notice>{t("access.disclaimer")}</Notice>
-      <ul className="card-flush divide-y divide-line">
+      <ul data-demo="services" className="card-flush divide-y divide-line">
         {TYPES.map((id) => (
           <li key={id} className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
             <div className="min-w-0 max-w-read">
@@ -32,7 +32,7 @@ export default function Access() {
             </div>
             {asked.includes(id)
               ? <span className="chip bg-brand-50 text-brand-800" role="status"><Check aria-hidden className="h-3.5 w-3.5" />{t("access.recorded")}</span>
-              : <button className="btn-quiet" onClick={() => ask(id)}><HandHelping aria-hidden className="h-4 w-4" />{t("access.request")}</button>}
+              : <button className="btn-quiet" data-demo="handoff" onClick={() => ask(id)}><HandHelping aria-hidden className="h-4 w-4" />{t("access.request")}</button>}
           </li>
         ))}
       </ul>

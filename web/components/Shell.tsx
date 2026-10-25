@@ -6,6 +6,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession, type Persona } from "@/lib/session";
 import { AssistantLauncher } from "./Assistant";
+import DemoOverlay from "./DemoOverlay";
+import { useDemo } from "@/lib/demo";
+import { PlayCircle } from "lucide-react";
 import CommandPalette from "./CommandPalette";
 import SettingsMenu from "./SettingsMenu";
 import { GROUPS } from "./nav";
@@ -17,6 +20,12 @@ export default function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [palette, setPalette] = useState(false);
+  const demo = useDemo();
+  useEffect(() => {
+    const close = () => { setPalette(false); setOpen(false); };
+    window.addEventListener("demo:close-overlays", close);
+    return () => window.removeEventListener("demo:close-overlays", close);
+  }, []);
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((p) => !p); } };
@@ -35,7 +44,7 @@ export default function Shell({ children }: { children: ReactNode }) {
   );
 
   const nav = (
-    <nav aria-label={t("nav.label")} className="flex flex-col gap-6 px-3 py-5">
+    <nav aria-label={t("nav.label")} data-demo="nav" className="flex flex-col gap-6 px-3 py-5">
       {visible.map((g) => (
         <div key={g.id}>
           <p className="eyebrow-free mb-1.5 px-3">{t(g.label)}</p>
@@ -77,7 +86,12 @@ export default function Shell({ children }: { children: ReactNode }) {
             <span className="flex items-center gap-2"><Search aria-hidden className="h-4 w-4" />{t("palette.open")}</span>
             <kbd className="whitespace-nowrap rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
           </button>
-          <div className="ms-auto flex items-center gap-2 sm:gap-3">
+          <div className="ms-auto flex items-center gap-2 sm:gap-3" data-demo="topbar">
+            {demo.available && !demo.active && (
+              <button className="btn-quiet h-9 px-3" onClick={() => demo.start()} data-testid="demo-start-top" title={t("demo.start")}>
+                <PlayCircle aria-hidden className="h-4 w-4 text-brand-600" /><span className="hidden lg:inline">{t("demo.short")}</span>
+              </button>
+            )}
             <label className="hidden items-center gap-2 text-xs font-medium text-muted xl:flex">{t("top.viewing")}{personaSelect("h-9 w-44 py-0")}</label>
             <div role="group" aria-label={t("welcome.language")} className="seg">
               {LANGUAGES.filter((l) => !l.hidden).map((l) => (
@@ -112,6 +126,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       </div>
       <AssistantLauncher />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
+      <DemoOverlay />
     </div>
   );
 }

@@ -22,19 +22,19 @@ export default function Family() {
     <section className="space-y-6">
       <PageHeader title={t("family.title")} lead={t("family.lead")} />
       <Notice>{t("family.hint")}</Notice>
-      <div className="card overflow-x-auto">{ped.data && <Pedigree data={ped.data} />}</div>
+      <div className="card overflow-x-auto" data-demo="pedigree">{ped.data && <Pedigree data={ped.data} />}</div>
       <div className="card flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="font-semibold">{t("family.invite")}</h2>
           <p className="text-sm text-muted">{t("consent.scope")}: {t("scope.couple_tier_only")}</p>
         </div>
         <div className="flex gap-2">
-          <button className="btn" onClick={() => invite.mutate("couple_tier_only")}><UserPlus aria-hidden className="h-4 w-4" />{t("family.invite")}</button>
+          <button className="btn" data-demo="invite" onClick={() => invite.mutate("couple_tier_only")}><UserPlus aria-hidden className="h-4 w-4" />{t("family.invite")}</button>
           <button className="btn-quiet" onClick={() => invite.mutate("decline")}><UserX aria-hidden className="h-4 w-4" />{t("family.decline")}</button>
         </div>
       </div>
 
-      <div className="card space-y-4">
+      <div className="card space-y-4" data-demo="toolkit">
         <div>
           <h2 className="text-lg font-semibold">{t("toolkit.title")}</h2>
           <p className="text-sm text-muted">{t("toolkit.lead")}</p>

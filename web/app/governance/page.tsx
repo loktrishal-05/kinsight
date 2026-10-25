@@ -17,11 +17,11 @@ export default function Governance() {
       <Notice>{t("gov.intended")}</Notice>
       <div className="card space-y-3">
         <div className="flex flex-wrap gap-2">
-          <button className="btn" onClick={async () => setValid((await api.auditVerify(false)).valid)}><ShieldCheck aria-hidden className="h-4 w-4" />{t("gov.verify")}</button>
-          <button className="btn-quiet" onClick={async () => setValid((await api.auditVerify(true)).valid)}><ShieldAlert aria-hidden className="h-4 w-4" />{t("gov.tamper")}</button>
+          <button className="btn" data-demo="verify" onClick={async () => setValid((await api.auditVerify(false)).valid)}><ShieldCheck aria-hidden className="h-4 w-4" />{t("gov.verify")}</button>
+          <button className="btn-quiet" data-demo="tamper" onClick={async () => setValid((await api.auditVerify(true)).valid)}><ShieldAlert aria-hidden className="h-4 w-4" />{t("gov.tamper")}</button>
         </div>
         {valid !== null && (
-          <p role="status" data-testid="chain" className={`chip text-sm ${valid ? "bg-brand-50 text-brand-800" : "bg-unsure-bg text-unsure-fg"}`}>
+          <p role="status" data-testid="chain" data-valid={valid} className={`chip text-sm ${valid ? "bg-brand-50 text-brand-800" : "bg-unsure-bg text-unsure-fg"}`}>
             {valid ? "Chain valid" : "Chain broken: tampering detected"}
           </p>
         )}

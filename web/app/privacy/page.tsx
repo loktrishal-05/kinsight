@@ -35,7 +35,7 @@ export default function Privacy() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("privacy.title")} lead={t("privacy.lead")} />
-      <div className="card-flush overflow-x-auto">
+      <div className="card-flush overflow-x-auto" data-demo="matrix">
         <table className="w-full min-w-[40rem] text-sm">
           <thead className="bg-sunk text-xs text-muted">
             <tr><th className="px-5 py-3 text-start font-semibold">{t("privacy.data")}</th>{ROLES.map((r) => <th key={r} className="px-2 py-3 text-center font-semibold">{t(`privacy.r.${r}`)}</th>)}</tr>
@@ -52,7 +52,7 @@ export default function Privacy() {
       </div>
       <p className="max-w-read text-sm text-muted">{t("privacy.never")}</p>
 
-      <div className="card">
+      <div className="card" data-demo="accesslog">
         <h2 className="mb-1 text-lg font-semibold">{t("privacy.log")}</h2>
         <p className="mb-3 text-sm text-muted">{t("privacy.logNote")}</p>
         <ul>{log.data?.map((e, i) => (
