@@ -7,7 +7,7 @@ export default function FamilyTreeArt() {
     </g>
   );
   const line = (d: string, delay: number) => (
-    <path d={d} pathLength={1} strokeDasharray={1} strokeDashoffset={1} className="animate-draw" style={{ animationDelay: `${delay}s` }} />
+    <path d={d} strokeDasharray={600} strokeDashoffset={600} className="animate-draw" style={{ animationDelay: `${delay}s` }} />
   );
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -20,8 +20,8 @@ export default function FamilyTreeArt() {
         {line("M155 300 H245 M365 300 H275", 3.8)}{line("M155 345 H365", 4.2)}
         {node(170, 70, true, 0)}{node(350, 70, false, 0.4)}{node(110, 215, true, 0.8)}{node(200, 215, false, 1.2)}
         {node(410, 215, false, 1.6)}{node(320, 215, true, 2)}{node(155, 345, true, 0.6, true)}{node(365, 345, false, 1.4, true)}
-        <path d="M155 380 v22 h210 v-22" pathLength={1} strokeDasharray={1} strokeDashoffset={1} className="animate-draw" style={{ animationDelay: "4.6s" }} />
-        <path d="M165 380 v14 h190 v-14" pathLength={1} strokeDasharray={1} strokeDashoffset={1} className="animate-draw" style={{ animationDelay: "4.8s" }} />
+        <path d="M155 380 v22 h210 v-22" strokeDasharray={600} strokeDashoffset={600} className="animate-draw" style={{ animationDelay: "4.6s" }} />
+        <path d="M165 380 v14 h190 v-14" strokeDasharray={600} strokeDashoffset={600} className="animate-draw" style={{ animationDelay: "4.8s" }} />
       </svg>
     </div>
   );

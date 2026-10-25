@@ -27,7 +27,7 @@ export default {
       maxWidth: { read: "68ch" },
       keyframes: {
         rise: { from: { opacity: "0", transform: "translateY(14px)" }, to: { opacity: "1", transform: "none" } },
-        draw: { to: { strokeDashoffset: "0" } },
+        draw: { to: { "stroke-dashoffset": "0" } },
         pulseSoft: { "0%,100%": { opacity: ".55" }, "50%": { opacity: "1" } },
         drift: { "0%": { transform: "translate3d(0,0,0)" }, "100%": { transform: "translate3d(0,-14px,0)" } },
       },
