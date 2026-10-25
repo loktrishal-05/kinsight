@@ -1,0 +1,20 @@
+# Tier rules (spec section 5). Highest triggered tier wins.
+related_phi_min: 0.0            # kinship above this counts as "related partners"
+emit_residual_unrelated: false  # emit both-not-detected findings for unrelated couples
+tier3:
+  both_carry_same: true
+  uncertain_on_condition_tiers: [2, 3]
+  carrier_with_related_partner: true
+  xlr_carrier: true
+  carrier_of_condition_tiers: [3]
+tier2:
+  one_carrier_unrelated_condition_tiers: [2]
+# Referral state machine: owner and due days per transition target
+referral:
+  counselling_requested:       { owner: counsellor, due_days: 7 }
+  counselling_done:            { owner: counsellor, due_days: 14 }
+  confirmatory_requested:      { owner: counsellor, due_days: 14 }
+  confirmatory_done:           { owner: confirmatory_service, due_days: 30 }
+  specialist_referral_requested: { owner: counsellor, due_days: 14 }
+  specialist_referral_done:    { owner: specialist_service, due_days: 45 }
+service_window_days: 7

@@ -1,0 +1,8 @@
+seed: 20261025
+family_clusters: 400
+generations: 4
+consanguineous_share: 0.50      # dated default from a 1990s UAE study; change freely
+first_cousin_share_of_all: 0.26 # same source
+couples: 1500
+languages: [ar, en]
+reading_levels: [basic, standard]

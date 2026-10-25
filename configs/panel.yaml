@@ -1,0 +1,274 @@
+# Fictional panel. Frequencies are illustrative only, never real prevalence.
+# label_ar values are PLACEHOLDERS pending native-speaker review (docs/REVIEWS.md).
+panel_version: "2026.1-demo"
+conditions:
+  - id: COND_001
+    label_en: "Inherited blood disorder 01 (illustrative)"
+    label_ar: "اضطراب وراثي في الدم 01 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.04
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_002
+    label_en: "Inherited metabolic condition 02 (illustrative)"
+    label_ar: "حالة أيضية وراثية 02 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_003
+    label_en: "Inherited hearing condition 03 (illustrative)"
+    label_ar: "حالة وراثية في السمع 03 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.025
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_004
+    label_en: "Inherited eye condition 04 (illustrative)"
+    label_ar: "حالة وراثية في العين 04 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_005
+    label_en: "Inherited nerve and muscle condition 05 (illustrative)"
+    label_ar: "حالة وراثية في الأعصاب والعضلات 05 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.015
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_006
+    label_en: "Inherited bone condition 06 (illustrative)"
+    label_ar: "حالة وراثية في العظام 06 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.01
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_007
+    label_en: "Inherited skin condition 07 (illustrative)"
+    label_ar: "حالة وراثية في الجلد 07 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.008
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_008
+    label_en: "Inherited immune condition 08 (illustrative)"
+    label_ar: "حالة وراثية في المناعة 08 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.005
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_009
+    label_en: "Inherited hormone condition 09 (illustrative)"
+    label_ar: "حالة وراثية في الهرمونات 09 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: XLR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_010
+    label_en: "Inherited lung or liver condition 10 (illustrative)"
+    label_ar: "حالة وراثية في الرئة أو الكبد 10 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_011
+    label_en: "Inherited blood disorder 11 (illustrative)"
+    label_ar: "اضطراب وراثي في الدم 11 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.04
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_012
+    label_en: "Inherited metabolic condition 12 (illustrative)"
+    label_ar: "حالة أيضية وراثية 12 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_013
+    label_en: "Inherited hearing condition 13 (illustrative)"
+    label_ar: "حالة وراثية في السمع 13 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.025
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_014
+    label_en: "Inherited eye condition 14 (illustrative)"
+    label_ar: "حالة وراثية في العين 14 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_015
+    label_en: "Inherited nerve and muscle condition 15 (illustrative)"
+    label_ar: "حالة وراثية في الأعصاب والعضلات 15 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.015
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_016
+    label_en: "Inherited bone condition 16 (illustrative)"
+    label_ar: "حالة وراثية في العظام 16 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.01
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_017
+    label_en: "Inherited skin condition 17 (illustrative)"
+    label_ar: "حالة وراثية في الجلد 17 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.008
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_018
+    label_en: "Inherited immune condition 18 (illustrative)"
+    label_ar: "حالة وراثية في المناعة 18 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.005
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_019
+    label_en: "Inherited hormone condition 19 (illustrative)"
+    label_ar: "حالة وراثية في الهرمونات 19 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: XLR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_020
+    label_en: "Inherited lung or liver condition 20 (illustrative)"
+    label_ar: "حالة وراثية في الرئة أو الكبد 20 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_021
+    label_en: "Inherited blood disorder 21 (illustrative)"
+    label_ar: "اضطراب وراثي في الدم 21 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.04
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_022
+    label_en: "Inherited metabolic condition 22 (illustrative)"
+    label_ar: "حالة أيضية وراثية 22 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_023
+    label_en: "Inherited hearing condition 23 (illustrative)"
+    label_ar: "حالة وراثية في السمع 23 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.025
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_024
+    label_en: "Inherited eye condition 24 (illustrative)"
+    label_ar: "حالة وراثية في العين 24 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_025
+    label_en: "Inherited nerve and muscle condition 25 (illustrative)"
+    label_ar: "حالة وراثية في الأعصاب والعضلات 25 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.015
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_026
+    label_en: "Inherited bone condition 26 (illustrative)"
+    label_ar: "حالة وراثية في العظام 26 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.01
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 1
+  - id: COND_027
+    label_en: "Inherited skin condition 27 (illustrative)"
+    label_ar: "حالة وراثية في الجلد 27 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.008
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_028
+    label_en: "Inherited immune condition 28 (illustrative)"
+    label_ar: "حالة وراثية في المناعة 28 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.005
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2
+  - id: COND_029
+    label_en: "Inherited hormone condition 29 (illustrative)"
+    label_ar: "حالة وراثية في الهرمونات 29 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: XLR
+    carrier_frequency: 0.03
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 3
+  - id: COND_030
+    label_en: "Inherited lung or liver condition 30 (illustrative)"
+    label_ar: "حالة وراثية في الرئة أو الكبد 30 (توضيحي)"
+    label_ar_status: placeholder
+    inheritance: AR
+    carrier_frequency: 0.02
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01
+    counselling_tier: 2

@@ -1,0 +1,662 @@
+[
+ {
+  "cond": "COND_001",
+  "a": "carrier",
+  "b": "carrier",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "carrier",
+     "formula_id": "ar_both_carrier",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0,
+      "carrier_child": 0.5,
+      "unaffected_noncarrier_child": 0.25
+     },
+     "risk_affected": 0.25,
+     "note_codes": []
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "carrier",
+  "b": "carrier",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "carrier",
+     "formula_id": "ar_both_carrier",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "carrier_child": 0.5,
+      "unaffected_noncarrier_child": 0.25
+     },
+     "risk_affected": 0.25,
+     "note_codes": [
+      "related_partners"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "carrier",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "not_detected",
+     "formula_id": "ar_one_carrier_residual",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0,
+      "prior_other": 0.04,
+      "post_other": 0.001248439450686643
+     },
+     "risk_affected": 0.00031210986267166075,
+     "note_codes": []
+    }
+   ],
+   "tier": 2,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "carrier",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "not_detected",
+     "formula_id": "ar_one_carrier_residual",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "prior_other": 0.16,
+      "post_other": 0.005681818181818187
+     },
+     "risk_affected": 0.0014204545454545468,
+     "note_codes": [
+      "related_partners"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "not_detected",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "not_detected",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "not_detected",
+     "status_b": "not_detected",
+     "formula_id": "ar_both_not_detected",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "p_x": 0.001248439450686643
+     },
+     "risk_affected": 3.8965026550769176e-07,
+     "note_codes": [
+      "related_partners",
+      "independence_assumed"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "uncertain",
+  "b": "carrier",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "carrier",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "uncertain",
+  "b": "carrier",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "carrier",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "related_partners",
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "uncertain",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "not_detected",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_001",
+  "a": "uncertain",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_001",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "not_detected",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.04,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "related_partners",
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "carrier",
+  "b": "carrier",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "carrier",
+     "formula_id": "ar_both_carrier",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0,
+      "carrier_child": 0.5,
+      "unaffected_noncarrier_child": 0.25
+     },
+     "risk_affected": 0.25,
+     "note_codes": []
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "carrier",
+  "b": "carrier",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "carrier",
+     "formula_id": "ar_both_carrier",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "carrier_child": 0.5,
+      "unaffected_noncarrier_child": 0.25
+     },
+     "risk_affected": 0.25,
+     "note_codes": [
+      "related_partners"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "carrier",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "not_detected",
+     "formula_id": "ar_one_carrier_residual",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0,
+      "prior_other": 0.02,
+      "post_other": 0.0006118702834998986
+     },
+     "risk_affected": 0.00015296757087497465,
+     "note_codes": []
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "carrier",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "carrier",
+     "status_b": "not_detected",
+     "formula_id": "ar_one_carrier_residual",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "prior_other": 0.14250000000000002,
+      "post_other": 0.004960691595834185
+     },
+     "risk_affected": 0.0012401728989585462,
+     "note_codes": [
+      "related_partners"
+     ]
+    }
+   ],
+   "tier": 3,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "not_detected",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "not_detected",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "not_detected",
+     "status_b": "not_detected",
+     "formula_id": "ar_both_not_detected",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125,
+      "p_x": 0.0006118702834998986
+     },
+     "risk_affected": 9.359631095756157e-08,
+     "note_codes": [
+      "related_partners",
+      "independence_assumed"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "uncertain",
+  "b": "carrier",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "carrier",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "uncertain",
+  "b": "carrier",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "carrier",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "related_partners",
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "uncertain",
+  "b": "not_detected",
+  "related": false,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0,
+   "kinship_phi": 0.0,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "not_detected",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0,
+      "r": 0.0
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ },
+ {
+  "cond": "COND_004",
+  "a": "uncertain",
+  "b": "not_detected",
+  "related": true,
+  "expected": {
+   "couple_id": "a:b",
+   "inbreeding_f": 0.0625,
+   "kinship_phi": 0.0625,
+   "findings": [
+    {
+     "condition_id": "COND_004",
+     "inheritance": "AR",
+     "status_a": "uncertain",
+     "status_b": "not_detected",
+     "formula_id": "ar_needs_review",
+     "inputs": {
+      "c": 0.02,
+      "s": 0.97,
+      "phi": 0.0625,
+      "r": 0.125
+     },
+     "risk_affected": null,
+     "note_codes": [
+      "related_partners",
+      "uncertain_result"
+     ]
+    }
+   ],
+   "tier": 1,
+   "engine_version": "0.1.0",
+   "panel_version": "2026.1-demo",
+   "config_hash": "c39ba233668310c1"
+  }
+ }
+]
