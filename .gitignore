@@ -1,0 +1,76 @@
+# Secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node / Next.js
+node_modules/
+web/.next/
+web/out/
+web/node_modules/
+*.tsbuildinfo
+npm-debug.log*
+.pnpm-store/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Data: keep the small demo cohort, ignore everything bulky
+data/raw/
+data/processed/
+data/reference/*
+!data/reference/.gitkeep
+*.parquet
+*.csv
+!data/demo/**/*.csv
+*.sqlite
+*.db
+
+# Local databases and volumes
+pgdata/
+redis-data/
+docker-volumes/
+
+# Model caches and large artefacts
+*.pt
+*.bin
+*.onnx
+*.safetensors
+.cache/
+models/
+
+# Logs and temp
+*.log
+logs/
+tmp/
+.tmp/
+
+# Evaluation and trace outputs
+evals/output/
+.langsmith/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
