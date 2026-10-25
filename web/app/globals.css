@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+body { @apply bg-calm text-ink antialiased; font-family: system-ui, "Segoe UI", Tahoma, sans-serif; line-height: 1.6; }
+a, button, input, select, textarea { @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent; }
+.card { @apply rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200; }
+.btn { @apply rounded-md bg-accent px-4 py-2 text-white hover:bg-slate-700 disabled:opacity-50; }
+.btn-quiet { @apply rounded-md bg-white px-4 py-2 text-ink ring-1 ring-slate-300 hover:bg-slate-50 disabled:opacity-50; }
+.note { @apply rounded-md bg-note p-3 text-sm; }
