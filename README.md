@@ -22,3 +22,8 @@ Challenge 03. All people and results are fictional; no real genomes are used.
     pip install -e ".[dev,api]" && python -m pytest -q
     python scripts/make_demo_cohort.py && python scripts/demo.py
     cd web && npm ci && npm run dev      # mock API mode by default (NEXT_PUBLIC_MOCK=1)
+
+## Run the web app against the live demo API
+    KINSIGHT_DEMO=1 KINSIGHT_DEMO_AUTH=1 KINSIGHT_TOKEN_SECRET=<32+ bytes> KINSIGHT_AUDIT_SALT=<32+ bytes>       python -m uvicorn services.api.main:app --port 8000
+    cd web && NEXT_PUBLIC_MOCK=0 npm run build && npm start     # /api is proxied to KINSIGHT_API_URL (default :8000)
+    # checks: LIVE_API=http://localhost:8000 npx vitest run tests/live.test.ts ; npx playwright test -c playwright.live.config.ts

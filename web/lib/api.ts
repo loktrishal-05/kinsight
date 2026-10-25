@@ -2,6 +2,7 @@
 // The front end never computes a risk figure: every number below comes from the API or a labelled fixture.
 import { z } from "zod";
 import { mock } from "./mock";
+import { real } from "./real";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
 
@@ -30,46 +31,33 @@ export type Step = z.infer<typeof StepS>;
 export type Quiz = z.infer<typeof QuizS>;
 export type Pedigree = z.infer<typeof PedigreeS>;
 
-let token = "";
-export const setToken = (t: string) => { token = t; };
+export const setToken = (_t: string) => {};
 
-async function call<T>(schema: z.ZodType<T, z.ZodTypeDef, unknown>, path: string, init: RequestInit = {}): Promise<T> {
-  const r = await fetch(path, { ...init, headers: { "content-type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}), ...init.headers } });
-  if (!r.ok) throw new Error(`${r.status}`);
-  return schema.parse(await r.json());
-}
-const post = (body: unknown): RequestInit => ({ method: "POST", body: JSON.stringify(body) });
-
+// One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
+const impl = (MOCK ? mock : real) as any;
 export const api = {
-  async login(persona: string) {
-    if (MOCK) return mock.login(persona);
-    const r = await call(z.object({ access_token: z.string() }), "/api/auth/persona", post({ persona }));
-    setToken(r.access_token);
-    return persona;
-  },
-  results: (): Promise<Result[]> => (MOCK ? mock.results() : call(z.array(ResultS), "/api/me/results")),
-  explanation: (lang: string, level: string, id = "current") =>
-    MOCK ? mock.explanation(lang, level) : call(ExplanationS, `/api/me/results/${id}/explanation`),
-  couple: (id = "demo-couple"): Promise<Couple> => (MOCK ? mock.couple() : call(CoupleS, `/api/couples/${id}/assessment`)),
-  grantPooling: () => (MOCK ? mock.grantPooling() : call(z.unknown(), "/api/me/consents", post({ scope: "couple_pooling" }))),
-  consents: (): Promise<Consent[]> => (MOCK ? mock.consents() : call(z.array(ConsentS), "/api/me/consents")),
-  revoke: (id: string) => (MOCK ? mock.revoke(id) : call(z.unknown(), `/api/me/consents/${id}/revoke`, post({}))),
-  quiz: (lang: string): Promise<Quiz> => (MOCK ? mock.quiz(lang) : call(QuizS, "/api/cases/demo-case/quiz")),
-  submitQuiz: (answers: Record<string, string>) =>
-    MOCK ? mock.submitQuiz(answers) : call(QuizResultS, "/api/cases/demo-case/quiz/answers", post({ answers })),
-  pedigree: (): Promise<Pedigree> => (MOCK ? mock.pedigree() : call(PedigreeS, "/api/me/pedigree")),
-  invite: (kind: string) => (MOCK ? mock.invite(kind) : call(z.unknown(), "/api/invitations", post({ recipient_id: "relative", scope: kind }))),
-  referral: (): Promise<Step[]> => (MOCK ? mock.referral() : call(z.object({ referral: z.array(StepS) }), "/api/cases/demo-case/referral").then((r) => r.referral)),
-  copilot: (text: string) => (MOCK ? mock.copilot(text) : call(z.object({ text: z.string(), refused: z.boolean().optional() }), "/api/copilot/chat", post({ text }))),
-  queue: () => (MOCK ? mock.queue() : call(z.array(z.object({ id: z.string(), tier: z.number(), status: z.string(), due_at: z.number().optional() })), "/api/counsellor/queue")),
-  brief: (id: string) => (MOCK ? mock.brief() : call(z.object({ brief: z.array(z.string()) }), `/api/counsellor/cases/${id}/brief`).then((r) => r.brief)),
-  decide: (id: string, decision: string) => (MOCK ? mock.decide(decision) : call(z.unknown(), `/api/counsellor/cases/${id}/decision`, post({ decision, reason_code: "reviewed" }))),
-  referralEvent: (id: string, event: string, evidence: string) =>
-    MOCK ? mock.referralEvent(event, evidence) : call(z.unknown(), `/api/counsellor/cases/${id}/referral/events`, post({ event, evidence_code: evidence || "none" })),
-  dashboard: () => (MOCK ? mock.dashboard() : call(z.object({ cells: z.record(z.number().nullable()), budget_remaining: z.number() }), "/api/analytics/dashboard")),
-  comprehension: () => (MOCK ? mock.comprehension() : call(z.any(), "/api/analytics/comprehension")),
-  capacity: () => (MOCK ? mock.capacity() : call(z.any(), "/api/analytics/capacity")),
-  auditVerify: (tamper = false) => (MOCK ? mock.auditVerify(tamper) : call(z.object({ valid: z.boolean() }), "/api/governance/audit-verify")),
-  policy: () => (MOCK ? mock.policy() : call(z.any(), "/api/governance/policy")),
-  sources: () => (MOCK ? mock.sources() : call(z.any(), "/api/governance/data-sources")),
+  login: (p: string): Promise<string> => impl.login(p),
+  results: (): Promise<Result[]> => impl.results(),
+  explanation: (lang: string, level: string): Promise<{ blocks: string[]; released: boolean }> => impl.explanation(lang, level),
+  couple: (): Promise<Couple> => impl.couple(),
+  grantPooling: (): Promise<unknown> => impl.grantPooling(),
+  consents: (): Promise<Consent[]> => impl.consents(),
+  revoke: (id: string): Promise<unknown> => impl.revoke(id),
+  quiz: (lang: string): Promise<Quiz> => impl.quiz(lang),
+  submitQuiz: (a: Record<string, string>): Promise<z.infer<typeof QuizResultS>> => impl.submitQuiz(a),
+  pedigree: (): Promise<Pedigree> => impl.pedigree(),
+  invite: (kind: string): Promise<unknown> => impl.invite(kind),
+  referral: (): Promise<Step[]> => impl.referral(),
+  requestCounselling: (): Promise<unknown> => (MOCK ? mock.referralEvent("counselling_requested", "") : real.requestCounselling()),
+  copilot: (t: string): Promise<{ text: string; refused?: boolean }> => impl.copilot(t),
+  queue: (): Promise<{ id: string; tier: number; status: string; due_at?: number }[]> => impl.queue(),
+  brief: (id: string): Promise<string[]> => impl.brief(id),
+  decide: (id: string, d: string): Promise<unknown> => impl.decide(id, d),
+  referralEvent: (id: string, e: string, ev: string): Promise<unknown> => impl.referralEvent(id, e, ev),
+  dashboard: (): Promise<{ cells: Record<string, number | null>; budget_remaining: number }> => impl.dashboard(),
+  comprehension: (): Promise<any> => impl.comprehension(),
+  capacity: (): Promise<any> => impl.capacity(),
+  auditVerify: (tamper = false): Promise<{ valid: boolean }> => impl.auditVerify(tamper),
+  policy: (): Promise<any> => impl.policy(),
+  sources: (): Promise<any> => impl.sources(),
 };

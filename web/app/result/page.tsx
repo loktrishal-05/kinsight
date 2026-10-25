@@ -8,7 +8,7 @@ export default function MyResult() {
   const qc = useQueryClient();
   const results = useQuery({ queryKey: ["results"], queryFn: api.results });
   const expl = useQuery({ queryKey: ["expl", lang, level], queryFn: () => api.explanation(lang, level) });
-  const talk = useMutation({ mutationFn: () => api.referralEvent("demo-case", "counselling_requested", ""), onSuccess: () => qc.invalidateQueries({ queryKey: ["referral"] }) });
+  const talk = useMutation({ mutationFn: () => api.requestCounselling(), onSuccess: () => qc.invalidateQueries({ queryKey: ["referral"] }) });
   const word = (s: string) => (s === "carrier" ? t("result.found") : s === "not_detected" ? t("result.notfound") : t("result.unclear"));
   return (
     <section className="space-y-4">
