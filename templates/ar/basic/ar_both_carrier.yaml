@@ -1,0 +1,21 @@
+block_id: ar_both_carrier
+applies_when:
+  formula_id: ar_both_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: كلاكما يحمل تغيرا في الجين نفسه. هذا الجين مرتبط بـ {condition_label}. في كل حمل فرصة {risk_affected_pct} أن يتأثر الطفل.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

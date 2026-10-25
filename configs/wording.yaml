@@ -1,0 +1,9 @@
+# Verifier wording rules (spec section 7). Plain lowercase substring scan.
+banned:
+  en: ["should not marry", "should not have children", "must not marry", "do not marry", "your fault",
+       "to blame", "positive", "negative", "you have the disease", "doomed", "will be affected",
+       "is a disease", "cancel the", "family honour", "family honor", "bad blood", "defective"]
+  ar: ["لا تتزوجا", "لا يجب أن تتزوجا", "عيب", "بسبب خطئكم", "محكوم", "مرضى حتما", "سيصاب حتما"]
+readability:
+  en_max_grade: { basic: 9.0, standard: 13.0 }
+  ar_max_sentence_words: { basic: 22, standard: 30 }

@@ -1,0 +1,21 @@
+block_id: ar_one_carrier_residual
+applies_when:
+  formula_id: ar_one_carrier_residual
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: One of you carries a change in a gene linked to {condition_label}. The other person has no change found, but no test finds everything. The chance that a child is affected is about {risk_affected_pct} in each pregnancy.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -1,0 +1,6 @@
+# Case workflow settings
+explain_max_retries: 2
+reexplain_max: 1   # spec route text: a second failed quiz offers a counsellor, never a third loop
+quiz:
+  questions: 5
+  pass_min: 5        # a single wrong answer triggers a gentle re-explanation (demo step 5)

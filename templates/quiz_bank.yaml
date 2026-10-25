@@ -1,0 +1,33 @@
+# Reviewed question bank (status: placeholder until both reviewers are recorded in docs/REVIEWS.md).
+# Options: first is the correct one unless "derived" (answer comes from the engine); the quiz builder shuffles deterministically.
+status: placeholder
+questions:
+  - id: q_carrier_not_disease
+    text: { en: "Does being a carrier mean a person has the condition?", ar: "هل كون الشخص حاملا يعني أنه مصاب بالحالة؟" }
+    options:
+      - { en: "No, a carrier is not the same as having the condition", ar: "لا، الحامل ليس مصابا بالحالة" }
+      - { en: "Yes, always", ar: "نعم، دائما" }
+  - id: q_chance_not_certain
+    text: { en: "If a chance is shown for a child being affected, does it mean a child will definitely be affected?", ar: "إذا ظهرت فرصة لتأثر الطفل، فهل يعني ذلك أن الطفل سيتأثر حتما؟" }
+    options:
+      - { en: "No, it is a chance, not a certainty", ar: "لا، هي فرصة وليست يقينا" }
+      - { en: "Yes, it will happen", ar: "نعم، سيحدث ذلك" }
+  - id: q_who_decides
+    text: { en: "Who decides what to do next?", ar: "من يقرر الخطوة التالية؟" }
+    options:
+      - { en: "You decide, with support if you want it", ar: "أنتما تقرران، مع الدعم إن رغبتما" }
+      - { en: "A counsellor decides for you", ar: "المستشار يقرر عنكما" }
+      - { en: "Your family decides for you", ar: "عائلتكما تقرر عنكما" }
+  - id: q_counsellor_anytime
+    text: { en: "Can you ask to talk with a genetic counsellor at any time?", ar: "هل يمكنكما طلب التحدث مع مستشار وراثي في أي وقت؟" }
+    options:
+      - { en: "Yes", ar: "نعم" }
+      - { en: "No, only once", ar: "لا، مرة واحدة فقط" }
+  - id: q_estimate_not_diagnosis
+    text: { en: "Is a chance estimate the same as a diagnosis?", ar: "هل تقدير الفرصة هو نفسه التشخيص؟" }
+    options:
+      - { en: "No, an estimate is not a diagnosis", ar: "لا، التقدير ليس تشخيصا" }
+      - { en: "Yes, they are the same", ar: "نعم، هما الشيء نفسه" }
+  - id: q_chance_value
+    derived: true
+    text: { en: "What chance does your result show for a child being affected in each pregnancy?", ar: "ما الفرصة التي تظهرها نتيجتكما لتأثر الطفل في كل حمل؟" }

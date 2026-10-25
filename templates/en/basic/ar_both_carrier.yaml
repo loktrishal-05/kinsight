@@ -1,0 +1,21 @@
+block_id: ar_both_carrier
+applies_when:
+  formula_id: ar_both_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: You both carry a change in the same gene. It is linked to {condition_label}. Each pregnancy has a {risk_affected_pct} chance that a child is affected.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

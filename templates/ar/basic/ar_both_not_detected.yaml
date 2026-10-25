@@ -1,0 +1,20 @@
+block_id: ar_both_not_detected
+applies_when:
+  formula_id: ar_both_not_detected
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: لم نجد تغيرا لدى أي منكما بخصوص {condition_label}. التقدير هو {risk_affected_pct}. بينكما قرابة، فقد تكون الفرصة الحقيقية أعلى.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder
