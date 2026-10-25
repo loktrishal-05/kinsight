@@ -6,10 +6,10 @@ import languages from "@/messages/languages.json";
 // A new language = a messages/<code>.json file plus one line in messages/languages.json. No code changes.
 export type Lang = string;
 export type Level = "basic" | "standard";
-export const LANGUAGES = languages as { code: string; label: string; dir: "ltr" | "rtl" }[];
+export const LANGUAGES = languages as { code: string; name: string; short: string; dir: "ltr" | "rtl"; hidden?: boolean }[];
 type Msgs = Record<string, string>;
 
-type Ctx = { lang: Lang; level: Level; setLang: (l: Lang) => void; setLevel: (l: Level) => void; t: (k: string) => string };
+type Ctx = { lang: Lang; level: Level; setLang: (l: Lang) => void; setLevel: (l: Level) => void; t: (k: string) => string; td: (k: string) => string };
 const I18n = createContext<Ctx | null>(null);
 
 const read = (k: string, d: string) => {
@@ -33,7 +33,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return () => { live = false; };
   }, [lang, level, ready]);
   const t = (k: string) => msgs[k] ?? (en as Msgs)[k] ?? k;
-  return <I18n.Provider value={{ lang, level, setLang, setLevel, t }}>{children}</I18n.Provider>;
+  // td: translate a data-driven key (e.g. a referral state) and fall back to a readable form of the raw id
+  const td = (k: string) => { const v = t(k); return v === k ? k.split(".").pop()!.replaceAll("_", " ") : v; };
+  return <I18n.Provider value={{ lang, level, setLang, setLevel, t, td }}>{children}</I18n.Provider>;
 }
 
 export const useI18n = () => {

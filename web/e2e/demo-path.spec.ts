@@ -28,9 +28,9 @@ for (const lang of ["en", "ar"] as const) {
       await page.goto("/counsellor");
       await page.getByRole("button", { name: /Approve|موافقة/ }).click();
       await page.goto("/understand");
-      await expect(page.locator("fieldset")).toHaveCount(5);
-      await page.locator("fieldset").first().locator("input").last().check();
-      for (const f of (await page.locator("fieldset").all()).slice(1)) await f.locator("input").first().check();
+      await expect(page.locator("form [role=group]")).toHaveCount(5);
+      await page.locator("form [role=group]").first().locator("input").last().check();
+      for (const f of (await page.locator("form [role=group]").all()).slice(1)) await f.locator("input").first().check();
       await page.getByRole("button", { name: /Submit answers|إرسال الإجابات/ }).click();
       await expect(page.getByTestId("quiz-msg")).toBeVisible();
     });

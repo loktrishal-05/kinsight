@@ -72,8 +72,8 @@ export const mock = {
   async login(p: string) { S.persona = p; return p; },
   async results() {
     return [
-      { condition_id: "COND_001", label: "Inherited blood disorder 01 (illustrative)", status: "carrier" as const },
-      { condition_id: "COND_002", label: "Inherited metabolic condition 02 (illustrative)", status: "not_detected" as const },
+      { condition_id: "COND_001", label: "Inherited blood disorder 01 (illustrative)", label_ar: "اضطراب وراثي في الدم 01 (توضيحي)", status: "carrier" as const },
+      { condition_id: "COND_002", label: "Inherited metabolic condition 02 (illustrative)", label_ar: "حالة أيضية وراثية 02 (توضيحي)", status: "not_detected" as const },
     ];
   },
   async explanation(lang: string, level: string) { return { blocks: EXPL[lang]?.[level] ?? EXPL.en.standard, released: S.released }; },
@@ -81,7 +81,7 @@ export const mock = {
     const both = S.pooled.a && S.pooled.b;
     if (!both) return { tier: null, awaiting_counsellor: false, findings: null };
     if (!S.released) return { tier: 3 as const, awaiting_counsellor: true, findings: null };
-    return { tier: 3 as const, awaiting_counsellor: false, findings: [{ condition_id: "COND_001", label: "Inherited blood disorder 01 (illustrative)", risk_affected: 0.25, note_codes: ["related_partners"] }] };
+    return { tier: 3 as const, awaiting_counsellor: false, findings: [{ condition_id: "COND_001", label: "Inherited blood disorder 01 (illustrative)", label_ar: "اضطراب وراثي في الدم 01 (توضيحي)", risk_affected: 0.25, note_codes: ["related_partners"] }] };
   },
   async grantPooling() {
     if (S.persona === "person_b") S.pooled.b = true; else S.pooled.a = true;
@@ -106,15 +106,19 @@ export const mock = {
     return S.attempts >= 2 ? { passed: false, counsellor_offered: true } : { passed: false, reexplain: true };
   },
   async pedigree() {
+    const P = (id: string, sex: "male" | "female", gen: number, col: number, parents?: [string, string], confirmed = true) => ({ id, sex, gen, col, confirmed, parents });
     return {
       people: [
-        { id: "GM", sex: "female" as const, gen: 0, col: 1, confirmed: true }, { id: "GF", sex: "male" as const, gen: 0, col: 0, confirmed: true },
-        { id: "P1", sex: "male" as const, gen: 1, col: 0, confirmed: true }, { id: "P2", sex: "male" as const, gen: 1, col: 2, confirmed: true },
-        { id: "A", sex: "male" as const, gen: 2, col: 0, confirmed: true }, { id: "B", sex: "female" as const, gen: 2, col: 2, confirmed: true },
-        ...(S.invited ? [{ id: "R1", sex: "female" as const, gen: 2, col: 1, confirmed: S.accepted }] : []),
+        P("GF", "male", 0, 2), P("GM", "female", 0, 3),
+        P("P1", "male", 1, 0, ["GF", "GM"]), P("S1", "female", 1, 1), P("P2", "female", 1, 4, ["GF", "GM"]), P("S2", "male", 1, 5),
+        P("A", "male", 2, 0.5, ["P1", "S1"]), P("B", "female", 2, 4.5, ["S2", "P2"]),
+        ...(S.invited ? [P("R1", "female", 2, 2.5, undefined, S.accepted)] : []),
       ],
+      related: [["A", "B"]] as [string, string][],
       relationships: [
         { a_id: "GF", b_id: "GM", type: "partner_of" as const, confidence: "known" as const },
+        { a_id: "P1", b_id: "S1", type: "partner_of" as const, confidence: "known" as const },
+        { a_id: "S2", b_id: "P2", type: "partner_of" as const, confidence: "known" as const },
         { a_id: "A", b_id: "B", type: "partner_of" as const, confidence: "known" as const },
       ],
       warnings: [],
@@ -127,14 +131,14 @@ export const mock = {
     return refuse ? { text: "", refused: true } : { text: "Your result says what was found for you. Being a carrier is not the same as having the condition. (Source: your explanation.)", refused: false };
   },
   async queue() { return [{ id: "demo-case", tier: 3, status: S.released ? "released" : "awaiting_counsellor", due_at: now() + 3 * day }, { id: "case-2", tier: 2, status: "awaiting_user", due_at: now() + 9 * day }]; },
-  async brief() { return ["Tier 3 couple: shared finding on COND_001 (assessment.findings[0])", "Related partners (assessment.kinship_phi)", "Quiz outcome: not yet taken (case.quiz_result)", "Open question: confirmatory assessment route (rule: tier 3)"]; },
+  async brief() { return ["tier_3", "finding_COND_001", "related_partners", "quiz", "open"]; },
   async decide(d: string) { if (d === "approve") S.released = true; return {}; },
   async referralEvent(event: string, evidence: string) {
     if (event === "closed" && !evidence) throw new Error("evidence");
     S.steps.push({ state: event, owner_id: "counsellor", due_at: now() + 14 * day });
     return {};
   },
-  async dashboard() { return { cells: { "COND_001 carriers": 41, "COND_002 carriers": 27, "COND_003 carriers": null, "Counselling uptake (cases)": 118 }, budget_remaining: 7.6 }; },
+  async dashboard() { return { cells: { tier_1: 388, tier_2: 195, tier_3: 917, small_group: null }, budget_remaining: 1.5 }; },
   async comprehension() {
     return { groups: [{ language: "en", reading_level: "standard", n: 40, pass_rate: 85 }, { language: "en", reading_level: "basic", n: 32, pass_rate: 81 }, { language: "ar", reading_level: "standard", n: 36, pass_rate: 78 }, { language: "ar", reading_level: "basic", n: 30, pass_rate: 70 }], gap_points: 15, target_gap_points: 10, label: "Pipeline test input, not evidence about people." };
   },

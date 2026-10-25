@@ -7,12 +7,12 @@ import { real } from "./real";
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
 
 const Fictional = z.object({ is_synthetic: z.literal(true).optional() });
-export const ResultS = Fictional.extend({ condition_id: z.string(), status: z.enum(["carrier", "not_detected", "uncertain"]), label: z.string().optional() });
+export const ResultS = Fictional.extend({ condition_id: z.string(), status: z.enum(["carrier", "not_detected", "uncertain"]), label: z.string().optional(), label_ar: z.string().optional() });
 export const ExplanationS = Fictional.extend({ blocks: z.array(z.string()), released: z.boolean().default(true) });
 export const CoupleS = Fictional.extend({
   tier: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullish(),
   awaiting_counsellor: z.boolean().optional(),
-  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), risk_affected: z.number().nullable(), note_codes: z.array(z.string()) })).nullish(),
+  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: z.number().nullable(), note_codes: z.array(z.string()) })).nullish(),
 });
 export const ConsentS = Fictional.extend({ id: z.string(), grantee_id: z.string(), scope: z.string(), purpose: z.string(), expires_at: z.number(), revoked_at: z.number().nullable() });
 export const StepS = z.object({ state: z.string(), owner_id: z.string(), due_at: z.number(), overdue: z.boolean().optional() });
@@ -20,7 +20,8 @@ export const QuizS = z.object({ questions: z.array(z.object({ id: z.string(), te
 export const QuizResultS = z.object({ passed: z.boolean(), reexplain: z.boolean().optional(), counsellor_offered: z.boolean().optional() });
 export const RelS = z.object({ a_id: z.string(), b_id: z.string(), type: z.enum(["parent_of", "partner_of"]), confidence: z.enum(["known", "reported", "uncertain"]), confirmed: z.boolean().optional() });
 export const PedigreeS = z.object({
-  people: z.array(z.object({ id: z.string(), sex: z.enum(["male", "female"]), gen: z.number(), col: z.number(), confirmed: z.boolean() })),
+  people: z.array(z.object({ id: z.string(), sex: z.enum(["male", "female"]), gen: z.number(), col: z.number(), confirmed: z.boolean(), parents: z.tuple([z.string(), z.string()]).optional() })),
+  related: z.array(z.tuple([z.string(), z.string()])).optional(),
   relationships: z.array(RelS), warnings: z.array(z.string()),
 });
 

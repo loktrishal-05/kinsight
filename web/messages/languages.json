@@ -1,17 +1,21 @@
 [
   {
     "code": "en",
-    "label": "English",
+    "name": "English",
+    "short": "EN",
     "dir": "ltr"
   },
   {
     "code": "ar",
-    "label": "العربية",
+    "name": "العربية",
+    "short": "AR",
     "dir": "rtl"
   },
   {
     "code": "ur",
-    "label": "اردو (placeholder)",
-    "dir": "rtl"
+    "name": "اردو (placeholder)",
+    "short": "UR",
+    "dir": "rtl",
+    "hidden": true
   }
 ]

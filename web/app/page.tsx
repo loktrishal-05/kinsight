@@ -1,29 +1,48 @@
 "use client";
-import Link from "next/link";
-import { useState } from "react";
-import { api } from "@/lib/api";
+import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Notice } from "@/components/ui";
 import { useI18n } from "@/lib/i18n";
+import { HOME, PERSONAS, useSession } from "@/lib/session";
 
-const PERSONAS = ["person_a", "person_b", "relative", "counsellor", "analyst", "auditor", "demo_operator"];
+const GROUPS: { label: string; ids: readonly (typeof PERSONAS)[number][] }[] = [
+  { label: "welcome.asPerson", ids: ["person_a", "person_b", "relative"] },
+  { label: "welcome.asPro", ids: ["counsellor", "analyst", "auditor", "demo_operator"] },
+];
 
 export default function Welcome() {
   const { t } = useI18n();
-  const [who, setWho] = useState("");
+  const { persona, choose } = useSession();
+  const router = useRouter();
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("app")}</h1>
-      <p>{t("tagline")}</p>
-      <p className="note">{t("welcome.intro")}</p>
-      <div className="card">
-        <h2 className="mb-2 font-medium">{t("welcome.persona")}</h2>
-        <div className="flex flex-wrap gap-2">
-          {PERSONAS.map((p) => (
-            <button key={p} className={who === p ? "btn" : "btn-quiet"} aria-pressed={who === p} onClick={async () => setWho(await api.login(p))}>
-              {t(`persona.${p}`)}
-            </button>
-          ))}
-        </div>
-        {who && <p className="mt-3"><Link className="underline" href={who === "counsellor" ? "/counsellor" : who === "analyst" ? "/analyst" : who === "auditor" ? "/governance" : "/result"}>→ {t(`persona.${who}`)}</Link></p>}
+    <section className="space-y-8">
+      <div className="max-w-read space-y-3">
+        <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{t("welcome.title")}</h1>
+        <p className="text-[1.05rem] text-muted">{t("tagline")}</p>
+        <Notice>{t("welcome.intro")}</Notice>
+      </div>
+      <div className="space-y-6">
+        <h2 className="text-lg font-semibold">{t("welcome.pick")}</h2>
+        {GROUPS.map((g) => (
+          <div key={g.label}>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">{t(g.label)}</p>
+            <ul className="card-flush divide-y divide-line">
+              {g.ids.map((p) => (
+                <li key={p}>
+                  <button onClick={async () => { await choose(p); router.push(HOME[p]); }}
+                    aria-pressed={persona === p}
+                    className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-start transition-colors hover:bg-brand-50 ${persona === p ? "bg-brand-50" : ""}`}>
+                    <span>
+                      <span className="block font-semibold">{t(`persona.${p}`)}</span>
+                      <span className="block text-sm text-muted">{t(`persona.desc.${p}`)}</span>
+                    </span>
+                    <ArrowRight aria-hidden className="h-4 w-4 shrink-0 text-brand-600 rtl:rotate-180" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );
