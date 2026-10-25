@@ -12,5 +12,6 @@ for name, want in m["sha256"].items():
     p = (D / "sim_truth" if name == "sim_truth" else D) / f"{name}.jsonl.gz"
     if hashlib.sha256(p.read_bytes()).hexdigest() != want:
         sys.exit(f"checksum mismatch: {name} (run make cohort)")
-couples = [json.loads(x) for x in gzip.open(D / "couples.jsonl.gz", "rt").read().splitlines()]
+with gzip.open(D / "couples.jsonl.gz", "rt") as fh:
+    couples = [json.loads(x) for x in fh.read().splitlines()]
 print("All people and results are fictional.", dict(Counter(c["tier"] for c in couples)), "couples by tier")
