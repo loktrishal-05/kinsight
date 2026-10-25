@@ -31,7 +31,7 @@ def test_every_table_is_labelled_synthetic():
 def test_alembic_upgrade_runs_on_sqlite(tmp_path):
     db = tmp_path / "m.db"
     env = {**os.environ, "DATABASE_URL": f"sqlite:///{db}"}
-    r = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], env=env, capture_output=True, text=True)
+    r = subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], env=env, capture_output=True, text=True, check=False)
     assert r.returncode == 0, r.stderr
     names = inspect(create_engine(f"sqlite:///{db}")).get_table_names()
     assert "person" in names and "audit_event" in names and "sim_truth" not in names
