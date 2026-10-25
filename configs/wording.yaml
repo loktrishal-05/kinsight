@@ -7,3 +7,6 @@ banned:
 readability:
   en_max_grade: { basic: 9.0, standard: 13.0 }
   ar_max_sentence_words: { basic: 22, standard: 30 }
+stigma:   # extra non-stigma suite (P5-5): words that label people, families or communities
+  en: ["inbred", "inbreeding family", "dangerous", "risky family", "bad genes", "tainted", "cursed", "burden", "abnormal", "unfit", "genetic defect", "backward"]
+  ar: ["مشوه", "ملعون", "عار", "فاسد الدم", "غير لائق وراثيا", "شاذ"]
