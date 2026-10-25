@@ -1,0 +1,1915 @@
+KinSight Build Specification
+Oct 25, 2026  ·  @hi
+Implementation brief for the coding agent: what to build, in what order, and how to know
+each part is done. Based on the KinSight Master Report; all data is synthetic or public
+reference data, never real people's genomes.
+1. Compliance check against Challenge 03 and the event rules
+The design meets four of the six solution requirements as drafted. Two are partial and
+now have added work: access navigation (requirement 2) and the full referral path
+through confirmatory assessment (requirement 5). Three judging criteria also needed
+additions. One rule shapes everything: the organisers provide no data, even synthetic, so
+every source must be declared and legally usable (event FAQ).
+A. Challenge 03 solution requirements (from the brief)
+Requirement How the design meets it Status
+1. Explain carrier status,
+couple compatibility and
+child risk in plain, non-
+stigmatising language, with
+uncertainty and the
+difference between risk and
+diagnosis
+Genetics engine computes
+every figure; explainer uses
+approved templates;
+uncertain and not-detected
+results handled; wording
+rules tested
+Met by design (Phases 2 to
+4)
+2. Informed, values-sensitive
+choices: access to premarital
+or preconception screening,
+counselling and appropriate
+options, without directing or
+coercing
+Neutral options explorer and
+values questions (F11, F12)
+Partial. Add an access-
+navigation step listing
+generic service types and a
+hand-off stub; never name
+facilities or claim
+availability
+3. Raise complex, high-
+impact or ambiguous
+findings to accredited
+genetics professionals; keep
+education, decision support
+and clinical advice apart
+Escalation rules in config;
+counsellor queue and brief
+(F6, F13); fixed intended-use
+statement
+Met by design
+KinSight Build Speciﬁcation
+Page 1 of 41
+
+=====PAGE=====
+B. Judging criteria
+Requirement How the design meets it Status
+4. Privacy-preserving family
+workflows: explicit consent,
+role-based access, data
+minimisation, auditable
+sharing, user control over
+partner and family sharing
+Consent vault, role checks on
+every read, hash-chained
+audit (F3, F4, F7)
+Met by design
+5. Traceable path from result
+to counselling, confirmatory
+assessment and specialised
+reproductive-genomics
+services
+Case state machine with
+referral tracking (F6)
+Partial. The state machine
+must include confirmatory
+assessment and specialist
+referral as explicit states
+with owners and due dates
+6. Measurable
+comprehension and access:
+understanding, counselling
+uptake, time to referral,
+privacy protection, equity
+across languages and
+literacy; cancelled marriages
+not the sole measure
+Comprehension and equity
+analytics, dashboard,
+scorecard (F8, F10)
+Met by design. Evidence is
+simulation plus a small
+volunteer study on fictional
+cases, and must be
+described that way
+Criterion Status Added to the plan
+Health impact and clinical
+relevance
+Partial Add a capacity and time-to-care
+simulator that shows modelled days to
+counselling with and without triage,
+labelled illustrative
+Technical depth and architecture Covered Deterministic engine, LangGraph
+workflow with human gate, verifier,
+consent enforcement
+Working solution and demo quality Covered Demo script in section 9; fresh-clone test
+in Phase 6
+Responsible AI, safety and data
+governance
+Covered Section 8 controls, governance page, red-
+team set
+KinSight Build Speciﬁcation
+Page 2 of 41
+
+=====PAGE=====
+C. Event rules and FAQ
+Criterion Status Added to the plan
+Scalability and deployment
+readiness
+Gap Containerised services, config-driven
+panels and languages, deployment note
+for an in-region setup
+Commercial viability and path to
+pilot
+Gap One-page pilot plan with buyer map,
+integration path and data-access needs,
+written in Phase 6
+Rule What we must do
+Submit a working prototype by 20 Nov with
+technical documentation and a statement of
+assumptions, dependencies and limitations
+Phase 6 produces all three
+Organisers provide no data; use only data
+you may legally use; declare every source;
+avoid unneeded personal data
+Keep DATA_SOURCES.md : source, licence,
+access date, real or synthetic. Store no real
+genetic or personal data at all
+IP stays with the team; code may be
+requested
+Keep the repository clean, no keys
+committed, choose a licence. Do not embed
+GPL-licensed components such as
+pedigreejs without a licence decision
+Team of one to five; one team per person;
+lead aged 18 or older
+Confirm before registering
+Technology-neutral; hardware optional Software-only is allowed; synthetic cohort
+replaces sensors
+Full submission requirements shared on
+registration
+Unknown. Register first, read the "Challenge
+rules" document, then re-check this table
+Volunteer study (our addition) Check your college's ethics rules first; use
+fictional cases only and collect no health
+data
+KinSight Build Speciﬁcation
+Page 3 of 41
+
+=====PAGE=====
+2. Scope and phases
+Build in seven phases, each ending in a demo-able state and a test the coding agent can
+run. Phases 1 to 4 are the core and must finish by 12 Nov; phase 5 is optional depth; phase
+6 is submission. Dates match the roadmap in the master report.
+Phase Dates
+(2026)
+Delivers Needs Exit test
+0. Setup 25–27
+Oct
+Team registered, repo, CI,
+DATA_SOURCES.md ,
+environment, rules read
+None make test  passes
+on an empty
+skeleton; rules re-
+checked against
+section 1
+1. Data and
+genetics engine
+26 Oct–
+2 Nov
+Panel config, synthetic
+cohort generator,
+pedigree model, risk
+maths, couple tiers
+0 Unit and property
+tests match hand-
+computed cases;
+one seeded cohort
+rebuilds identically
+2. Pedigree and
+consent
+30 Oct–
+8 Nov
+Pedigree store and
+queries, consent vault,
+role checks on every
+read, basic audit chain
+1 A read without
+consent is refused
+in every route;
+revoking consent
+removes access
+immediately
+3. Explainer and
+agents
+3–11
+Nov
+Template library, verifier,
+teach-back, LangGraph
+case graph with
+counsellor gate
+2 A sample couple
+result produces a
+verified explanation
+in Arabic and
+English and stops at
+the gate when
+escalation rules fire
+4. Product
+surface and
+validation
+6–14
+Nov
+User app, counsellor
+console, referral state
+machine, dashboard,
+comprehension harness,
+scorecard, time-to-care
+simulator
+3 Demo script steps 1
+to 9 run; scorecard
+shows all metrics
+from the master
+report
+KinSight Build Speciﬁcation
+Page 4 of 41
+
+=====PAGE=====
+Scope rules. Never start a phase-5 item before phase 4 exits. If phase 4 slips past 12 Nov,
+drop phase 5 entirely. Every feature ships behind a config flag so a half-built item cannot
+break the demo.
+Phase Dates
+(2026)
+Delivers Needs Exit test
+5. Depth 10–16
+Nov
+Options explorer, values
+questions, red-team
+suite, counsellor brief,
+voice, extra languages,
+private partner check
+4 Each item behind a
+flag with a test; cut
+any that miss 12 Nov
+6. Submission 15–19
+Nov
+Hardening, technical
+documentation,
+limitations statement,
+mini-study write-up,
+demo video, pilot plan
+4 (5
+optional)
+Fresh clone builds
+and runs the demo
+from one command;
+document set
+complete
+KinSight Build Speciﬁcation
+Page 5 of 41
+
+=====PAGE=====
+3. System architecture
+Both front ends use one API, and the API enforces consent before any record leaves. The
+genetics engine is plain code that computes every risk figure. The agent orchestrator
+wraps those figures in approved wording, verifies it, and stops for a human counsellor
+when escalation rules fire. The consent and privacy service sits on every read, and the
+audit log records each decision. Run all services as containers from one docker compose
+up .
+Design principles
+Deterministic core, model at the edge. Risk figures, tiers and escalation come from
+tested code. The model selects among approved template phrases and adjusts reading
+level; it never produces a number.
+system architecture · 2 clients, 3 services
+KinSight Build Speciﬁcation
+Page 6 of 41
+
+=====PAGE=====
+Consent as a precondition. No read path bypasses the consent check, including
+dashboards, the copilot and exports.
+No identity data. Persons are aliases; there is no national id, real name or exact
+location.
+Humans close the loop. A case closes only with a counsellor's recorded decision or
+documented evidence.
+Pedigrees in Postgres. Use recursive queries over the relationship table; add a graph
+database only if profiling shows a need.
+Everything configurable. Panel, thresholds, escalation rules, languages, templates and
+feature flags live in versioned YAML files.
+Service responsibilities
+4. Data layer: synthetic cohort and panel
+Everything the app shows comes from a synthetic cohort the generator builds from
+config. Real reference data (gene symbols, condition labels) is optional and used only for
+labels. There are no sensors and no real genomes. Every row carries is_synthetic=true ,
+Service Package Owns Must not
+API services/api Routes, auth, role checks,
+streaming
+Contain business
+rules or call a model
+directly
+Genetics
+engine
+services/genetics Pedigree queries,
+inbreeding, couple
+assessment, tiers
+Call the network or a
+model
+Agent
+orchestrator
+services/agents LangGraph graphs,
+template rendering,
+verifier, copilot
+Compute any risk
+figure
+Consent and
+privacy
+services/consent Consent vault, policy
+checks, suppression,
+noise, audit
+Store identity data
+Cohort
+generator
+services/cohort Synthetic cohort, panel
+loading, reference
+loaders
+Use real genomes
+KinSight Build Speciﬁcation
+Page 7 of 41
+
+=====PAGE=====
+and every screen says results are fictional.
+Panel config ( configs/panel.yaml ). About 30 fictional conditions; use generic category
+labels, illustrative frequencies and ids such as COND_007 .
+panel_version: "2026.1-demo"
+conditions:
+  - id: COND_001
+    label_en: "Inherited blood disorder (illustrative)"
+    label_ar: "<Arabic label, reviewed by a native speaker>"
+    inheritance: AR            # AR or XLR
+    carrier_frequency: 0.04    # illustrative only, never real prevalence
+    test_sensitivity: 0.97
+    uncertain_rate: 0.01       # share of results returned as uncertain
+    counselling_tier: 2        # 1 info only, 2 counsellor offered, 3 
+counsellor required
+  # ... about 30 entries
+Cohort config ( configs/cohort.yaml )
+seed: 20261025
+family_clusters: 400
+generations: 4
+consanguineous_share: 0.50      # dated default from a 1990s UAE study; 
+change freely
+first_cousin_share_of_all: 0.26 # same source; see master report section 5
+couples: 1500
+languages: [ar, en]
+reading_levels: [basic, standard]
+Generator algorithm ( services/cohort/generate.py )
+1. Read both configs and seed one random generator; never use global randomness.
+2. For each family cluster, create founders with two alleles per condition, using allele
+frequency q = carrier_frequency / 2 . For X-linked conditions assign sex and use
+the correct allele count.
+3. Simulate gametes to build children for the configured number of generations, with
+explicit parent links.
+4. Form couples: with probability consanguineous_share  pair two descendants of a
+common ancestor (weighted so first cousins reach the configured share); otherwise
+pair people from different clusters.
+KinSight Build Speciﬁcation
+Page 8 of 41
+
+=====PAGE=====
+5. Record true genotypes in a separate table sim_truth . Only the evaluation harness
+may read it; no API route may expose it.
+6. Simulate screening: a carrier is reported carrier  with probability test_sensitivity ,
+otherwise not_detected ; add uncertain  results at uncertain_rate .
+7. Write persons (alias ids only), relationships, screening results and couple records; then
+compute couple assessments with the genetics engine.
+8. Emit a manifest: seed, config hashes, counts, achieved consanguinity share, mean
+inbreeding coefficient.
+Cohort validation tests
+Core entities (Postgres, migrations with Alembic)
+Test Pass condition
+Reproducibility Same seed and config give identical files (hash
+match)
+Realism Achieved consanguineous share within 3 points of
+config; mean inbreeding coefficient within 20% of
+the value implied by the shares
+Mendelian check Across simulated carrier-by-carrier couples, the
+affected-child rate is within sampling error of 25%
+for autosomal recessive conditions
+Missed-carrier rate Share of true carriers reported not_detected  is
+within sampling error of 1 - test_sensitivity
+Privacy deny-list No column or field name matches the deny-list:
+name , phone , emirates_id , passport , dob ,
+address , lat , lon , worker_id
+Labelling Every row is_synthetic=true
+Table Key fields Notes
+person id  (alias uuid), sex_at_birth
+(needed for X-linked maths),
+language , reading_level ,
+is_synthetic
+No names, no national
+ids, no dates of birth; age
+band only
+KinSight Build Speciﬁcation
+Page 9 of 41
+
+=====PAGE=====
+Reference data loaders (optional, services/cohort/reference/ ). If used, load gene
+symbols and condition labels from licensed public references into data/reference/ ,
+record each source's licence in DATA_SOURCES.md , and never join reference allele
+frequencies to individuals. Check each source's terms before use: ClinVar, gnomAD,
+HGNC. Public variant data under-represents Middle Eastern populations (Genome
+Medicine), so keep frequencies illustrative and say so.
+Offline rule. The demo must run with no internet: commit the generated demo cohort
+(small) under data/demo/  with checksums and regenerate with make cohort .
+Table Key fields Notes
+relationship type  (parent_of, partner_of),
+a_id , b_id , confidence
+(known, reported, uncertain)
+Pedigree edges; partner
+edges only after both
+sides agree
+screening_result person_id , condition_id ,
+status  (carrier, not_detected,
+uncertain), panel_version ,
+reported_at
+One row per person per
+condition
+couple_assessment person_a , person_b ,
+shared_conditions[] ,
+risk_per_pregnancy ,
+inbreeding_f , tier ,
+engine_version , computed_at
+Recomputed when a
+result or relationship
+changes
+sim_truth person_id , condition_id ,
+genotype
+Evaluation only; separate
+role and schema
+consent , share_event ,
+audit_event
+See section 8 Append-only audit
+case , case_event See section 6 Counsellor workflow
+comprehension_check assessment_id , language ,
+reading_level , questions ,
+answers , passed
+Feeds equity analytics
+KinSight Build Speciﬁcation
+Page 10 of 41
+
+=====PAGE=====
+5. Genetics engine
+The engine ( services/genetics/ ) is pure Python with no network, no model and no wall
+clock. It owns every number a person sees. Build it first and test it hardest: a wrong figure
+here is the worst failure the product can have. Have a genetics-trained reviewer check the
+unit tests before the demo, because the formulas below are standard textbook results
+that we have not validated against a clinical source in this project.
+Pedigree rules
+A person has at most two biological parents (one of each sex at birth) and no cycles;
+reject edges that break this.
+Edges carry confidence  (known, reported, uncertain). Compute with known and
+reported edges; show a warning when uncertain edges exist and offer a recomputation
+without them.
+Persons with no recorded parents are founders and are treated as unrelated.
+Inbreeding coefficient by the kinship recursion. Use the general method; it handles
+complex pedigrees where simple path counting fails. Memoise results.
+kinship(i, i)   = 0.5 * (1 + F_i)
+kinship(i, j)   = 0 if both are distinct founders
+for i != j, with i the later-born of the two (order by topological sort):
+  kinship(i, j) = 0.5 * ( kinship(father_i, j) + kinship(mother_i, j) )
+F_child         = kinship(father, mother)
+relationship r  = 2 * kinship(a, b)
+Required test values for the coefficient of a child whose parents are: first cousins 1/16;
+double first cousins 1/8; full siblings 1/4; half-siblings 1/8; uncle and niece 1/8; second
+cousins 1/64; unrelated 0.
+Couple assessment per condition. Inputs: both partners' reported status ( carrier ,
+not_detected , uncertain ), the condition's inheritance mode, carrier frequency c , test
+sensitivity s , and the kinship phi  between the partners.
+KinSight Build Speciﬁcation
+Page 11 of 41
+
+=====PAGE=====
+Autosomal recessive:
+  both carrier            -> affected 25%, carrier 50%, neither 25% per 
+pregnancy
+  one carrier, other not_detected:
+     prior_other   = r + (1 - r) * c            # r = 2*phi, chance a 
+relative shares the allele
+     post_other    = prior_other*(1-s) / ( prior_other*(1-s) + (1-
+prior_other) )
+     risk_affected = 0.25 * post_other
+  both not_detected:
+     p_x = c*(1-s) / ( c*(1-s) + (1-c) )  for each partner
+     risk_affected = 0.25 * p_a * p_b          # assumes independence; flag 
+if related
+  any uncertain           -> no figure; status 'needs review'
+X-linked recessive, mother carrier: each son 50% affected, each daughter 50% 
+carrier
+Background risk for an inbred couple, allele frequency q = c/2:
+  P(affected child) = q^2 + F * q * (1 - q)     # shown only as context, 
+never as a result
+The both not_detected  figure ignores correlation between related partners, so the
+interface must say that relatedness can raise the true figure and the tier rules must send
+related couples to a counsellor when any result is uncertain. Do not invent corrections
+beyond these formulas.
+Tier rules ( configs/escalation.yaml , tested)
+Tier Meaning Triggers (any)
+3 Counsellor required before the result is
+released as final
+Both partners carry the same condition;
+any uncertain  result on a tier 2 or 3
+condition; one carrier plus a related
+partner; X-linked carrier; any carrier of a
+tier 3 condition
+2 Counsellor offered, user decides One carrier with an unrelated partner
+not_detected, on a tier 2 condition
+1 Information only No carrier findings on any panel
+condition
+KinSight Build Speciﬁcation
+Page 12 of 41
+
+=====PAGE=====
+If triggers conflict, take the highest tier. Release wording for tier 3 must say that a
+qualified counsellor will review the result with the couple.
+Interfaces
+class Finding(BaseModel):
+    condition_id: str
+    inheritance: Literal["AR", "XLR"]
+    status_a: Status; status_b: Status
+    formula_id: str                    # e.g. "ar_both_carrier", 
+"ar_one_carrier_residual"
+    inputs: dict[str, float]           # c, s, phi, r, prior_other ...
+    risk_affected: float | None        # None when 'needs review'
+    note_codes: list[str]              # e.g. ["related_partners", 
+"uncertain_result"]
+class CoupleAssessment(BaseModel):
+    couple_id: str
+    inbreeding_f: float
+    kinship_phi: float
+    findings: list[Finding]
+    tier: Literal[1, 2, 3]
+    engine_version: str; panel_version: str; config_hash: str
+def kinship(pedigree: Pedigree, a: str, b: str) -> float: ...
+def inbreeding(pedigree: Pedigree, person: str) -> float: ...
+def assess_couple(pedigree, a, b, results, panel, rules) -> CoupleAssessment: 
+...
+Every number that appears in an explanation must be a field of CoupleAssessment  or a
+value derived from it by the template renderer.
+Tests (all required)
+Unit tests for each coefficient value listed above and for each formula branch with
+hand-computed numbers.
+Property tests with Hypothesis: kinship is symmetric; coefficients lie in 0 to 0.5; risk
+lies in 0 to 0.25; adding a carrier result never lowers risk; swapping partners gives the
+same assessment; the three offspring probabilities for a carrier couple sum to 1.
+Golden files: 20 fixed couples with expected CoupleAssessment  JSON, reviewed by
+the genetics reviewer.
+KinSight Build Speciﬁcation
+Page 13 of 41
+
+=====PAGE=====
+Pedigree validation tests: cycles, three parents, self-parenting and impossible age
+order are rejected.
+Performance: a 200-person pedigree assessed in under 200 ms on a laptop.
+6. Agent workflow with LangGraph
+Graph 1 turns an incoming screening result into a couple assessment and starts Graph 2.
+Graph 2 picks a template, drafts and verifies the explanation, pauses for a counsellor on
+tier 3 cases, releases the result, checks understanding with a short quiz, and then tracks
+referral to documented closure. Graphs 3 to 5 handle family sharing, the copilot and
+evaluation runs.
+Design decisions
+LangGraph workflow · 5 graphs, 2 human gates
+KinSight Build Speciﬁcation
+Page 14 of 41
+
+=====PAGE=====
+Deterministic routing. Tiers and branches come from the engine and
+configs/escalation.yaml , not from a model.
+Two kinds of pause. teach_back  waits for the user and counsellor_gate  waits for a
+counsellor. Only one is pending at a time in a thread, so each resume is unambiguous.
+Several pending interrupts in one run need a resume map keyed by interrupt id (guide),
+so keep them sequential.
+One thread per couple case. thread_id  is the case id; family sharing runs as its own
+thread so a relative's consent never blocks a couple's case.
+Durable checkpoints. interrupt()  needs a checkpointer; use SqliteSaver  locally
+and PostgresSaver  for the demo stack, and resume only with Command(resume=...)
+(overview).
+Current APIs. LangGraph and LangChain reached 1.0 in October 2025 and
+create_agent  in langchain.agents  replaces create_react_agent  (LangChain). Pin
+versions and check docs.langchain.com before coding.
+State for Graph 2
+from typing import Literal, TypedDict
+class CaseState(TypedDict):
+    case_id: str
+    couple_id: str
+    assessment: CoupleAssessment          # from the engine; no agent may 
+edit it
+    language: Literal["ar", "en"]
+    reading_level: Literal["basic", "standard"]
+    template_set: str | None
+    draft: DraftExplanation | None
+    verify_report: VerifyReport | None
+    retries: int                          # explain retries, max 2
+    quiz: Quiz | None
+    quiz_result: QuizResult | None
+    reexplain_count: int                  # understanding retries, max 2
+    counsellor_decision: CounsellorDecision | None
+    released: bool
+    referral: ReferralState               # see state machine below
+    status: 
+Literal["drafting","awaiting_counsellor","released","awaiting_user",
+                    "tracking","closed","failed"]
+KinSight Build Speciﬁcation
+Page 15 of 41
+
+=====PAGE=====
+Wiring (skeleton)
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import interrupt, Command
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+g = StateGraph(CaseState)
+for name, fn in [("select_template", select_template), ("explain_agent", 
+explain_agent),
+                 ("verify", verify), ("counsellor_gate", counsellor_gate),
+                 ("release", release), ("teach_back", teach_back),
+                 ("check_understanding", check_understanding),
+                 ("referral_tracker", referral_tracker)]:
+    g.add_node(name, fn)
+g.add_edge(START, "select_template")
+g.add_edge("select_template", "explain_agent")
+g.add_edge("explain_agent", "verify")
+g.add_conditional_edges("verify", route_after_verify,
+    {"retry": "explain_agent", "tier3": "counsellor_gate", "ok": "release", 
+"fail": "counsellor_gate"})
+g.add_edge("counsellor_gate", "release")
+g.add_edge("release", "teach_back")
+g.add_edge("teach_back", "check_understanding")
+g.add_conditional_edges("check_understanding", route_after_quiz,
+    {"reexplain": "select_template", "continue": "referral_tracker"})
+g.add_edge("referral_tracker", END)
+async with AsyncPostgresSaver.from_conn_string(DATABASE_URL) as saver:
+    await saver.setup()
+    case_graph = g.compile(checkpointer=saver)
+def counsellor_gate(state: CaseState) -> Command:
+    # No side effects above interrupt(): a resumed node restarts from its 
+first line.
+    decision = interrupt({"case_id": state["case_id"], "draft": 
+state["draft"],
+                          "assessment": state["assessment"]})
+    return Command(update={"counsellor_decision": decision}, goto="release")
+def teach_back(state: CaseState) -> Command:
+    answers = interrupt({"case_id": state["case_id"], "quiz": state["quiz"]})
+    return Command(update={"quiz_result": grade(state["quiz"], answers)})
+KinSight Build Speciﬁcation
+Page 16 of 41
+
+=====PAGE=====
+In route_after_quiz , a second failed quiz must offer a counsellor conversation and then
+continue to referral_tracker ; never loop a third time. Test both interrupts by restarting
+the API between pause and resume.
+Node contracts
+Node Type Input Output Failure behaviour
+result_intake Code Result record Validated result linked
+to a couple
+Reject and log
+invalid records
+assess Tool call to
+engine
+Pedigree,
+results, panel
+CoupleAssessment Engine error opens
+a system case for
+the team; never
+guess a figure
+tier_router Code Assessment Tier 1, 2 or 3 None
+select_template Code Assessment,
+language,
+level
+Template set id Falls back to the
+plain English set
+and flags it
+explain_agent LLM,
+structured
+output
+Template set,
+assessment
+facts
+DraftExplanation
+made of template ids
+and slot values
+Retry up to 2 with
+the verifier's errors
+verify Code Draft,
+assessment
+VerifyReport After 2 failed
+retries send to
+counsellor_gate
+with the raw facts
+counsellor_gate interrupt() Draft,
+assessment
+CounsellorDecision :
+approve, edit or hold
+Pending past the
+service window:
+reminder, then
+mark overdue
+release Code Decision,
+consents
+Result visible to the
+couple; partner view
+only with consent
+Fail closed: if
+consent is unclear,
+show to the owner
+only
+teach_back interrupt() Quiz Answers No answer within
+the window: gentle
+reminder, then
+offer a counsellor
+check_understanding Code Quiz result Pass or re-explain at a
+simpler level
+Max 2 re-
+explanations
+KinSight Build Speciﬁcation
+Page 17 of 41
+
+=====PAGE=====
+Referral state machine ( ReferralState ). Allowed transitions only; each has an owner
+and a due date from configs/escalation.yaml , and each change writes an audit event.
+result_released -> counselling_requested -> counselling_done
+counselling_done -> confirmatory_requested -> confirmatory_done
+confirmatory_done -> specialist_referral_requested -> 
+specialist_referral_done
+any state -> closed   (needs closure evidence or a recorded counsellor 
+decision)
+any state -> overdue  (set by the timer; cleared by the next transition)
+Timers. A scheduler calls the API at due times, and the API resumes or updates the thread
+( Command(resume={"event": "timeout"})  or a status update). Never sleep inside a
+node.
+Other graphs. family_share_graph : create invite, wait for the recipient's consent with
+interrupt() , release only the scoped fields, write the share event. copilot :
+create_agent  with read-only tools, each filtered by consent. eval_graph : fan out one
+run per language and reading-level group with Send , collect quiz pass rates and fidelity
+scores.
+7. Agents and LangChain components
+Use the model where wording and retrieval help, and make every number and every
+medical statement come from code or reviewed text. LangChain 1.x supplies the agent
+loop, structured output and middleware; LangGraph supplies the durable workflow;
+LangSmith supplies traces and evaluation (LangChain, overview). Evidence says models
+that simplify text can drop critical information and that readability gains can cost
+accuracy (simplification study, RepQA), so the design limits what the model may write.
+Two explanation modes
+Node Type Input Output Failure behaviour
+referral_tracker Code plus
+interrupts
+Tier, status
+events
+Updated
+ReferralState
+Overdue steps
+appear on the
+counsellor
+dashboard
+KinSight Build Speciﬁcation
+Page 18 of 41
+
+=====PAGE=====
+Build Mode A first: it gives zero invented content and still demonstrates agents,
+structured output and verification. Pre-author each template at two reading levels in
+Arabic and English, and have a native speaker and a genetics-trained reviewer approve
+them.
+Template library ( templates/<lang>/<level>/<block_id>.yaml )
+block_id: ar_both_carrier
+applies_when: { formula_id: ar_both_carrier }
+slots:
+  condition_label: { source: finding.condition_label }
+  risk_affected_pct: { source: finding.risk_affected, format: percent0 }
+text: >
+  Both of you carry a change in the same gene linked to {condition_label}.
+  In each pregnancy there is a {risk_affected_pct} chance that a child is 
+affected.
+  Being a carrier is not the same as having the condition.
+must_include_ids: [carrier_not_disease, counsellor_available]
+forbidden_ids: [directive_marriage, blame]
+reviewed_by: { language: "<name>", genetics: "<name>", date: "<date>" }
+The renderer, not the model, fills slots from CoupleAssessment . Keep an approved
+glossary ( glossary.yaml ) with the same term translated consistently.
+Agents
+Mode What the model does What it cannot do Phase
+A. Template-driven
+(default)
+Chooses block ids, an
+analogy id from an allow-list
+and the tone id, as
+structured output
+Write free text or any
+number
+P0
+B. Constrained
+rewrite (flagged)
+Rewrites an approved block
+for a lower reading level
+Add digits, add or remove
+claims, use banned
+phrases; the verifier
+rejects any such output
+P1
+KinSight Build Speciﬁcation
+Page 19 of 41
+
+=====PAGE=====
+Agent construction (check signatures against the installed versions)
+Agent Purpose Tools Structured output Guardrails Test
+explain_agent Select
+blocks and
+tone
+None DraftExplanation :
+block ids with slot
+refs
+Only ids
+from the
+allow-list for
+the
+findings;
+mandatory
+blocks
+present;
+Mode B
+only when
+flagged
+Fidelity and
+conformity
+100% on the
+golden set
+quiz_builder  (code first,
+model optional)
+Build the
+teach-back
+quiz
+question_bank(formula_id,
+lang, level)
+Quiz  of 5 questions
+with one correct
+answer each
+Questions
+come only
+from the
+reviewed
+bank;
+correct
+answers
+derived
+from the
+assessment
+Every
+answer key
+matches the
+engine
+counsellor_brief_agent
+(P1)
+Summarise
+a case for
+the
+counsellor
+read_assessment ,
+read_pedigree_summary ,
+read_quiz_results  (all
+consent-filtered)
+CounsellorBrief :
+findings, flags, open
+questions
+Every
+statement
+links to an
+assessment
+field; no
+advice
+beyond the
+rule text
+Brief
+contains no
+fact absent
+from the
+sources
+copilot  (P1) Answer a
+user's
+questions
+about their
+own result
+get_my_explanation ,
+explain_term  (glossary),
+list_my_consents ,
+explain_consent_effects ,
+find_service_types
+(generic)
+Text with source ids Read-only;
+refuses
+clinical
+advice,
+decisions
+and any
+data about
+other
+people;
+output
+passes the
+consent
+filter
+Red-team
+set of 100
+prompts all
+refused or
+answered
+safely
+eval_runner Run
+evaluation
+batches
+Evaluators, dataset loader Scorecard Reads only
+synthetic
+data
+Scorecard
+reproducible
+from a seed
+KinSight Build Speciﬁcation
+Page 20 of 41
+
+=====PAGE=====
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+model = init_chat_model(settings.llm.default)          # name from 
+configs/llm.yaml
+copilot = create_agent(
+    model=model,
+    tools=[get_my_explanation, explain_term, list_my_consents,
+           explain_consent_effects, find_service_types],
+    system_prompt=load_prompt("copilot.md"),
+    response_format=CopilotAnswer,                      # Pydantic schema
+    middleware=[consent_filter_mw, directive_language_mw, model_retry_mw],
+)
+Custom middleware hooks into the agent loop, and prebuilt retry middleware exists from
+LangChain 1.1 (notes). Write consent_filter_mw  to remove anything the caller has no
+consent to see, and directive_language_mw  to block outputs that steer a family
+decision.
+Verifier checks ( verify )
+1. Schema valid and only allow-listed block ids used.
+2. Every mandatory block present; no forbidden block present.
+3. Every rendered number equals the engine's value (compare after formatting).
+4. No digit appears outside a rendered slot.
+5. Banned-phrase scan: directive wording about marriage or children, blame, fatalistic or
+diagnostic claims, and any statement that carrier status is a disease.
+6. Readability band: in English use a grade-level formula against the target; in Arabic use
+sentence length and glossary-term coverage as proxies, and rely on native review.
+7. In Mode B only: fact-token preservation and an entailment check by a second model as
+a judge, with failures falling back to the original template text.
+Guardrail layers, in order. 1. Input minimisation. 2. Structured output. 3. Verifier. 4.
+Consent filter. 5. Counsellor gate for tier 3. 6. Audit. A failure at any layer stops the draft;
+none may be skipped for speed.
+Prompts. Keep in prompts/*.md , versioned and tested. Shared rules: plain, kind language;
+separate carrier status from having a condition; state uncertainty; never recommend
+what a couple should decide; show every legitimate option with equal weight; never
+address stigma or family honour; say when data is fictional.
+KinSight Build Speciﬁcation
+Page 21 of 41
+
+=====PAGE=====
+Evaluation and tracing. Enable LangSmith tracing with environment variables. Build
+datasets of 40 golden couples in two languages and two reading levels. Run on every
+template, prompt or model change: numeric fidelity (code evaluator, 100%), block
+conformity (100%), banned phrases (0), readability bands, groundedness by an LLM
+judge, and a 10% human review sample. LangSmith supports datasets with code, LLM-as-
+judge and human evaluators (overview). If cloud tracing is not allowed, use another
+tracing tool; Arize documents Phoenix for LangGraph tracing (Arize), so check whether it
+can run in your environment.
+Advanced techniques, in priority order
+8. Consent, privacy and security rules
+The brief makes explicit consent, role-based access, data minimisation and auditable
+sharing graded requirements. These rules are build requirements: each has an
+implementation and a test. Genetic information is shared across a family, and many
+Technique Where Priority
+Durable execution, two human-in-the-loop
+interrupts, checkpoints, streaming
+Graph 2 P0
+Structured output and middleware All agents P0
+Template-constrained generation with a
+deterministic verifier
+explain_agent P0
+Consent-aware tool access (policy checked inside
+every tool)
+Copilot, brief P0
+Constrained rewrite with entailment judge Mode B P1
+Differential-privacy noise with a budget ledger on
+dashboards
+Consent and privacy P1
+Parallel evaluation fan-out with Send eval_graph P1
+Private set intersection for the partner check (see
+section 8)
+Stretch demo P2
+Voice input and output User app P2
+KinSight Build Speciﬁcation
+Page 22 of 41
+
+=====PAGE=====
+jurisdictions impose no duty to warn relatives, so sharing must always be the individual's
+choice (PMC).
+Policy decision function. Every read goes through one function in
+services/consent/policy.py ; routes, agents, dashboards and exports may not query
+tables directly.
+def decide(actor: Actor, resource: ResourceRef, purpose: Purpose, fields: 
+set[str]) -> Decision:
+    """Default deny. Returns allowed fields, a reason code and the consent 
+ids relied on."""
+Checks, in order: role permits the resource type; the actor is the owner or holds an active
+consent covering resource, fields and purpose; consent has not expired or been revoked;
+the purpose matches the consent's purpose code; the response is projected to the
+minimum fields. Return the reason code and write an audit event for every decision,
+allowed or denied.
+Consent record
+Rules that shape the product
+1. Own result first. Each person sees their own result before anyone else does.
+Field Meaning
+grantor_id , grantee_id Who gives and who receives access
+scope One of couple_tier_only , couple_summary ,
+condition_findings:[ids] ,
+relationship_only , quiz_status
+purpose Short vocabulary modelled on the GA4GH Data
+Use Ontology: own_care , couple_planning ,
+counselling , family_notification
+granted_at , expires_at ,
+revoked_at
+Time-limited and revocable at any moment
+version , text_shown_hash Hash of the exact consent text shown, in the
+user's language
+KinSight Build Speciﬁcation
+Page 23 of 41
+
+=====PAGE=====
+2. Couple pooling needs both. A couple assessment uses both partners' results, so
+compute and show it only after both grant couple_pooling . Until then each person
+sees only their own result. If one declines, say so neutrally and offer counselling; never
+reveal that the other person declined.
+3. Relatives are invited, not disclosed. A relative appears in a pedigree only as a
+relationship and a "not confirmed" flag, until they accept an invitation. A user may
+record coarse family history they know themselves (yes, no, unknown); label it
+"reported by the user" and show it only to the user and a counsellor.
+4. Revocation is immediate. After revoke, all reads by the grantee fail on the next
+request; cached views are invalidated.
+5. Deletion. Provide DELETE /api/me , which removes the person, relationships, results
+and consents. The audit log keeps only salted hashes and event types, never content.
+6. No export. No route returns bulk personal data; there is no download button; the
+inventory test lists routes and fails if one is added.
+7. No unrelated use. The policy has no purpose code for employment, insurance or
+commercial use, so such reads are always denied; the governance page says so.
+Roles
+Role Can read Cannot
+Person (self) Own results, own explanation, own
+consents, own audit trail
+Anyone else's data
+Partner couple_summary  or couple_tier_only
+per consent
+Partner's individual results
+unless scoped
+Relative Scoped items they were invited to see Anything outside the invitation
+Counsellor Cases assigned to them, with a time limit
+and reason code
+Cases not assigned; bulk lists
+Analyst Suppressed aggregates only Any row-level data
+Auditor Audit chain, policy rules, model card,
+data register
+Content of results
+Demo
+operator
+Start and reset the synthetic cohort Real data (none exists)
+KinSight Build Speciﬁcation
+Page 24 of 41
+
+=====PAGE=====
+Aggregate views. The dashboard shows carrier burden by condition, counselling uptake
+and wait times. Suppress counts below min_cell  (default 10), use complementary
+suppression, and add Laplace noise from a budget ledger. Plain suppression has been
+reversed in real systems (Loyola review); public-health bodies publish suppression rules
+(Illinois); guidance for surveillance favours correct trend detection (overview).
+Audit chain
+audit_event(id, ts, actor_ref, action, resource_type, resource_ref, decision,
+            reason_code, consent_ids, prev_hash, hash)
+hash = SHA-256( prev_hash || canonical_json(all fields except hash) )
+Log identifiers, scope and decisions, never result content. Provide verify_chain()  and
+run it in CI and on the governance page.
+Application security
+Control Implementation
+Authentication Demo personas with short-lived signed tokens; no
+real accounts or passwords stored
+Authorisation Role dependency on every route plus the policy
+function; tested with a role-by-route matrix
+Input handling Strict Pydantic validation; length limits on free text;
+reject unexpected fields
+Prompt injection Treat user text as untrusted; give agents read-only
+tools; allow-list tool names and arguments;
+templates and glossary are trusted content under
+version control
+Secrets Environment variables only; .env.example
+committed; secret scan in CI
+Logging No result content or free text in logs; request ids
+only
+Rate limiting Per-token limits on the copilot and consent routes
+Dependencies Lock files; automated vulnerability scan in CI
+KinSight Build Speciﬁcation
+Page 25 of 41
+
+=====PAGE=====
+Private partner check (P2 stretch, label it a demo). Private set intersection lets two
+parties learn only what they share (Evans, UVA), and recent work covers authorised
+variants for genome matching (IACR 2024). Build it on synthetic panels with an honest-
+but-curious server model: each partner's browser blinds its set of carried condition ids,
+the server runs the protocol, and only the shared conditions are returned. Prefer an
+established open-source PSI library; confirm its licence and maturity first, and otherwise
+implement a documented commutative-encryption protocol with a vetted cryptography
+library. State clearly that it is unaudited, and that it reports only shared findings, so it
+cannot produce the one-carrier or relatedness-adjusted figures from section 5.
+Privacy tests (all required)
+Role-by-route matrix: every role against every route returns the expected status and
+fields.
+Default deny: a new resource type with no policy rule is unreadable.
+Revocation: reads fail on the very next request after revoke.
+Couple pooling: no couple figure exists until both have consented.
+Aggregate safety: no suppressed cell is derivable by subtraction (property test);
+budget never exceeded.
+Audit: altering any row makes verify_chain()  fail.
+Route inventory: no export route exists.
+Schema deny-list: no identity-like field names anywhere.
+Injection set: 20 poisoned user inputs; none changes tool use or leaks data.
+9. API and frontend
+The API is the only door to the system. Every route runs the role dependency and then the
+consent policy function from section 8. Use FastAPI with Pydantic v2 and generate an
+OpenAPI schema so the front end gets a typed client.
+Routes
+Control Implementation
+Residency Containers with no hard dependency on a foreign
+region; real UAE health data would need in-region
+hosting and an approved model endpoint (Al
+Tamimi). The demo uses synthetic data only
+KinSight Build Speciﬁcation
+Page 26 of 41
+
+=====PAGE=====
+Route Method Purpose Roles
+/api/auth/persona POST Issue a demo token for a
+chosen persona
+Public (demo)
+/api/me GET,
+DELETE
+Profile (alias, language,
+reading level); delete all
+own data
+Person
+/api/me/results ,
+/api/me/results/{id}/explanation
+GET Own results and the
+verified explanation
+Person
+/api/me/consents ,
+/api/me/consents/{id}/revoke
+GET,
+POST
+List, grant and revoke
+consents; preview what
+a grant lets someone
+see
+Person
+/api/invitations ,
+/api/invitations/{id}/respond
+POST Invite a partner or
+relative; recipient
+accepts, declines or
+limits scope
+Person,
+recipient
+/api/me/pedigree GET,
+PUT
+Own pedigree view and
+validated edits
+Person
+/api/couples/{id}/assessment GET Couple assessment,
+only when both consent
+to pooling and the case
+is released
+Partner
+/api/cases/{id}/quiz/answers POST Submit teach-back
+answers; resumes the
+graph
+Person
+/api/cases/{id}/referral GET Referral timeline with
+owners and due dates
+Person,
+counsellor
+/api/counsellor/queue ,
+/api/counsellor/cases/{id}/brief
+GET Queue by tier and due
+date; case brief
+Counsellor
+/api/counsellor/cases/{id}/decision POST Approve, edit or hold a
+draft; resumes the
+graph
+Counsellor
+/api/counsellor/cases/{id}/referral/events POST Record a referral step
+with evidence
+Counsellor
+/api/analytics/{dashboard,comprehension,cap
+acity}
+GET Suppressed aggregates;
+equity by language and
+level; time-to-care
+simulator
+Analyst
+KinSight Build Speciﬁcation
+Page 27 of 41
+
+=====PAGE=====
+Screens
+Route Method Purpose Roles
+/api/eval/run , /api/eval/{id} POST,
+GET
+Run and read evaluation
+batches
+Analyst,
+auditor
+/api/governance/{audit-verify,policy,model-
+card,data-sources}
+GET Governance page data Auditor; data
+sources for
+all
+/api/stream GET
+(SSE)
+Events:
+case_progress ,
+queue_update ,
+consent_changed
+By role
+/api/copilot/chat POST
+(SSE)
+Copilot answers about
+the caller's own result
+Person
+/api/demo/{reset,load-cohort} POST Reset or reload the
+synthetic cohort
+Demo
+operator
+/api/health GET Liveness, versions,
+config hash
+Public
+App Screen What it shows Must include
+User Welcome Language (Arabic,
+English), reading level,
+short plain explanation of
+the service
+Banner: "All people and
+results here are fictional"
+User My result Own result in plain words;
+carrier versus having a
+condition; counsellor
+button
+Neutral colours; found
+and not found wording,
+not positive and negative
+User Couple view Shared findings and per-
+pregnancy chances, once
+both consent and the
+case is released
+Uncertainty note; tier 3
+shows "a counsellor will
+review this with you"
+User Check
+understanding
+Five short questions Gentle wording; a re-
+explanation, never a score
+shown as failure
+KinSight Build Speciﬁcation
+Page 28 of 41
+
+=====PAGE=====
+Front-end stack. Next.js (App Router) with TypeScript, Tailwind and shadcn/ui, TanStack
+Query, Zod, and an i18n library such as next-intl  with message files per language. Build
+the pedigree viewer as a custom SVG component using standard pedigree symbols and a
+App Screen What it shows Must include
+User Family circle Pedigree viewer and
+editor, invitations,
+consent switches
+"Not confirmed" flags;
+preview of what each
+grant lets someone see
+User Consent centre Every consent, expiry,
+one-tap revoke
+Plain-language scope text
+in the user's language
+User Next steps Neutral list of options to
+discuss with a counsellor,
+generic service types,
+referral timeline
+Equal prominence for
+every option; no facility
+names
+User Ask a question Copilot drawer Refusal message for
+requests about other
+people or for decisions
+Counsellor Queue and case Cases by tier and due
+date; brief; consent-
+scoped pedigree
+summary; quiz outcome;
+decision form; referral
+steps
+Overdue markers; closure
+needs evidence
+Analyst Dashboard Suppressed counts,
+counselling uptake,
+waiting times
+Suppression note and
+privacy budget remaining
+Analyst Comprehension
+and equity
+Quiz pass rates by
+language and reading
+level
+Group sizes; gap against
+the 10-point target
+Analyst Capacity simulator Modelled days to
+counselling with and
+without triage
+Labelled illustrative
+Auditor Governance Audit-chain verification,
+policy rules, model card,
+data register, limitations
+Download as JSON of
+non-personal metadata
+only
+KinSight Build Speciﬁcation
+Page 29 of 41
+
+=====PAGE=====
+generation-row layout; do not embed a GPL-licensed editor unless the team chooses a
+compatible licence. A diagram library such as React Flow can host custom nodes if its
+licence suits the project; confirm before use. Test with Playwright in both languages and
+on a phone-sized viewport.
+Arabic and right-to-left
+Use logical CSS properties ( margin-inline-start ) and set dir  per language; mirror
+icons that imply direction.
+Keep numerals consistent within a screen; make the numeral style a setting and
+default to the one the native reviewer prefers.
+Pedigree diagrams keep a fixed drawing direction, with labels rendered correctly in
+each script.
+Every Arabic string comes from a reviewed message file; machine translation is not
+allowed in the demo.
+Add a Playwright screenshot test per key screen in both directions.
+Accessibility and tone. Target WCAG 2.2 AA; full keyboard use; screen-reader labels;
+reading-level toggle. Voice input and output (P2) can use browser speech features where
+available; treat them as optional, since support varies. Avoid alarm colours and the words
+"positive" and "negative" for carrier status.
+Demo script (the acceptance test for the product)
+1. Choose the persona for a related fictional couple; show the fictional banner; switch to
+Arabic and show right-to-left layout.
+2. Person A opens their own result and reads the explanation; person B does the same.
+3. Both grant couple pooling. The couple view shows a shared finding as "awaiting
+counsellor review" (tier 3).
+4. Switch to the counsellor persona, open the queue and brief, and approve the draft.
+5. The couple sees the released explanation, takes the quiz, fails one question, receives a
+simpler re-explanation and passes.
+6. Open the referral timeline: counselling requested and done, then confirmatory
+assessment; fast-forward a timer to show an overdue marker.
+7. In the family circle, invite a relative; show that declining reveals nothing; accept a
+limited scope and show only that item; revoke and show access ending at once.
+8. Analyst dashboard: suppressed small cells, comprehension by language and level,
+capacity simulator.
+KinSight Build Speciﬁcation
+Page 30 of 41
+
+=====PAGE=====
+9. Governance page: verify the audit chain, run the tamper test and show it failing; ask
+the copilot a question about the result, then ask for the partner's raw result and show
+the refusal.
+10. Phased build plan with tasks and acceptance criteria
+Work top to bottom. A task is done only when its acceptance check passes in CI. Task ids
+are stable so commits and issues can reference them.
+Phase 0: Setup (25–27 Oct)
+Phase 1: Data and genetics engine (26 Oct–2 Nov)
+Id Task Acceptance
+P0-1 Register the team; read the "Challenge
+rules" document; update section 1 with
+any new rule
+Differences listed in
+docs/RULES_DELTA.md
+P0-
+2
+Monorepo (layout in section 11), Docker
+Compose with Postgres, Redis, API and
+web; Makefile targets up , test , lint ,
+cohort , demo
+make up  starts everything; /api/health
+returns versions
+P0-
+3
+CI: lint, type-check, unit tests, secret
+scan, schema deny-list scan,
+dependency scan
+CI green on an empty skeleton
+P0-
+4
+DATA_SOURCES.md  with every source,
+licence, real or synthetic, access date
+CI fails if a loader has no entry
+P0-
+5
+Line up two reviewers: a native Arabic
+speaker and a genetics-trained person;
+record names and dates in a review log
+docs/REVIEWS.md  exists; template files
+have a reviewed_by  slot
+Id Task Acceptance
+P1-1 panel.yaml , cohort.yaml ,
+escalation.yaml , loaders and schema
+validation
+Invalid configs fail with clear errors
+KinSight Build Speciﬁcation
+Page 31 of 41
+
+=====PAGE=====
+Phase 2: Pedigree and consent (30 Oct–8 Nov)
+Id Task Acceptance
+P1-
+2
+Pedigree model and validation rules Cycles, three parents, self-parenting
+and impossible age order are rejected
+P1-3 Kinship recursion and inbreeding
+coefficient
+All required test values pass (1/16, 1/8,
+1/4, 1/8, 1/8, 1/64, 0); property tests pass
+P1-
+4
+Couple assessment, tier rules, Finding
+and CoupleAssessment  models
+20 golden couples match expected
+JSON, reviewed by the genetics
+reviewer
+P1-5 Cohort generator with manifest Reproducible by hash; realism and
+Mendelian checks pass
+P1-
+6
+Alembic migrations for all tables;
+sim_truth  in a separate schema and role
+No API role can read sim_truth
+P1-7 make cohort  writes the committed demo
+cohort with checksums
+make demo  works offline
+Id Task Acceptance
+P2-1 Consent tables and decide()  policy
+function
+Default deny; every decision writes an
+audit event
+P2-
+2
+Roles, demo personas and token issue Role-by-route matrix test passes
+P2-
+3
+Invitations, couple pooling and revocation No couple figure before both consent;
+revoke blocks the next read
+P2-
+4
+Hash-chained audit log and
+verify_chain()
+Tampering is detected
+P2-
+5
+Pedigree API with validation and
+confidence  handling
+Uncertain edges produce a warning and
+an alternative computation
+P2-
+6
+Privacy test suite from section 8 All listed tests pass in CI
+KinSight Build Speciﬁcation
+Page 32 of 41
+
+=====PAGE=====
+Phase 3: Explainer and agents (3–11 Nov)
+Phase 4: Product surface and validation (6–14 Nov)
+Id Task Acceptance
+P3-1 Template library and glossary in Arabic
+and English at two reading levels; review
+gate
+Every template has both reviewers
+recorded before it is marked approved
+P3-
+2
+Renderer and verifier with all seven
+checks
+Seeded bad drafts are all rejected; good
+drafts pass
+P3-
+3
+explain_agent  in Mode A with
+structured output
+Fidelity and conformity 100% on the
+golden set
+P3-
+4
+result_graph  and case_graph  with
+Postgres checkpointer and both
+interrupts
+Tier 3 case stops at the gate; restart the
+API and resume; tier 1 case passes
+straight through
+P3-
+5
+Quiz bank, quiz_builder , grading and
+re-explanation loop
+Answer keys match the engine; a
+second failure offers a counsellor and
+does not loop again
+P3-
+6
+Referral state machine and timers Illegal transitions refused; overdue state
+set and cleared correctly
+P3-
+7
+LangSmith tracing and the 40-couple
+evaluation dataset
+Evaluators run in CI; fidelity gate on
+P3-
+8
+Case, quiz, decision and stream routes OpenAPI schema generated; role matrix
+still passes
+Id Task Acceptance
+P4-1 Front-end shell, personas, i18n, typed API
+client, right-to-left support
+Both languages render the shell
+correctly
+P4-
+2
+User screens: welcome, my result, couple
+view, check understanding, consent
+centre, next steps
+Playwright covers each in Arabic and
+English
+P4-
+3
+Pedigree viewer and editor (custom SVG) Standard symbols; edits validated by the
+API
+KinSight Build Speciﬁcation
+Page 33 of 41
+
+=====PAGE=====
+Comprehension analytics spec. The code must work on any quiz result file. For pipeline
+tests use scripted answer profiles and label them clearly as test inputs; they are not
+evidence about people. Real evidence comes only from the mini-study in Phase 6. Do not
+use language-model-simulated readers as evidence of comprehension.
+Capacity simulator spec. A discrete-event simulation with weekly case arrivals by tier
+from the cohort, a configurable counsellor capacity per week and three policies: first
+come first served, tier priority, and tier priority with automated handling of tier 1. Output
+the median and 95th percentile days from result to counsellor contact for each policy,
+plus the share of tier 3 cases seen within the service window. Seed it, show every
+assumption on screen, and label the output illustrative.
+Phase 5: Depth (10–16 Nov), each behind a flag
+Id Task Acceptance
+P4-
+4
+Counsellor console with queue, brief
+placeholder, decision form, referral steps
+Approve path completes a tier 3 case
+P4-
+5
+Analyst dashboard with suppression,
+complementary suppression, noise and
+budget ledger
+No suppressed cell derivable; budget
+never exceeded
+P4-
+6
+Comprehension and equity analytics Imports quiz results; reports pass rate,
+group sizes and gap by language and
+level
+P4-
+7
+Capacity simulator (spec below) Reproducible by seed; labelled
+illustrative
+P4-
+8
+Governance page Chain verification, policy rules, model
+card and data register visible
+P4-
+9
+Full demo-path Playwright test in both
+languages
+Steps 1 to 9 pass
+Id Task Acceptance
+P5-1 Mode B constrained rewrite with
+entailment judge and fallback
+Zero accepted drafts with new digits
+or claims on the test set
+KinSight Build Speciﬁcation
+Page 34 of 41
+
+=====PAGE=====
+Phase 6: Submission (15–19 Nov)
+Id Task Acceptance
+P5-
+2
+Neutral options explorer and values
+questions
+Every option has equal prominence; no
+scoring or steering; reviewed by the
+genetics reviewer
+P5-
+3
+counsellor_brief_agent Every statement links to an
+assessment field
+P5-
+4
+Copilot and the 100-prompt red-team set All prompts refused or answered
+safely
+P5-
+5
+Non-stigma suite: phrase checks plus
+judge, run across all templates and model
+outputs
+Zero violations
+P5-
+6
+Voice input and output where the browser
+supports it
+Falls back cleanly to text
+P5-
+7
+Private partner check demo with synthetic
+panels
+Returns only shared conditions;
+labelled unaudited demo
+P5-
+8
+Extra language scaffold A third language loads from message
+files without code changes
+P5-
+9
+FHIR-style export of referral status for
+synthetic cases
+Confirm resource names against the
+current FHIR specification; synthetic
+data only
+Id Task Acceptance
+P6-1 Fresh-clone test: make up && make
+demo  on a clean machine
+Demo steps 1 to 9 run without manual
+fixes
+P6-
+2
+Technical documentation: architecture,
+data register, model card, evaluation,
+assumptions, dependencies, limitations
+Files in docs/  linked from the README
+P6-
+3
+Limitations statement generated from
+this spec and the latest scorecard
+States synthetic data, no real genomes,
+no clinical validation, small-study caveat
+KinSight Build Speciﬁcation
+Page 35 of 41
+
+=====PAGE=====
+11. Repository, tech stack and coding-agent rules
+Stack. Pin exact versions at project start and record them in lock files. Check the current
+LangChain and LangGraph documentation at docs.langchain.com before writing agent
+code, because the API changed at the 1.0 release (LangChain).
+Id Task Acceptance
+P6-
+4
+Mini-study: protocol, fictional cases, quiz,
+consent text and results write-up, after
+checking college ethics rules
+Group sizes reported plainly; if the
+study cannot be run, publish the
+protocol and say so
+P6-
+5
+Demo video of the script (target under 5
+minutes)
+Committed
+P6-
+6
+One-page pilot plan: buyer map,
+integration path, data-access needs,
+scalability, risks
+Covers scalability and commercial path
+P6-
+7
+Final rules check against section 1 and
+the data register
+Every row marked met or explained
+Layer Choice Notes
+Language and
+tooling
+Python 3.12, uv , Ruff, mypy,
+pytest, Hypothesis
+Hypothesis for the property tests in
+sections 5 and 8
+API FastAPI, Pydantic v2,
+SQLAlchemy 2, Alembic
+Async routes; SSE for streams
+Genetics and
+stats
+NumPy, SciPy; plain Python for
+pedigree and kinship
+No R dependency
+Agents LangChain 1.x ( create_agent ,
+middleware, structured output),
+LangGraph 1.x, langgraph-
+checkpoint-postgres , LangSmith
+Model name from
+configs/llm.yaml ; provider
+swappable
+Data stores Postgres with pgvector, Redis pgvector holds the template and
+glossary index if retrieval is needed;
+templates are also plain files
+KinSight Build Speciﬁcation
+Page 36 of 41
+
+=====PAGE=====
+Repository layout
+kinsight/
+  README.md  DATA_SOURCES.md  Makefile  docker-compose.yml  pyproject.toml
+  configs/     panel.yaml cohort.yaml escalation.yaml privacy.yaml llm.yaml 
+flags.yaml
+  templates/   ar/{basic,standard}/*.yaml   en/{basic,standard}/*.yaml   
+glossary.yaml
+  prompts/     explain.md quiz.md brief.md copilot.md
+  data/        demo/ (committed, small, checksummed)   reference/ (git-
+ignored)
+  docs/        architecture.md model_card.md limitations.md pilot_plan.md
+               RULES_DELTA.md REVIEWS.md DEVIATIONS.md OPEN_QUESTIONS.md 
+study/
+  services/
+    genetics/   pedigree.py kinship.py assess.py rules.py models.py
+    cohort/     generate.py panel.py reference/
+    consent/    policy.py roles.py audit.py aggregates.py psi_demo.py
+    agents/     state.py result_graph.py case_graph.py family_graph.py 
+eval_graph.py
+                copilot.py nodes/ middleware/ render.py verify.py quiz.py
+    analytics/  comprehension.py capacity.py
+    api/        main.py routes/ deps.py auth.py sse.py schemas/
+  web/          Next.js app (app/, components/, lib/, messages/{ar,en}.json)
+  tests/        unit/ property/ golden/ integration/ e2e/ evals/ redteam/
+  scripts/      verify_audit_chain.py make_demo_cohort.py
+Layer Choice Notes
+Scheduler A small worker (for example
+APScheduler or a cron container)
+calling the API for timers
+No sleeping inside graph nodes
+Front end Next.js with TypeScript, Tailwind,
+shadcn/ui, TanStack Query, Zod,
+next-intl
+Typed client generated from
+OpenAPI
+Tests pytest, Hypothesis, Playwright,
+LangSmith or equivalent
+evaluators
+CI runs everything except live-
+model evaluators, which run on a
+schedule
+Packaging Docker and Docker Compose Deployable in a UAE region later
+KinSight Build Speciﬁcation
+Page 37 of 41
+
+=====PAGE=====
+Rules for the coding agent
+1. Read this whole spec first, then work phase by phase. Put the task id in every commit
+message, for example P1-3: kinship recursion .
+2. Never use real genomes or real personal data. Every row is synthetic and flagged;
+every source is listed in DATA_SOURCES.md .
+3. Every number a person sees comes from services/genetics . No agent, template slot
+or front-end code may compute or invent a risk figure.
+4. Keep services/genetics  pure: no network, no model, no wall clock, no randomness
+except through an explicit seeded generator in services/cohort .
+5. Every read of personal data goes through decide() . Add a test whenever you add a
+route or tool.
+6. The model never writes free-text medical statements in Mode A. In Mode B it only
+rewrites approved blocks and the verifier gates the result.
+7. Put thresholds, tiers, panel, languages, escalation rules and flags in configs/ . No
+magic numbers in code.
+8. Do not mark any template or Arabic string approved until the reviewers are recorded in
+docs/REVIEWS.md . Machine-translated text is allowed only as a placeholder and must
+be flagged.
+9. Write tests before or with each function in the engine, consent and verifier packages.
+Use property tests where the spec lists them.
+10. Gate every optional feature behind a flag. Run make demo  before closing any task; the
+demo path must stay green.
+11. Label fictional data in code, API responses and UI. Never write wording that steers a
+couple's decision or labels people, families or communities.
+12. If a library API differs from this spec, follow the installed version and record the
+difference in docs/DEVIATIONS.md .
+13. If something is ambiguous, choose the simplest safe option, record the question in
+docs/OPEN_QUESTIONS.md , and continue.
+Definition of done for a task. Code merged with tests; CI green; docs or config updated;
+the acceptance check in section 10 passes; make demo  runs.
+12. Risks, open questions and sources
+Risks
+KinSight Build Speciﬁcation
+Page 38 of 41
+
+=====PAGE=====
+Risk Effect Mitigation
+Wrong risk figure Harm to users; fails judging
+on safety
+Pure, tested engine; golden
+files reviewed by a
+genetics-trained person;
+verifier compares every
+number
+Arabic text is poor or
+unreviewed
+Confusing or offensive
+wording; fails equity goals
+Native reviewer gate;
+reviewed message files
+only; Mode A first
+Scope too large for 26 days No working demo Phases 1 to 4 only until 12
+Nov; every extra behind a
+flag
+Synthetic data judged
+unrealistic
+Credibility loss Config tied to cited
+statistics; manifest shows
+achieved realism; say
+plainly that it is fictional
+Comprehension claims
+overstated
+Misleading evidence Mini-study with fictional
+cases and plain group sizes;
+no model-simulated
+readers as evidence
+Consent flows too complex
+for users
+Abandonment Plain-language previews,
+short screens, usability
+check with volunteers
+Library API drift (LangChain,
+LangGraph)
+Build breaks Pin versions, read current
+docs first, log deviations
+Licence conflicts (GPL
+pedigree tools, reference-
+data terms)
+Submission risk Build the pedigree viewer
+ourselves; record every
+licence in the data register
+Cryptographic demo
+mistaken for production
+Overclaim Label the partner check as
+an unaudited demo and
+keep it behind a flag
+KinSight Build Speciﬁcation
+Page 39 of 41
+
+=====PAGE=====
+Open questions for the team
+1. Who will be the native Arabic reviewer and the genetics-trained reviewer, and by what
+date?
+2. Team size and owners for engine, consent, agents, front end, and documentation and
+study.
+3. Which model provider will the project use, and is cloud tracing acceptable? If not,
+choose a self-hosted tracing option.
+4. Can the mini-study go ahead under the college's ethics rules, and who recruits
+volunteers?
+5. After registration: do the full challenge rules change anything in section 1?
+6. Which languages beyond Arabic and English, if any, matter for the demo?
+7. Where will the demo be hosted for judges, and does that matter for the data-residency
+story?
+Sources
+This spec draws on the KinSight Master Report and its sources, plus:
+Challenge brief, FAQ and timeline: Hack2skill event page (read 25 Oct 2026; the
+separate "Challenge rules" document was not opened)
+LangChain and LangGraph 1.0: LangChain blog, migration notes
+Interrupts, checkpointers and routing: overview, LangGraph.js guide, Arize notes
+LangSmith and evaluation: comparison
+Language-model simplification risks: simplification study, RepQA, Gazi Med J
+Consent, family sharing and privacy: PMC, HIPAA analysis, GA4GH DUO, Al Tamimi,
+Loyola review, Illinois policy
+Private set intersection: Evans, UVA, IACR 2024
+Reference data: ClinVar terms, gnomAD terms, HGNC licence, Genome Medicine on
+regional representation
+Risk Effect Mitigation
+Tone read as steering families Reputational and ethical
+harm
+Tested wording rules, equal
+prominence for options,
+red-team set, counsellor
+review
+KinSight Build Speciﬁcation
+Page 40 of 41
+
+=====PAGE=====
+Limits of this spec. LangChain and LangGraph details come from the release
+announcement and secondary articles read through search excerpts, not the official
+reference pages; verify signatures against the installed versions. The genetics formulas
+are standard results that have not been validated against a clinical source in this project
+and need review by a genetics-trained person. Targets, effort and timing are proposals.
+Legal points are a summary, not legal advice.
+KinSight Build Speciﬁcation
+Page 41 of 41
