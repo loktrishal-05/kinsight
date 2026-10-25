@@ -6,6 +6,7 @@ COPY configs ./configs
 COPY templates ./templates
 COPY data ./data
 COPY scripts ./scripts
+COPY DATA_SOURCES.md ./DATA_SOURCES.md
 RUN pip install --no-cache-dir -e ".[api]"
 ENV KINSIGHT_DEMO=1 KINSIGHT_DEMO_AUTH=1
 EXPOSE 8000

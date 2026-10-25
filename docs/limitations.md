@@ -12,3 +12,4 @@
 - Optional items (voice, private partner check, FHIR export, extra languages) are not built unless listed as done in `docs/PLAN.md`.
 - Dependencies: Python 3.10+, LangGraph 1.x, FastAPI, SQLAlchemy 2, Next.js 14 (see lock files).
 - Copilot guard and red-team set (P5-4): keyword rules were tuned on the 109 prompts in tests/redteam/prompts.yaml, so a pass is a regression gate, not evidence of robustness. A model judge plus fresh adversarial prompts is needed before any real use.
+- Demo reset restores the case, quiz and referral state but keeps consent rows and the audit chain, so re-running the live demo flow on the same database fails on duplicate grants; use 'docker compose down -v' for a clean demo.
