@@ -74,3 +74,4 @@ evals/output/
 .idea/
 .DS_Store
 Thumbs.db
+*.db
