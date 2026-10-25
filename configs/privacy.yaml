@@ -1,0 +1,8 @@
+# Synthetic demo only. Secrets belong in environment variables.
+min_cell: 10
+epsilon_per_release: 0.5
+epsilon_total: 2.0
+token_ttl_seconds: 900
+consent_max_seconds: 2592000
+rate_limit_requests: 30
+rate_limit_window_seconds: 60
