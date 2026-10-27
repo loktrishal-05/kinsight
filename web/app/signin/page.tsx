@@ -1,7 +1,7 @@
 "use client";
 // Demo sign-in: a cinematic background video beside a light form. Any non-empty username and password signs in (fictional demo,
 // no real accounts); "Use the demo account" fills them in. The video lives at public/media/signin.mp4; until it exists, or under
-// reduced motion, a still daylight lattice stands in.
+// reduced motion, a still daylight lattice stands in. The clip plays forward then reversed (encoded that way) so the loop has no seam.
 import { ArrowLeft, ArrowRight, Eye, EyeOff, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,11 +48,14 @@ export default function SignIn() {
         </svg>
       </div>
       {video && (
-        <video aria-hidden autoPlay muted loop playsInline preload="auto" poster="/media/signin.jpg" onError={() => setVideo(false)}
+        // Mirrored in right-to-left so the lattice always sits opposite the form.
+        <div aria-hidden className="absolute inset-0 rtl:-scale-x-100">
+        <video autoPlay muted loop playsInline preload="auto" poster="/media/signin.jpg" onError={() => setVideo(false)}
           className="absolute inset-0 h-full w-full animate-settle object-cover">
           <source src="/media/signin.webm" type="video/webm" />
           <source src="/media/signin.mp4" type="video/mp4" onError={() => setVideo(false)} />
         </video>
+        </div>
       )}
       {/* Light veil: the form side stays bright and readable over any frame. */}
       <div aria-hidden className="absolute inset-0 bg-canvas/70 lg:bg-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-canvas/30 lg:via-45% lg:to-canvas/95 lg:to-70% rtl:lg:bg-gradient-to-l" />
@@ -108,7 +111,7 @@ export default function SignIn() {
           </section>
         </main>
 
-        <p className="text-center text-xs text-ink/60 lg:text-start">{t("banner")}</p>
+        <p className="text-center text-xs text-ink/70 lg:w-[26rem] lg:self-end lg:me-[6vw]">{t("banner")}</p>
       </div>
     </div>
   );
