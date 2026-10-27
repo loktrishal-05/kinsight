@@ -426,5 +426,19 @@
   "landing.scroll": "Scroll to open",
   "landing.statement": "Being a carrier is not the same as having a condition. A result is information, and every choice stays yours.",
   "landing.close.t": "See the whole journey, step by step",
-  "landing.close.d": "The guided demo plays every feature with fictional people, in English or Arabic. Nothing real is used."
+  "landing.close.d": "The guided demo plays every feature with fictional people, in English or Arabic. Nothing real is used.",
+  "signin.cta": "Sign in",
+  "signin.title": "Welcome back",
+  "signin.lead": "Sign in to explore KinSight. This is a fictional demo: no real people, results or accounts.",
+  "signin.user": "Username",
+  "signin.pass": "Password",
+  "signin.show": "Show password",
+  "signin.hide": "Hide password",
+  "signin.demo": "Use the demo account",
+  "signin.demoHint": "Fills in the demo username and password for you.",
+  "signin.submit": "Sign in",
+  "signin.busy": "Signing in…",
+  "signin.missing": "Enter a username and password, or use the demo account.",
+  "signin.back": "Back to the home page",
+  "landing.nav.how": "How it works"
 }

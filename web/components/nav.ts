@@ -3,7 +3,7 @@ import type { Persona } from "@/lib/session";
 
 export type Item = { key: string; href: string; icon: typeof Home };
 export const NAV_ITEMS: Item[] = [
-  { key: "home", href: "/", icon: Home }, { key: "learn", href: "/learn", icon: BookOpenText },
+  { key: "home", href: "/home", icon: Home }, { key: "learn", href: "/learn", icon: BookOpenText },
   { key: "result", href: "/result", icon: FileText }, { key: "couple", href: "/couple", icon: Users },
   { key: "understand", href: "/understand", icon: BookOpenCheck }, { key: "next", href: "/next", icon: Compass }, { key: "access", href: "/access", icon: HandHelping },
   { key: "summary", href: "/summary", icon: Printer }, { key: "family", href: "/family", icon: Network },

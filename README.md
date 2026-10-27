@@ -31,6 +31,11 @@ Challenge 03. All people and results are fictional; no real genomes are used.
     cd web && NEXT_PUBLIC_MOCK=0 npm run build && npm start     # /api is proxied to KINSIGHT_API_URL (default :8000)
     # checks: LIVE_API=http://localhost:8000 npx vitest run tests/live.test.ts ; npx playwright test -c playwright.live.config.ts
 
+## Pages
+`/` is the public landing page (3D hero), `/signin` is a demo sign-in (the "Use the demo account" button fills the fields; any
+non-empty username and password signs in, no real accounts), and the app starts at `/home`. Sign-in video prompts:
+docs/GENERATION_PROMPTS.md (drop the clip at web/public/media/signin.mp4).
+
 ## Guided demo
 Start the web app (mock mode) and click "Watch the guided demo" on the home page, or open `http://localhost:3000/?demo=1`
 (`?demo=ar` for Arabic). It drives every feature in 42 narrated steps; Space pauses, arrow keys step, Esc stops.

@@ -33,7 +33,8 @@ export default function Shell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", k);
   }, []);
   const visible = GROUPS.filter((g) => g.roles === "all" || !persona || g.roles.includes(persona));
-  const hero = path === "/";
+  // The public landing page and sign-in stand outside the app chrome; the guided demo overlay still works on them.
+  const bare = path === "/" || path === "/signin";
 
   const personaSelect = (cls: string) => (
     <select className={`field ${cls}`} value={persona ?? ""} aria-label={t("welcome.persona")}
@@ -50,7 +51,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <p className="eyebrow-free mb-1.5 px-3">{t(g.label)}</p>
           <ul className="space-y-0.5">
             {g.items.map(({ key, href, icon: Icon }) => {
-              const active = href === "/" ? path === "/" : path.startsWith(href);
+              const active = path.startsWith(href);
               return (
                 <li key={key}>
                   <Link href={href} aria-current={active ? "page" : undefined}
@@ -67,6 +68,8 @@ export default function Shell({ children }: { children: ReactNode }) {
     </nav>
   );
 
+  if (bare) return <>{children}<DemoOverlay /></>;
+
   return (
     <div className="min-h-screen">
       <div role="status" data-testid="fictional-banner" className="flex items-center justify-center gap-2 bg-deep px-4 py-1.5 text-center text-xs font-medium text-deepfg">
@@ -78,7 +81,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           <button className="btn-quiet h-9 w-9 shrink-0 px-0 lg:hidden" aria-label={t("nav.menu")} aria-expanded={open} onClick={() => setOpen(!open)}>
             {open ? <X aria-hidden className="h-5 w-5" /> : <Menu aria-hidden className="h-5 w-5" />}
           </button>
-          <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight text-brand-700">
+          <Link href="/home" className="flex items-center gap-2 text-lg font-bold tracking-tight text-brand-700">
             <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-onbrand">K</span>
             <span className="hidden sm:inline">{t("app")}</span>
           </Link>
@@ -119,9 +122,9 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
           {nav}
         </aside>
-        <main className={hero ? "min-w-0" : "mx-auto w-full min-w-0 max-w-5xl px-4 py-6 sm:px-8 sm:py-8"}>
-          <div className={hero ? "" : "space-y-6"}>{children}</div>
-          <footer className={`border-t border-line pt-4 text-xs text-muted ${hero ? "mx-auto mt-0 max-w-5xl px-4 pb-24 sm:px-8" : "mt-12"}`}>{t("limits")}</footer>
+        <main className="mx-auto w-full min-w-0 max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+          <div className="space-y-6">{children}</div>
+          <footer className="mt-12 border-t border-line pt-4 text-xs text-muted">{t("limits")}</footer>
         </main>
       </div>
       <AssistantLauncher />

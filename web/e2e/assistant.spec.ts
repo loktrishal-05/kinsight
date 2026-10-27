@@ -20,7 +20,7 @@ const STUB = () => {
 };
 
 const open = async (page: Page) => {
-  await page.goto("/");
+  await page.goto("/home");
   await page.getByRole("button", { name: "Ask Kin" }).click();
   return page.getByRole("dialog", { name: /Kin, your assistant/ });
 };
@@ -32,7 +32,7 @@ const send = async (panel: ReturnType<Page["getByRole"]>, text: string) => {
 test.beforeEach(async ({ page }) => { await page.addInitScript(STUB); });
 
 test("the generated logo loads and opens the assistant", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/home");
   const logo = page.getByRole("button", { name: "Ask Kin" }).locator("img");
   await expect(logo).toBeVisible();
   expect(await logo.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(100);
@@ -133,7 +133,7 @@ test("the full-page assistant on /ask works and the floating button is hidden th
 });
 
 test("the panel fits inside the viewport on a phone and in an Arabic interface", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/home");
   await page.evaluate(() => localStorage.setItem("ks_lang", "ar"));
   await page.reload();
   await page.getByRole("button", { name: "اسأل كِن" }).click();

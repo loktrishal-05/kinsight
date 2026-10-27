@@ -2,7 +2,8 @@
 // Landing hero: a sunlit 3D lattice screen (mashrabiya: see without being seen) opens as you scroll and reveals a family
 // tree where cousins marry; its members become 100 lights that settle into one 10x10 chance (two carriers: 1 in 4).
 // three.js loads on demand; reduced motion shows the resolved still; without WebGL the text and actions stand alone.
-import { ArrowDown, PlayCircle } from "lucide-react";
+import { ArrowRight, PlayCircle } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useDemo } from "@/lib/demo";
 import { useI18n } from "@/lib/i18n";
@@ -257,22 +258,22 @@ export default function LatticeHero() {
   return (
     <>
       <section ref={root} aria-labelledby="hero-title" className={still ? "relative" : "relative h-[330vh]"}>
-        <div data-demo="hero" className="sticky top-[5.5rem] h-[calc(100svh-5.5rem)] min-h-[34rem] overflow-hidden bg-[radial-gradient(ellipse_at_66%_38%,#fffaf0,#e3efec_70%)]">
+        <div data-demo="hero" className="sticky top-0 h-[100svh] min-h-[34rem] overflow-hidden bg-[radial-gradient(ellipse_at_66%_38%,#fffaf0,#e3efec_70%)]">
           <canvas ref={canvas} aria-hidden className={`absolute inset-0 h-full w-full ${noGl ? "hidden" : ""}`} />
           <div ref={veil} aria-hidden style={{ "--v": "82%" } as React.CSSProperties} className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgb(var(--canvas))_var(--v),transparent_calc(var(--v)+6%))] sm:bg-gradient-to-r sm:from-canvas/90 sm:via-canvas/40 sm:via-[28%] sm:to-transparent sm:to-[44%] rtl:sm:bg-gradient-to-l" />
 
-          <div ref={intro} className="relative z-10 flex h-full max-w-[44rem] flex-col justify-start gap-6 px-5 pt-[9vh] will-change-transform sm:justify-center sm:px-10 sm:pt-0 lg:px-16">
+          <div ref={intro} className="relative z-10 flex h-full max-w-[44rem] flex-col justify-start gap-6 px-5 pt-28 will-change-transform sm:justify-center sm:px-10 sm:pt-12 lg:px-16">
             <h1 id="hero-title" className="hero-in font-display text-[clamp(2.5rem,6.2vw,5.4rem)] font-bold leading-[0.98] tracking-[-0.035em] text-ink [animation-delay:.04s]">{t("welcome.title")}</h1>
             <p className="hero-in max-w-[34rem] text-lg leading-relaxed text-ink/75 [animation-delay:.2s]">{t("hero.sub")}</p>
             <div className="hero-in flex flex-wrap items-center gap-3 [animation-delay:.32s]">
+              <Link href="/signin" data-testid="hero-signin" className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 ps-6 pe-5 text-sm font-bold text-onbrand shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-700">
+                {t("signin.cta")}<ArrowRight aria-hidden className="h-4 w-4 transition group-hover:translate-x-0.5 rtl:rotate-180" />
+              </Link>
               {demo.available && (
-                <button onClick={() => demo.start()} data-testid="demo-start" className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 ps-5 pe-6 text-sm font-bold text-onbrand shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-700">
-                  <PlayCircle aria-hidden className="h-5 w-5 transition group-hover:scale-110" />{t("demo.start")}
+                <button onClick={() => demo.start()} data-testid="demo-start" className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-surface/80 px-6 text-sm font-bold text-ink shadow-card transition hover:-translate-y-0.5 hover:border-brand-500">
+                  <PlayCircle aria-hidden className="h-5 w-5" />{t("demo.start")}
                 </button>
               )}
-              <a href="#start" className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-surface/80 px-6 text-sm font-bold text-ink shadow-card transition hover:-translate-y-0.5 hover:border-brand-500">
-                {t("hero.cta")}<ArrowDown aria-hidden className="h-4 w-4" />
-              </a>
             </div>
           </div>
 

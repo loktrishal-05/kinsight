@@ -8,7 +8,7 @@ export type Persona = (typeof PERSONAS)[number];
 
 export const HOME: Record<Persona, string> = {
   person_a: "/result", person_b: "/result", relative: "/family", counsellor: "/counsellor",
-  analyst: "/analyst", auditor: "/governance", demo_operator: "/",
+  analyst: "/analyst", auditor: "/governance", demo_operator: "/home",
 };
 
 type Ctx = { persona: Persona | null; choose: (p: Persona) => Promise<void> };
