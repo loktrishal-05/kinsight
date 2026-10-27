@@ -18,6 +18,7 @@ export default {
         note: { bg: v("note-bg"), fg: v("note-fg"), line: v("note-line") },
       },
       fontFamily: {
+        display: ['"Bricolage Grotesque Variable"', '"Reem Kufi"', '"Noto Sans Arabic Variable"', "system-ui", "sans-serif"],
         sans: ['"Plus Jakarta Sans Variable"', '"Noto Sans Arabic Variable"', "system-ui", "Segoe UI", "sans-serif"],
       },
       boxShadow: {
@@ -29,12 +30,14 @@ export default {
         rise: { from: { opacity: "0", transform: "translateY(14px)" }, to: { opacity: "1", transform: "none" } },
         draw: { to: { "stroke-dashoffset": "0" } },
         pulseSoft: { "0%,100%": { opacity: ".55" }, "50%": { opacity: "1" } },
+        cue: { "0%": { transform: "translateY(-100%)" }, "100%": { transform: "translateY(300%)" } },
         drift: { "0%": { transform: "translate3d(0,0,0)" }, "100%": { transform: "translate3d(0,-14px,0)" } },
       },
       animation: {
         rise: "rise .7s cubic-bezier(.16,1,.3,1) both",
         draw: "draw 2.2s cubic-bezier(.65,0,.35,1) forwards",
         pulseSoft: "pulseSoft 3.4s ease-in-out infinite",
+        cue: "cue 1.8s cubic-bezier(.65,0,.35,1) infinite",
         drift: "drift 9s ease-in-out infinite alternate",
       },
     },

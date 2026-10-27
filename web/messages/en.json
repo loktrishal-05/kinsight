@@ -415,5 +415,16 @@
   "demo.restart": "Watch again",
   "demo.close": "Explore on my own",
   "demo.start": "Watch the guided demo",
-  "demo.short": "Demo"
+  "demo.short": "Demo",
+  "landing.beat1.t": "Your result stays behind your own screen",
+  "landing.beat1.d": "Nothing reaches a partner, a relative or a counsellor until you agree, and you can stop sharing in one tap.",
+  "landing.beat2.t": "Every family is a tree. In some, branches meet.",
+  "landing.beat2.d": "When partners are related, they can share a change passed down from the same grandparents. KinSight shows how, without blame.",
+  "landing.beat3.t": "That becomes a chance, not a verdict",
+  "landing.beat3.d": "If both partners carry a change in the same gene, each pregnancy has a 1 in 4 chance that the child has the condition: 25 out of 100. An estimate, not a diagnosis.",
+  "landing.grid": "In 25 out of 100 pregnancies the child would have the condition; in 75 the child would not.",
+  "landing.scroll": "Scroll to open",
+  "landing.statement": "Being a carrier is not the same as having a condition. A result is information, and every choice stays yours.",
+  "landing.close.t": "See the whole journey, step by step",
+  "landing.close.d": "The guided demo plays every feature with fictional people, in English or Arabic. Nothing real is used."
 }

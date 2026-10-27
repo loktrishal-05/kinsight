@@ -121,7 +121,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </aside>
         <main className={hero ? "min-w-0" : "mx-auto w-full min-w-0 max-w-5xl px-4 py-6 sm:px-8 sm:py-8"}>
           <div className={hero ? "" : "space-y-6"}>{children}</div>
-          <footer className={`border-t border-line pt-4 text-xs text-muted ${hero ? "mx-auto mt-0 max-w-5xl px-4 pb-8 sm:px-8" : "mt-12"}`}>{t("limits")}</footer>
+          <footer className={`border-t border-line pt-4 text-xs text-muted ${hero ? "mx-auto mt-0 max-w-5xl px-4 pb-24 sm:px-8" : "mt-12"}`}>{t("limits")}</footer>
         </main>
       </div>
       <AssistantLauncher />

@@ -76,3 +76,7 @@ evals/output/
 Thumbs.db
 *.db
 shots
+
+# impeccable review captures (regenerated)
+web/.impeccable/review/
+web/.impeccable/questions/

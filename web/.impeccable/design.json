@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T00:00:00Z",
+  "title": "Design System: KinSight",
+  "extensions": {
+    "colorMeta": {
+      "canvas": { "role": "neutral", "displayName": "Mint Canvas", "canonical": "rgb(var(--canvas)) light 243 245 244 / dark 10 19 22", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#EBF0EE", "#F3F5F4"] },
+      "surface": { "role": "neutral", "displayName": "Paper White", "canonical": "rgb(var(--surface)) light 255 255 255 / dark 16 29 33", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#F3F5F4", "#FFFFFF"] },
+      "sunk": { "role": "neutral", "displayName": "Sunk Mint", "canonical": "rgb(var(--sunk)) light 235 240 238 / dark 21 38 42", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#EBF0EE", "#F3F5F4"] },
+      "ink": { "role": "neutral", "displayName": "Night Teal Ink", "canonical": "rgb(var(--ink)) light 24 39 44 / dark 228 238 236", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#EBF0EE", "#F3F5F4"] },
+      "muted": { "role": "neutral", "displayName": "Slate Muted", "canonical": "rgb(var(--muted)) light 85 101 107 / dark 148 168 170 / high-contrast 52 66 70", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#EBF0EE", "#F3F5F4"] },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "rgb(var(--line)) light 219 226 224 / dark 38 57 62 / high-contrast 120 140 140", "tonalRamp": ["#18272C", "#2B3D42", "#55656B", "#7F8E92", "#AAB6B5", "#DBE2E0", "#EBF0EE", "#F3F5F4"] },
+      "deep": { "role": "primary", "displayName": "Deep Teal", "canonical": "rgb(var(--deep)) light 10 69 67 / dark 8 34 36", "tonalRamp": ["#0A4543", "#0C5755", "#106B68", "#1D7F7A", "#A4CFC8", "#CFE6E2", "#E8F3F1", "#F4FAF9"] },
+      "sand": { "role": "tertiary", "displayName": "Daylight Sand", "canonical": "rgb(var(--sand)) light 251 244 228 / dark 40 34 20", "tonalRamp": ["#5B4510", "#6C5114", "#9C7A2E", "#C9A95E", "#ECDCAE", "#F4ECDC", "#FBF4E4", "#FDFAF2"] },
+      "brand-500": { "role": "primary", "displayName": "Lit Teal", "canonical": "rgb(var(--b500)) light 29 127 122 / dark 62 178 168", "tonalRamp": ["#0A4543", "#0C5755", "#106B68", "#1D7F7A", "#A4CFC8", "#CFE6E2", "#E8F3F1", "#F4FAF9"] },
+      "brand-600": { "role": "primary", "displayName": "Mashrabiya Teal", "canonical": "rgb(var(--b600)) light 16 107 104 / dark 76 196 185 / high-contrast 8 80 78", "tonalRamp": ["#0A4543", "#0C5755", "#106B68", "#1D7F7A", "#A4CFC8", "#CFE6E2", "#E8F3F1", "#F4FAF9"] },
+      "brand-700": { "role": "primary", "displayName": "Shade Teal", "canonical": "rgb(var(--b700)) light 12 87 85 / dark 132 218 210", "tonalRamp": ["#0A4543", "#0C5755", "#106B68", "#1D7F7A", "#A4CFC8", "#CFE6E2", "#E8F3F1", "#F4FAF9"] },
+      "brand-50": { "role": "primary", "displayName": "Teal Wash", "canonical": "rgb(var(--b50)) light 232 243 241 / dark 18 46 47", "tonalRamp": ["#0A4543", "#0C5755", "#106B68", "#1D7F7A", "#A4CFC8", "#CFE6E2", "#E8F3F1", "#F4FAF9"] },
+      "found-fg": { "role": "secondary", "displayName": "Found Indigo", "canonical": "rgb(var(--found-fg)) light 51 65 127 / dark 190 200 245", "tonalRamp": ["#1F2850", "#33417F", "#4A5AA3", "#6F7DC0", "#97A2D6", "#BEC8F5", "#E9ECFA", "#F4F6FD"] },
+      "found-bg": { "role": "secondary", "displayName": "Found Indigo Wash", "canonical": "rgb(var(--found-bg)) light 233 236 250 / dark 38 44 82", "tonalRamp": ["#1F2850", "#33417F", "#4A5AA3", "#6F7DC0", "#97A2D6", "#BEC8F5", "#E9ECFA", "#F4F6FD"] },
+      "unsure-fg": { "role": "tertiary", "displayName": "Unsure Amber", "canonical": "rgb(var(--unsure-fg)) light 108 81 20 / dark 238 214 150", "tonalRamp": ["#5B4510", "#6C5114", "#9C7A2E", "#C9A95E", "#ECDCAE", "#F7EED8", "#FBF4E4", "#FDFAF2"] },
+      "clear-fg": { "role": "neutral", "displayName": "Clear Sage", "canonical": "rgb(var(--clear-fg)) light 64 82 79 / dark 170 190 188", "tonalRamp": ["#1E2A28", "#40524F", "#5E716E", "#82938F", "#A9B6B3", "#CFD8D6", "#EEF1F0", "#F7F9F8"] },
+      "lattice-sand": { "role": "tertiary", "displayName": "Lattice Sand", "canonical": "three.js 0xf4ecdc (landing hero only, light)", "tonalRamp": ["#5B4510", "#6C5114", "#9C7A2E", "#C9A95E", "#ECDCAE", "#F4ECDC", "#FBF4E4", "#FDFAF2"] },
+      "light-dot": { "role": "tertiary", "displayName": "Light Dot", "canonical": "three.js 0xf1e9d8 (landing hero only, light)", "tonalRamp": ["#5B4510", "#6C5114", "#9C7A2E", "#C9A95E", "#ECDCAE", "#F1E9D8", "#FBF4E4", "#FDFAF2"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero headline only. Reem Kufi 600/700 carries Arabic." },
+      "headline": { "displayName": "Headline", "purpose": "Landing statement, closing band, scroll beats." },
+      "title": { "displayName": "Title", "purpose": "Landing section headings." },
+      "page-title": { "displayName": "Page Title", "purpose": "App screen headings in the body face; 1.5rem below sm." },
+      "lede": { "displayName": "Lede", "purpose": "Hero and closing sub-copy at ink 75%." },
+      "body": { "displayName": "Body", "purpose": "All running text, tabular figures, max 68ch." },
+      "label": { "displayName": "Group Label", "purpose": "Uppercase label above lists and nav groups; never above a headline." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px rgb(var(--shadow) / .06), 0 8px 24px -12px rgb(var(--shadow) / .14)", "purpose": "Cards at rest, secondary pill, primary button on hover." },
+      { "name": "lift", "value": "0 2px 4px rgb(var(--shadow) / .08), 0 18px 40px -16px rgb(var(--shadow) / .28)", "purpose": "Landing primary pill CTA." },
+      { "name": "lattice-shade", "value": "three.js ShadowMaterial color 0x0c5755 opacity 0.22, PCF soft, radius 3", "purpose": "The mashrabiya's pattern thrown onto the wall behind it." }
+    ],
+    "motion": [
+      { "name": "ease-expo-out", "value": "cubic-bezier(.16,1,.3,1)", "purpose": "All reveals (hero-in, rise)." },
+      { "name": "hero-in", "value": "1.1s expo-out; from opacity 0, translateY(48px), blur(14px); delays .04s/.2s/.32s", "purpose": "Hero copy assembles on load." },
+      { "name": "rise", "value": ".7s expo-out; from opacity 0, translateY(14px)", "purpose": "App content entrance." },
+      { "name": "ease-in-out-strong", "value": "cubic-bezier(.65,0,.35,1)", "purpose": "Line draws (2.2s) and the scroll cue (1.8s loop)." },
+      { "name": "scroll-smoothing", "value": "p += (goal - p) * (1 - exp(-dt * 9)); settles in about 0.35s; idle redraw about 15fps", "purpose": "Hero follows scroll at the same pace on slow and fast devices." },
+      { "name": "beat-windows", "value": "[0.13,0.38] [0.34,0.6] [0.62,1.01]; 6% fade in/out with 40px travel and 12px blur", "purpose": "Scroll beats over the hero scene." },
+      { "name": "reduced-motion", "value": "animation and transition durations .01ms; hero renders progress 0.95 still; beats become a static list", "purpose": "OS setting or data-motion=reduce." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "portrait-scene", "value": "aspect < 0.9" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The app's single action button.",
+      "html": "<button class=\"ds-btn\">Continue</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 0; border-radius: 8px; background: rgb(var(--b600, 16 107 104)); color: rgb(var(--onbrand, 255 255 255)); font: 600 14px/1 'Plus Jakarta Sans Variable', system-ui, sans-serif; cursor: pointer; transition: all .15s; } .ds-btn:hover { background: rgb(var(--b700, 12 87 85)); transform: translateY(-1px); box-shadow: 0 1px 2px rgb(24 39 44 / .06), 0 8px 24px -12px rgb(24 39 44 / .14); } .ds-btn:active { transform: none; } .ds-btn:focus-visible { outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary action and icon buttons.",
+      "html": "<button class=\"ds-btn-quiet\">Cancel</button>",
+      "css": ".ds-btn-quiet { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid rgb(var(--line, 219 226 224)); border-radius: 8px; background: rgb(var(--surface, 255 255 255)); color: rgb(var(--ink, 24 39 44)); font: 600 14px/1 'Plus Jakarta Sans Variable', system-ui, sans-serif; cursor: pointer; transition: background-color .15s; } .ds-btn-quiet:hover { background: rgb(var(--b50, 232 243 241)); } .ds-btn-quiet:focus-visible { outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Landing Pill CTA",
+      "kind": "button",
+      "refersTo": "button-pill",
+      "description": "Primary persuasion CTA on the landing (hero and closing band).",
+      "html": "<button class=\"ds-pill\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M10 8l6 4-6 4z\"/></svg>Watch the guided demo</button>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px 0 20px; border: 0; border-radius: 9999px; background: rgb(var(--b600, 16 107 104)); color: rgb(var(--onbrand, 255 255 255)); font: 700 14px/1 'Plus Jakarta Sans Variable', system-ui, sans-serif; box-shadow: 0 2px 4px rgb(24 39 44 / .08), 0 18px 40px -16px rgb(24 39 44 / .28); cursor: pointer; transition: all .15s; } .ds-pill svg { transition: transform .15s; } .ds-pill:hover { background: rgb(var(--b700, 12 87 85)); transform: translateY(-2px); } .ds-pill:hover svg { transform: scale(1.1); } .ds-pill:focus-visible { outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Landing Pill Secondary",
+      "kind": "button",
+      "refersTo": "button-pill-secondary",
+      "description": "Secondary landing CTA.",
+      "html": "<a class=\"ds-pill-2\" href=\"#\">Explore a couple's journey<svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M19 12l-7 7-7-7\"/></svg></a>",
+      "css": ".ds-pill-2 { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; border: 1px solid rgb(var(--ink, 24 39 44) / .15); border-radius: 9999px; background: rgb(var(--surface, 255 255 255) / .8); color: rgb(var(--ink, 24 39 44)); font: 700 14px/1 'Plus Jakarta Sans Variable', system-ui, sans-serif; text-decoration: none; box-shadow: 0 1px 2px rgb(24 39 44 / .06), 0 8px 24px -12px rgb(24 39 44 / .14); transition: all .15s; } .ds-pill-2:hover { transform: translateY(-2px); border-color: rgb(var(--b500, 29 127 122)); } .ds-pill-2:focus-visible { outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tier Chips",
+      "kind": "chip",
+      "refersTo": "chip-found",
+      "description": "Status chips; indigo for found, never red or green.",
+      "html": "<span class=\"ds-chip ds-found\">Found</span> <span class=\"ds-chip ds-clear\">Clear</span> <span class=\"ds-chip ds-unsure\">Talk to a counsellor</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 9999px; font: 600 12px/1.5 'Plus Jakarta Sans Variable', system-ui, sans-serif; } .ds-found { background: rgb(var(--found-bg, 233 236 250)); color: rgb(var(--found-fg, 51 65 127)); } .ds-clear { background: rgb(var(--clear-bg, 238 241 240)); color: rgb(var(--clear-fg, 64 82 79)); } .ds-unsure { background: rgb(var(--unsure-bg, 247 238 216)); color: rgb(var(--unsure-fg, 108 81 20)); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Default container.",
+      "html": "<div class=\"ds-card\"><strong>Your result</strong><p>An estimate, not a diagnosis.</p></div>",
+      "css": ".ds-card { border: 1px solid rgb(var(--line, 219 226 224)); border-radius: 16px; background: rgb(var(--surface, 255 255 255)); padding: 20px; color: rgb(var(--ink, 24 39 44)); font: 400 15px/1.65 'Plus Jakarta Sans Variable', system-ui, sans-serif; box-shadow: 0 1px 2px rgb(24 39 44 / .06), 0 8px 24px -12px rgb(24 39 44 / .14); } .ds-card p { margin: 4px 0 0; color: rgb(var(--muted, 85 101 107)); }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Text input and select.",
+      "html": "<input class=\"ds-field\" placeholder=\"Search pages and terms\">",
+      "css": ".ds-field { height: 40px; width: 100%; padding: 0 12px; border: 1px solid rgb(var(--line, 219 226 224)); border-radius: 8px; background: rgb(var(--surface, 255 255 255)); color: rgb(var(--ink, 24 39 44)); font: 400 14px 'Plus Jakarta Sans Variable', system-ui, sans-serif; } .ds-field::placeholder { color: rgb(var(--muted, 85 101 107) / .7); } .ds-field:focus-visible { border-color: rgb(var(--b500, 29 127 122)); outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Nav Item",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Start-side nav group with label, item and active state.",
+      "html": "<nav class=\"ds-nav\"><p class=\"ds-nav-label\">My care</p><a class=\"ds-nav-item ds-active\" href=\"#\">My result</a><a class=\"ds-nav-item\" href=\"#\">Couple view</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 220px; font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif; } .ds-nav-label { margin: 0 0 6px; padding: 0 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .025em; color: rgb(var(--muted, 85 101 107)); } .ds-nav-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; color: rgb(var(--ink, 24 39 44) / .8); transition: background-color .15s; } .ds-nav-item:hover { background: rgb(var(--sunk, 235 240 238)); } .ds-active { background: rgb(var(--b50, 232 243 241)); color: rgb(var(--b800, 10 69 67)); } .ds-nav-item:focus-visible { outline: 2px solid rgb(var(--b600, 16 107 104)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Lattice Band",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Sand closing band with the eight-point star lattice at 7%.",
+      "html": "<section class=\"ds-band\"><svg class=\"ds-band-bg\" aria-hidden=\"true\"><defs><pattern id=\"ds-lat\" width=\"44\" height=\"44\" patternUnits=\"userSpaceOnUse\"><path fill=\"currentColor\" d=\"M22 6.5l4.3 4.7 6.4-.3-.3 6.4 4.7 4.3-4.7 4.3.3 6.4-6.4-.3L22 37.5l-4.3-4.5-6.4.3.3-6.4L6.9 22.6l4.7-4.3-.3-6.4 6.4.3z\"/></pattern></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#ds-lat)\"/></svg><h2>See it for yourself</h2></section>",
+      "css": ".ds-band { position: relative; isolation: isolate; overflow: hidden; padding: 96px 32px; border-top: 1px solid rgb(var(--line, 219 226 224)); background: rgb(var(--sand, 251 244 228)); } .ds-band-bg { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; color: rgb(var(--b600, 16 107 104) / .07); } .ds-band h2 { margin: 0; max-width: 42rem; font: 700 clamp(2rem, 4.6vw, 3.8rem)/1.02 'Bricolage Grotesque Variable', 'Reem Kufi', system-ui, sans-serif; letter-spacing: -.035em; color: rgb(var(--ink, 24 39 44)); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sunlit Screen",
+    "overview": "KinSight is a daylight world: a cool mint-grey canvas, white surfaces, night-teal ink, one deep teal accent, and warm sand as the light that comes through. Privacy is the architecture, and the mashrabiya (a lattice screen you can see out of without being seen) is its signature: eight-point stars of sand with teal light in the gaps. The app screens are quiet and dense with care information; the landing page is the one place the screen becomes a 3D object that opens as you scroll.\n\nTokens are CSS variables holding space-separated RGB triplets (app/globals.css), so light, dark and high-contrast share one set of class names; the frontmatter mirrors the light theme, the variables are normative. Every surface works in Arabic RTL with full parity, honours reduced motion, and never uses colour as the only signal. The tone is calm and neutral: information, not a verdict.",
+    "keyCharacteristics": [
+      "One teal accent for action; indigo reserved for \"found\"; sand as warmth, never alarm.",
+      "Soft two-layer shadows tinted with the ink colour, never neutral black in light mode.",
+      "Generous radii (8px controls, 16px cards, full pills on the landing).",
+      "Expo-out motion that resolves to a complete still when motion is reduced.",
+      "Mashrabiya star lattice as the reusable signature motif, in 3D and as a faint SVG pattern."
+    ],
+    "rules": [
+      { "name": "The One Teal Rule", "body": "Teal is the only action colour. Every primary button, active toggle and focus ring is brand-600; nothing else competes for the eye.", "section": "colors" },
+      { "name": "The Indigo Means Found Rule", "body": "Indigo appears only for the \"found\" state. Carrier status is never red or green; tiers are indigo, neutral grey-green and amber.", "section": "colors" },
+      { "name": "The Three Themes Rule", "body": "A new colour is a CSS variable with a light, dark and high-contrast value, consumed as `rgb(var(--x) / alpha)`; no hex in components outside the landing hero's lighting.", "section": "colors" },
+      { "name": "The Display Is For Story Rule", "body": "Bricolage and Reem Kufi set landing and persuasion headings only. App screens keep Plus Jakarta page titles.", "section": "typography" },
+      { "name": "The Bare Headline Rule", "body": "Headlines stand alone: no label, kicker or eyebrow above them. The uppercase label names a list or nav group, never a heading.", "section": "typography" },
+      { "name": "The Ink-Tinted Shadow Rule", "body": "Shadows are two layers, a tight contact and a long negative-spread blur, always tinted with the ink token. No hard offsets, no coloured glows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do express every colour as a CSS variable RGB triplet with light, dark and high-contrast values.",
+      "Do keep brand-600 the single action colour and indigo the single \"found\" colour.",
+      "Do tint shadows with the ink token using the Card and Lift recipes.",
+      "Do give every scroll-driven or animated piece a resolved still for reduced motion and a no-WebGL fallback.",
+      "Do mirror layout, gradients, icons and 3D camera offsets in RTL.",
+      "Do use the eight-point star lattice as the signature motif, at low opacity when it is decorative."
+    ],
+    "donts": [
+      "Don't use red or green for carrier status.",
+      "Don't put a label, kicker or eyebrow above a headline.",
+      "Don't use the display faces on app screens; they belong to landing and persuasion headings.",
+      "Don't use hard offset or untinted black shadows in light mode.",
+      "Don't hard-code hex colours in components; the landing hero's lighting (three.js scene and stage gradient) is the only exception."
+    ]
+  }
+}

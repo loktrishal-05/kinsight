@@ -1,5 +1,8 @@
 @import "@fontsource-variable/plus-jakarta-sans";
 @import "@fontsource-variable/noto-sans-arabic";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource/reem-kufi/arabic-600.css";
+@import "@fontsource/reem-kufi/arabic-700.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,6 +48,10 @@ p { text-wrap: pretty; }
   .card, .card-flush { box-shadow: none; border-color: #bbb; }
   main { max-width: none !important; padding: 0 !important; }
 }
+
+/* landing: the hero copy assembles from blur on load (expo-out); reduced motion keeps it simply visible */
+.hero-in { animation: hero-in 1.1s cubic-bezier(.16,1,.3,1) both; }
+@keyframes hero-in { from { opacity: 0; transform: translateY(48px); filter: blur(14px); } to { opacity: 1; transform: none; filter: none; } }
 
 @layer components {
   .card { @apply rounded-2xl border border-line bg-surface p-5 shadow-card; }

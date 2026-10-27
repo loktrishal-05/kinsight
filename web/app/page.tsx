@@ -1,10 +1,10 @@
 "use client";
-import { ArrowDown, ArrowRight, BookOpenText, Check, FileText, Lock, MessagesSquare, PlayCircle, Route, UserRoundCheck } from "lucide-react";
+import { ArrowRight, BookOpenText, Check, FileText, MessagesSquare, PlayCircle, Route, UserRoundCheck } from "lucide-react";
 import { useDemo } from "@/lib/demo";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import FamilyTreeArt from "@/components/FamilyTreeArt";
+import LatticeHero from "@/components/LatticeHero";
+import Statement from "@/components/Statement";
 import { TierChip } from "@/components/visuals";
 import { api, MOCK } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -28,34 +28,15 @@ export default function Welcome() {
   const l = lang === "ar" ? "ar" : "en";
   return (
     <div>
-      <section data-demo="hero" className="relative isolate overflow-hidden bg-gradient-to-br from-[#04191a] via-[#0a3f3e] to-[#13283f] text-deepfg">
-        <FamilyTreeArt />
-        <div className="relative mx-auto flex min-h-[min(80vh,46rem)] max-w-5xl flex-col justify-center gap-7 px-4 py-16 sm:px-8">
-          <p className="animate-rise inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
-            <Lock aria-hidden className="h-3.5 w-3.5" />{t("hero.badge")}
-          </p>
-          <h1 className="animate-rise max-w-2xl text-[2.4rem] font-bold leading-[1.08] tracking-tight text-white [animation-delay:.08s] sm:text-5xl lg:text-6xl">{t("welcome.title")}</h1>
-          <p className="animate-rise max-w-lg text-lg text-deepfg/85 [animation-delay:.18s]">{t("hero.sub")}</p>
-          <div className="animate-rise flex flex-wrap gap-3 [animation-delay:.28s]">
-            <a href="#start" className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-[#0a3f3e] shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-50">
-              {t("hero.cta")}<ArrowDown aria-hidden className="h-4 w-4" />
-            </a>
-            {demo.available && (
-              <button onClick={() => demo.start()} data-testid="demo-start" className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-500 px-6 text-sm font-bold text-white shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-600">
-                <PlayCircle aria-hidden className="h-5 w-5" />{t("demo.start")}
-              </button>
-            )}
-            <Link href="/learn" className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/30 px-6 text-sm font-semibold text-white transition hover:bg-white/10">{t("hero.learn")}</Link>
-          </div>
-          <ul className="animate-rise mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-deepfg/80 [animation-delay:.4s]">
-            {["hero.p1", "hero.p2", "hero.p3"].map((k) => <li key={k} className="flex items-center gap-2"><Check aria-hidden className="h-4 w-4 text-brand-200" />{t(k)}</li>)}
-          </ul>
-        </div>
+      <LatticeHero />
+
+      <section className="mx-auto max-w-5xl px-5 py-24 sm:px-8 sm:py-32">
+        <Statement text={t("landing.statement")} />
       </section>
 
       <div className="mx-auto max-w-5xl space-y-14 px-4 py-12 sm:px-8">
         <section aria-labelledby="how" data-demo="how">
-          <h2 id="how" className="text-xl font-bold">{t("how.title")}</h2>
+          <h2 id="how" className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.03em]">{t("how.title")}</h2>
           <ol className="relative mt-6 grid gap-6 sm:grid-cols-5 sm:gap-4">
             <span aria-hidden className="absolute start-4 top-4 hidden h-0.5 w-[calc(100%-2rem)] bg-line sm:block" />
             {JOURNEY.map(({ icon: Icon, k }) => (
@@ -71,7 +52,7 @@ export default function Welcome() {
         </section>
 
         <section id="start" aria-labelledby="pick" className="scroll-mt-24 space-y-8">
-          <h2 id="pick" className="text-xl font-bold">{t("welcome.pick")}</h2>
+          <h2 id="pick" className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold leading-[1.08] tracking-[-0.03em]">{t("welcome.pick")}</h2>
           <div className="grid gap-8 lg:grid-cols-2">
             {MOCK && (
               <div>
@@ -118,6 +99,26 @@ export default function Welcome() {
           </div>
         </section>
       </div>
+
+      {demo.available && (
+        <section aria-labelledby="close" className="relative isolate overflow-hidden border-t border-line bg-sand">
+          <svg aria-hidden className="absolute inset-0 -z-10 h-full w-full text-brand-600/[.07]">
+            <defs>
+              <pattern id="lattice" width="44" height="44" patternUnits="userSpaceOnUse">
+                <path fill="currentColor" d="M22 6.5l4.3 4.7 6.4-.3-.3 6.4 4.7 4.3-4.7 4.3.3 6.4-6.4-.3L22 37.5l-4.3-4.5-6.4.3.3-6.4L6.9 22.6l4.7-4.3-.3-6.4 6.4.3z" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#lattice)" />
+          </svg>
+          <div className="mx-auto flex max-w-5xl flex-col items-start gap-6 px-5 py-24 sm:px-8 sm:py-28">
+            <h2 id="close" className="max-w-2xl font-display text-[clamp(2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracking-[-0.035em]">{t("landing.close.t")}</h2>
+            <p className="max-w-xl text-lg text-ink/75">{t("landing.close.d")}</p>
+            <button onClick={() => demo.start()} className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 ps-5 pe-6 text-sm font-bold text-onbrand shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-700">
+              <PlayCircle aria-hidden className="h-5 w-5 transition group-hover:scale-110" />{t("demo.start")}
+            </button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
