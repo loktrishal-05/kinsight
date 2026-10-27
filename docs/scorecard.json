@@ -7,7 +7,7 @@
   "all_rows_synthetic": true
  },
  "explanations": {
-  "drafts": 160,
+  "drafts": 560,
   "numeric_fidelity": 1.0,
   "block_conformity": 1.0,
   "banned_phrases": 0
