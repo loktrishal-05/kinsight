@@ -10,10 +10,7 @@ It turns a premarital or preconception screening result into plain words, shows 
 keeps a genetic counsellor in the loop, and never tells anyone what to decide.
 
 [![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/Python-3.10%2B-1d7f7a)
-![FastAPI](https://img.shields.io/badge/FastAPI-LangGraph-1d7f7a)
 ![Next.js](https://img.shields.io/badge/Next.js-14-18272c)
-![three.js](https://img.shields.io/badge/three.js-WebGL-18272c)
 ![Languages](https://img.shields.io/badge/languages-7-33417f)
 ![Tests](https://img.shields.io/badge/tests-578%20passing-1d7f7a)
 
@@ -95,44 +92,54 @@ feature on its own (`/?demo=1`).
 
 <table>
 <tr>
-<td width="33%"><img src="docs/screenshots/02-landing-tree.jpg" alt="Landing: the lattice opens onto a family tree" /><br/><sub><b>Landing, beat 1–2.</b> The 3D lattice opens onto a family tree where cousins marry.</sub></td>
-<td width="33%"><img src="docs/screenshots/03-landing-chance.jpg" alt="Landing: 100 lights settle into a 10 by 10 chance" /><br/><sub><b>Landing, beat 3.</b> The family becomes 100 lights: a 1 in 4 chance, 25 in teal.</sub></td>
-<td width="33%"><img src="docs/screenshots/04-signin.jpg" alt="Sign-in with background video" /><br/><sub><b>Sign-in.</b> Background film; "Use the demo account" fills the form.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/03-landing-chance.jpg" alt="Landing" /><br/><b>Landing</b><br/><sub>A 3D lattice opens onto a family tree, whose members settle into 100 lights: a 1 in 4 chance.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/06-result.jpg" alt="My result" /><br/><b>My result</b><br/><sub>Found or not found, and a verified explanation in plain words.</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/05-home.jpg" alt="App home" /><br/><sub><b>App home.</b> The path to care, seven fictional cases, seven roles.</sub></td>
-<td><img src="docs/screenshots/06-result.jpg" alt="My result" /><br/><sub><b>My result.</b> Found / not found, and a verified plain-words explanation.</sub></td>
-<td><img src="docs/screenshots/17-couple.jpg" alt="Couple view" /><br/><sub><b>Couple view.</b> Released after both partners and a counsellor agree.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/17-couple.jpg" alt="Couple view" /><br/><b>Couple view</b><br/><sub>Released only after both partners agree and a counsellor approves.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/12-counsellor.jpg" alt="Counsellor console" /><br/><b>Counsellor console</b><br/><sub>Filterable queue, workload and a one-page case brief.</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/07-kin.jpg" alt="Kin assistant" /><br/><sub><b>Kin.</b> Explains a term; declines "should we cancel the marriage?".</sub></td>
-<td><img src="docs/screenshots/08-understand.jpg" alt="Teach-back check" /><br/><sub><b>Check understanding.</b> Teach-back that never loops.</sub></td>
-<td><img src="docs/screenshots/09-next.jpg" alt="Next steps" /><br/><sub><b>Next steps.</b> Referral path with owners and dates.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/13-analyst.jpg" alt="Analyst dashboard" /><br/><b>Analyst dashboard</b><br/><sub>Anonymous totals with small cells suppressed.</sub></td>
+<td width="50%" valign="top"><img src="docs/screenshots/19-hindi-result.jpg" alt="Seven languages" /><br/><b>Seven languages</b><br/><sub>The whole app, including verified explanations, in the reader's language.</sub></td>
+</tr>
+</table>
+
+<details>
+<summary><b>More screens</b> (15 more, plus phone views)</summary>
+<br/>
+
+<table>
+<tr>
+<td width="33%" valign="top"><img src="docs/screenshots/02-landing-tree.jpg" alt="Landing: family tree" /><br/><sub>Landing: family tree</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/04-signin.jpg" alt="Sign-in" /><br/><sub>Sign-in</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/05-home.jpg" alt="App home" /><br/><sub>App home</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/12-counsellor.jpg" alt="Counsellor console" /><br/><sub><b>Counsellor console.</b> Queue, workload and case brief.</sub></td>
-<td><img src="docs/screenshots/13-analyst.jpg" alt="Analyst dashboard" /><br/><sub><b>Analyst dashboard.</b> Anonymous totals, small cells suppressed.</sub></td>
-<td><img src="docs/screenshots/14-analyst-capacity.jpg" alt="Analyst charts" /><br/><sub><b>Time to care and equity.</b> Weekly waits, comprehension by language.</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/07-kin.jpg" alt="Kin assistant" /><br/><sub>Kin assistant</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/08-understand.jpg" alt="Check understanding" /><br/><sub>Check understanding</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/09-next.jpg" alt="Next steps" /><br/><sub>Next steps</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/15-governance.jpg" alt="Governance" /><br/><sub><b>Governance.</b> Verify the audit chain; run a tamper test.</sub></td>
-<td><img src="docs/screenshots/11-privacy.jpg" alt="Privacy centre" /><br/><sub><b>Privacy centre.</b> Who can see what, and who looked.</sub></td>
-<td><img src="docs/screenshots/10-family.jpg" alt="Family circle" /><br/><sub><b>Family circle.</b> Pedigree and no-result invitations.</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/10-family.jpg" alt="Family circle" /><br/><sub>Family circle</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/11-privacy.jpg" alt="Privacy centre" /><br/><sub>Privacy centre</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/14-analyst-capacity.jpg" alt="Time to care and equity" /><br/><sub>Time to care and equity</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/18-guided-demo.jpg" alt="Guided demo" /><br/><sub><b>Guided demo.</b> 42 narrated, self-driving steps.</sub></td>
-<td><img src="docs/screenshots/16-methods.jpg" alt="Methods" /><br/><sub><b>Methods and evidence.</b> Formulas and assumptions.</sub></td>
-<td><img src="docs/screenshots/19-hindi-result.jpg" alt="Hindi result" /><br/><sub><b>हिन्दी.</b> The whole app, including verified explanations.</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/15-governance.jpg" alt="Governance" /><br/><sub>Governance</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/16-methods.jpg" alt="Methods and evidence" /><br/><sub>Methods and evidence</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/18-guided-demo.jpg" alt="Guided demo" /><br/><sub>Guided demo</sub></td>
 </tr>
 <tr>
-<td><img src="docs/screenshots/20-tamil-landing.jpg" alt="Tamil landing" /><br/><sub><b>தமிழ்.</b> Landing page in Tamil.</sub></td>
-<td><img src="docs/screenshots/21-arabic.jpg" alt="Arabic couple view" /><br/><sub><b>العربية.</b> Fully mirrored right-to-left layout.</sub></td>
-<td><img src="docs/screenshots/22-malayalam-learn.jpg" alt="Malayalam learn" /><br/><sub><b>മലയാളം.</b> Learn hub in Malayalam.</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/20-tamil-landing.jpg" alt="Tamil" /><br/><sub>Tamil</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/21-arabic.jpg" alt="Arabic, right to left" /><br/><sub>Arabic, right to left</sub></td>
+<td width="33%" valign="top"><img src="docs/screenshots/22-malayalam-learn.jpg" alt="Malayalam" /><br/><sub>Malayalam</sub></td>
 </tr>
 </table>
 
 <img src="docs/screenshots/phone-strip.jpg" alt="Phone screens: landing, sign-in, result, Telugu learn" width="100%" />
-<p align="center"><sub>On a phone: landing, sign-in, my result, and the Learn hub in Telugu.</sub></p>
+
+</details>
 
 ---
 
