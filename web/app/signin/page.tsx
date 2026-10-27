@@ -35,7 +35,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="relative min-h-[100svh] overflow-hidden bg-canvas">
+    <div className="theme-light relative min-h-[100svh] overflow-hidden bg-canvas text-ink">
       {/* Background: the still lattice is always underneath; the video covers it once it plays. */}
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,#fffaf0,#d6ebe7_75%)]">
         <svg className="h-full w-full text-brand-600/[.12]">

@@ -12,7 +12,7 @@ keeps a genetic counsellor in the loop, and never tells anyone what to decide.
 [![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-14-18272c)
 ![Languages](https://img.shields.io/badge/languages-7-33417f)
-![Tests](https://img.shields.io/badge/tests-578%20passing-1d7f7a)
+![Tests](https://img.shields.io/badge/tests-585%20passing-1d7f7a)
 
 Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 
@@ -370,9 +370,9 @@ Reproducible from the committed seed ([docs/SCORECARD.md](docs/SCORECARD.md), `p
 
 | Test suite | Count |
 |---|---|
-| Python (unit, property, golden, integration, privacy, red-team, eval gate) | 490 |
-| Web unit (Vitest: Kin rules, multilingual guards, mock API) | 28 |
-| End-to-end (Playwright, desktop + phone: demo path, guided demo, landing, sign-in, Kin with stubbed speech) | 60 |
+| Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis) | 491 |
+| Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring) | 32 |
+| End-to-end (Playwright, desktop + phone: demo path, guided demo, landing, sign-in, volunteer study, Kin with stubbed speech) | 62 |
 
 CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a production build and Playwright on every push.
 
@@ -448,6 +448,8 @@ KINSIGHT_DEMO=1 KINSIGHT_DEMO_AUTH=1 KINSIGHT_TOKEN_SECRET=<32+ bytes> KINSIGHT_
 cd web && NEXT_PUBLIC_MOCK=0 npm run build && npm start      # /api is proxied to KINSIGHT_API_URL (default :8000)
 ```
 
+**Volunteer study:** open `/study` (participants) and `/study/results` (facilitator: summary and CSV export); then `python scripts/analyse_study.py <export.csv>`.
+
 **Guided demo:** open `/?demo=1` (or `/?demo=<language code>`, e.g. `?demo=hi`). Space pauses, the arrow keys step, Esc stops.
 
 **Demo data:** `python scripts/export_web_fixtures.py` regenerates `web/lib/fixtures/data.json` from the real engine and verified
@@ -470,7 +472,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Engine, consent, audit, case graph, API, web app, dashboards | Done and tested |
 | Cinematic landing, demo sign-in, guided demo | Done and tested |
 | Seven languages end to end | Done; translations pending native-speaker and genetics review |
-| **Volunteer comprehension study** | **Protocol ready, not yet run.** It needs real participants and an ethics check ([docs/study/protocol.md](docs/study/protocol.md)). Until then the scorecard reports comprehension as not measured, and no comprehension claims are made. |
+| **Volunteer comprehension study** | **Tooling built and tested; study not yet run.** `/study` (consent, case, five-question check, rating), `/study/results` (summary and CSV export) and `scripts/analyse_study.py` are ready ([docs/study/protocol.md](docs/study/protocol.md)). It still needs real participants and an ethics check, so the scorecard reports comprehension as not measured and no comprehension claims are made. |
 | Clinical validation, in-region hosting, accredited reviewers | Out of scope for a fictional demo; see [docs/pilot_plan.md](docs/pilot_plan.md) |
 
 ## Documentation

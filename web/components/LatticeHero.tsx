@@ -233,14 +233,14 @@ export default function LatticeHero() {
     };
     const resize = () => { scene?.resize(cv.clientWidth, cv.clientHeight); last = -1; };
     // Full frame rate only while the scroll is settling; at rest the ambient sway redraws at about 15 fps to spare the GPU.
-    let last = -1, prev = performance.now();
+    let last = -1, prev = performance.now(), painted = -1;
     const loop = (now: number) => {
       if (!alive) return;
       // Time-based smoothing (about 0.35 s to settle) so slow devices follow the scroll as closely as fast ones.
       const goal = target(), moving = Math.abs(goal - p) > 0.0005, dt = Math.min(0.25, (now - prev) / 1000);
       prev = now;
       p = moving ? p + (goal - p) * (1 - Math.exp(-dt * 9)) : goal;
-      if (!reduced) paint();
+      if (!reduced && p !== painted) { paint(); painted = p; } // DOM layers only change with the scroll
       if (seen && scene && (moving || (!scene.lite && now - last > 66) || last < 0)) { scene.frame(reduced ? 0.95 : p, now / 1000, moving || last < 0); last = now; }
       raf = requestAnimationFrame(loop);
     };

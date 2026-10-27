@@ -33,9 +33,10 @@ export default function Shell({ children }: { children: ReactNode }) {
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, []);
-  const visible = GROUPS.filter((g) => g.roles === "all" || !persona || g.roles.includes(persona));
+  // Before a role is chosen show every group once; the relative's group is a subset of "My care" with the same heading.
+  const visible = GROUPS.filter((g) => g.roles === "all" || (!persona ? g.id !== "relative" : g.roles.includes(persona)));
   // The public landing page and sign-in stand outside the app chrome; the guided demo overlay still works on them.
-  const bare = path === "/" || path === "/signin";
+  const bare = path === "/" || path === "/signin" || path.startsWith("/study");
 
   const personaSelect = (cls: string) => (
     <select className={`field ${cls}`} value={persona ?? ""} aria-label={t("welcome.persona")}

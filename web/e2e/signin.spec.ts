@@ -24,9 +24,9 @@ test("landing -> sign in with the demo account -> app home", async ({ page }) =>
 });
 
 test("sign-in works without the video and in Arabic", async ({ page }) => {
+  // Set before any page script runs: the language provider writes the stored language back after it loads.
+  await page.addInitScript(() => localStorage.setItem("ks_lang", "ar"));
   await page.goto("/signin");
-  await page.evaluate(() => localStorage.setItem("ks_lang", "ar"));
-  await page.reload();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.getByTestId("demo-account").click();

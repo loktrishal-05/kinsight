@@ -14,7 +14,8 @@
 @tailwind utilities;
 
 /* ---- design tokens: space-separated RGB so Tailwind opacity modifiers work ---- */
-:root {
+/* .theme-light pins the public pages (landing, sign-in, study) to the light palette their 3D scene, film and veils were made for */
+:root, .theme-light {
   --canvas: 243 245 244; --surface: 255 255 255; --sunk: 235 240 238; --ink: 24 39 44; --muted: 85 101 107; --line: 219 226 224;
   --onbrand: 255 255 255; --deep: 10 69 67; --deepfg: 232 243 241; --sand: 251 244 228; --shadow: 24 39 44;
   --b50: 232 243 241; --b100: 207 230 226; --b200: 164 207 200; --b500: 29 127 122; --b600: 16 107 104; --b700: 12 87 85; --b800: 10 69 67;

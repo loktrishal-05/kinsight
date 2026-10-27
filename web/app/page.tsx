@@ -13,7 +13,7 @@ export default function Landing() {
   const { t } = useI18n();
   const demo = useDemo();
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="theme-light min-h-screen bg-canvas text-ink">
       <header className="fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-5">
         <nav aria-label="KinSight" className="mx-auto flex h-14 max-w-6xl items-center gap-3 rounded-full border border-line/80 bg-surface/80 ps-4 pe-2 shadow-card backdrop-blur-md">
           <Brand />
