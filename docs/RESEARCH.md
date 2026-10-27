@@ -64,3 +64,16 @@ Not built (needs people or infrastructure): reviewer sign-off, the volunteer stu
 - **Logo:** generated with Canva (an AI image), made transparent and used as the launcher, header and favicon (`web/public/kin-logo.png`).
 - **Finding services** (`/access`): generic service types in equal weight, with a hand-off stub that only records a request in the browser
   session. It names no facility and claims no availability (challenge requirement 2).
+
+## 5. Guided auto-demo
+
+- **What it is:** a self-driving tour of 42 narrated steps (`web/lib/demoScript.ts`) that performs each feature's real action in mock
+  mode: role switches, counsellor approval, the refused close without evidence, release to the couple, the teach-back quiz (wrong then
+  right), consent revocation, Kin in Arabic, dark mode, the capacity simulator and audit tamper detection. A spotlight and caption card
+  (`web/components/DemoOverlay.tsx`) show what is happening; the closing screen lists every feature covered, each linked to its page.
+- **Starting it:** the hero button "Watch the guided demo", the top-bar Demo button, the search palette (Ctrl+K), or open any page with
+  `?demo=1` (`?demo=ar` for Arabic). Space pauses, the arrow keys step, Esc stops; speed, narration (browser speech) and language are on
+  the caption card. It is only available in mock mode, so it never touches live data.
+- **Checks:** `web/e2e/demo.spec.ts` runs all 42 steps in fast mode (localStorage `ks_demo_fast=1`) in English from the hero and in Arabic
+  from `?demo=ar`, and asserts that every action note is logged with no step errors; it also covers pause, next, previous and stop, and
+  narration with a stubbed `speechSynthesis`. All on desktop and phone viewports.

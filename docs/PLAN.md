@@ -26,16 +26,10 @@ Every commit message starts with its task id. Push to `main` after every finishe
 5. P5 only after P4 exits (flags); P6 docs, fresh-clone test
 Scope rule: if P4 slips, drop P5.
 
-## Paused 2026-10-26 (guided demo work) - resume here when the user says "continue"
-Done and committed: guided auto-demo (`web/lib/demoScript.ts` 42 narrated steps, `web/lib/demo.tsx` runtime, `web/components/DemoOverlay.tsx`
-spotlight + captions + controls). Start it from the hero "Watch the guided demo", the top-bar Demo button, Ctrl+K, or `/?demo=1` (`?demo=ar` for Arabic).
-Verified in fast mode (localStorage `ks_demo_fast=1`): all 42 steps run and every action logs success in `window.__demoLog`.
-The demo found and fixed a real bug: in fixture mode, counsellor Approve and referral buttons passed arguments in the wrong order.
-
-Still to do:
-1. Add `web/e2e/demo.spec.ts`: fast mode, start from the hero, wait for `demo-done`, assert `__demoLog` contains every action note
-   (counsellor:approved, close:refused, couple:released, quiz:reexplain, quiz:passed, consent:revoked, kin:arabic, theme:dark, audit:tamper-detected, demo:done),
-   plus pause/next/prev/stop controls and an Arabic (`?demo=ar`) run. Then run the full Playwright suite (previously 44 passing).
-2. Visual check at normal speed on desktop and phone (caption card must not cover the spotlight target on phone; consider moving it to the top when the target is low).
-3. Narration voice (speaker toggle) check with stubbed speechSynthesis; the e2e for this is not written yet.
-4. Update docs/RESEARCH.md and the README with how to run the demo; commit, push, watch CI.
+## Guided demo (finished 2026-10-27)
+42 narrated steps (`web/lib/demoScript.ts`, `web/lib/demo.tsx`, `web/components/DemoOverlay.tsx`); how to run it: README and docs/RESEARCH.md section 5.
+Tested by `web/e2e/demo.spec.ts` (full en and ar runs, controls, narration; desktop and phone). Full Playwright suite: 52 passing.
+Phone check found and fixed: the caption covered the spotlight (targets now scroll to the top, the caption moves to the top when there is
+more room there, and the speed control is hidden on narrow screens so the controls fit one row), and skipping a step during its start-up
+delay let the stale step reopen the search palette.
+Remaining from the spec: the volunteer comprehension study (docs/study/protocol.md) has not been run.

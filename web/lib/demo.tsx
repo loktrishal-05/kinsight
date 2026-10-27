@@ -49,6 +49,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     if (s.target && !["palette-dialog", "kin-panel", "settings-panel", "quiz-msg"].includes(s.target)) await waitFor(`[data-demo="${s.target}"]`, 6000);
     if (!alive()) return;
     await sleep(quick ? 150 : 500);
+    if (!alive()) return; // skipped during the pause: a stale action must not reopen overlays the next step closed
     const ctx: Ctx = {
       lang: live.current.demoLang, go: (h) => router.push(h), choose, setLang: (l) => setLang(l), setLevel, api,
       setTheme: (t) => setPrefs({ theme: t }), setText: (n) => setPrefs({ text: n }), log,
@@ -56,7 +57,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     try { await s.run?.(ctx); } catch (e) { log(`error:${s.id}:${String(e)}`); }
     if (!alive()) return;
     const el = s.target ? await waitFor(`[data-demo="${s.target}"]`, 2500) : null;
-    el?.scrollIntoView({ block: "center", behavior: quick ? "auto" : "smooth" });
+    // Align to the top so the free space, where the caption card sits, is below the target.
+    el?.scrollIntoView({ block: "start", behavior: quick ? "auto" : "smooth" });
     const text = s.text[live.current.demoLang];
     const dwell = quick ? 250 : Math.min(13000, Math.max(5000, text.length * 60)) / live.current.speed;
     const t0 = Date.now();

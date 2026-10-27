@@ -31,5 +31,10 @@ Challenge 03. All people and results are fictional; no real genomes are used.
     cd web && NEXT_PUBLIC_MOCK=0 npm run build && npm start     # /api is proxied to KINSIGHT_API_URL (default :8000)
     # checks: LIVE_API=http://localhost:8000 npx vitest run tests/live.test.ts ; npx playwright test -c playwright.live.config.ts
 
+## Guided demo
+Start the web app (mock mode) and click "Watch the guided demo" on the home page, or open `http://localhost:3000/?demo=1`
+(`?demo=ar` for Arabic). It drives every feature in 42 narrated steps; Space pauses, arrow keys step, Esc stops.
+Test: `cd web && npx playwright test e2e/demo.spec.ts`. Details: docs/RESEARCH.md section 5.
+
 ## Rich demo data
 `python scripts/export_web_fixtures.py` regenerates `web/lib/fixtures/data.json` from the real engine, the verified templates and the committed demo cohort (seven couple scenarios across every tier, 30 conditions, a 26-case queue, weekly series, comprehension matrix, capacity grid). A test fails if the file drifts from the engine.

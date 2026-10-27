@@ -25,6 +25,7 @@
 :root[data-theme="dark"][data-contrast="high"] { --line: 150 175 175; --muted: 200 215 215; --b600: 120 225 215; }
 
 html { -webkit-text-size-adjust: 100%; }
+[data-demo] { scroll-margin-top: 4.5rem; } /* the guided demo scrolls targets to just below the sticky top bar */
 html[data-text="1"] { font-size: 112.5%; }
 html[data-text="2"] { font-size: 125%; }
 html:lang(ar), html:lang(ur) { font-family: "Noto Sans Arabic Variable", "Plus Jakarta Sans Variable", system-ui, sans-serif; }

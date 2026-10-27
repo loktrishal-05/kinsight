@@ -32,6 +32,8 @@ export default function DemoOverlay() {
 
   if (!d.active) return null;
   const pad = 8;
+  // Caption goes to the top when the target leaves more room above it than below (e.g. Kin's panel anchored at the bottom).
+  const atTop = !!rect && rect.y > innerHeight - rect.y - rect.h;
   return (
     <div data-noprint>
       {!d.done && (
@@ -45,7 +47,7 @@ export default function DemoOverlay() {
 
       {!d.done ? (
         <section role="region" aria-label={t("demo.title")} aria-live="polite" data-testid="demo-caption" data-step={step.id}
-          className="fixed bottom-3 start-3 z-[60] w-[min(36rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-line bg-surface shadow-lift sm:bottom-5 sm:start-5">
+          className={`fixed start-3 z-[60] w-[min(36rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-line bg-surface shadow-lift sm:start-5 ${atTop ? "top-3 sm:top-5" : "bottom-3 sm:bottom-5"}`}>
           <div className="h-1 bg-sunk"><div className="h-full bg-brand-600 transition-all" style={{ width: `${((d.index + 1) / STEPS.length) * 100}%` }} /></div>
           <div className="space-y-2 p-4" dir={l === "ar" ? "rtl" : "ltr"}>
             <p className="text-xs font-semibold text-muted tabular-nums">{t("demo.step")} {d.index + 1} / {STEPS.length}</p>
@@ -58,7 +60,7 @@ export default function DemoOverlay() {
               {d.playing ? <Pause aria-hidden className="h-4 w-4" /> : <Play aria-hidden className="h-4 w-4" />}
             </button>
             <button className="btn-quiet h-8 w-8 px-0" onClick={d.next} aria-label={t("demo.next")}><ChevronRight aria-hidden className="h-4 w-4 rtl:rotate-180" /></button>
-            <select className="field h-8 w-auto py-0 text-xs" value={d.speed} onChange={(e) => d.setSpeed(+e.target.value)} aria-label={t("demo.speed")}>
+            <select className="field hidden h-8 w-auto py-0 text-xs sm:block" value={d.speed} onChange={(e) => d.setSpeed(+e.target.value)} aria-label={t("demo.speed")}>
               {[0.75, 1, 1.5, 2].map((s) => <option key={s} value={s}>{s}×</option>)}
             </select>
             <button className="btn-quiet h-8 w-8 px-0" aria-pressed={d.voice} onClick={() => d.setVoice(!d.voice)} aria-label={t("demo.narrate")} title={t("demo.narrate")}>
