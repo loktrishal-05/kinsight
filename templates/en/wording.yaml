@@ -1,0 +1,32 @@
+# Verifier wording rules for this language: banned directive/blame phrases and stigmatising words (lowercase substring scan).
+banned:
+- should not marry
+- should not have children
+- must not marry
+- do not marry
+- your fault
+- to blame
+- positive
+- negative
+- you have the disease
+- doomed
+- will be affected
+- is a disease
+- cancel the
+- family honour
+- family honor
+- bad blood
+- defective
+stigma:
+- inbred
+- inbreeding family
+- dangerous
+- risky family
+- bad genes
+- tainted
+- cursed
+- burden
+- abnormal
+- unfit
+- genetic defect
+- backward

@@ -14,13 +14,30 @@ def texts():
         for b in tset.values():
             yield lang, b.text
     for q in load_bank():
-        for lang in ("en", "ar"):
+        for lang in q["text"]:
             yield lang, q["text"][lang]
             for o in q.get("options", []):
-                yield lang, o[lang]
-    for lang in ("en", "ar"):
-        for v in json.loads((ROOT / "web/messages" / f"{lang}.json").read_text(encoding="utf-8")).values():
-            yield lang, v
+                if lang in o:
+                    yield lang, o[lang]
+    # every interface language with its own wording rules (web/messages/<lang>.json, web/content/<lang>.json)
+    for lang in W["banned"]:
+        for folder in ("messages", "content"):
+            p = ROOT / "web" / folder / f"{lang}.json"
+            if p.exists():
+                yield from ((lang, v) for v in strings(json.loads(p.read_text(encoding="utf-8"))))
+
+
+def strings(o, key=""):
+    """Every user-facing string in a messages/content file; Kin's keyword lists (words, pageWords, aliases) are inputs, not text shown."""
+    if isinstance(o, str):
+        yield o
+    elif isinstance(o, list):
+        for x in o:
+            yield from strings(x, key)
+    elif isinstance(o, dict):
+        for k, v in o.items():
+            if k not in ("words", "pageWords", "aliases", "myth"):  # a myth is shown struck through, then corrected
+                yield from strings(v, k)
 
 
 def test_no_banned_or_stigmatising_phrases_in_any_user_text():

@@ -1,6 +1,12 @@
 @import "@fontsource-variable/plus-jakarta-sans";
 @import "@fontsource-variable/noto-sans-arabic";
 @import "@fontsource-variable/bricolage-grotesque";
+/* Indian scripts: each face is declared for its own Unicode range, so it downloads only when that script is on screen */
+@import "@fontsource-variable/noto-sans-devanagari";
+@import "@fontsource-variable/noto-sans-tamil";
+@import "@fontsource-variable/noto-sans-telugu";
+@import "@fontsource-variable/noto-sans-kannada";
+@import "@fontsource-variable/noto-sans-malayalam";
 @import "@fontsource/reem-kufi/arabic-600.css";
 @import "@fontsource/reem-kufi/arabic-700.css";
 @tailwind base;
@@ -31,6 +37,9 @@ html { -webkit-text-size-adjust: 100%; }
 [data-demo] { scroll-margin-top: 4.5rem; } /* the guided demo scrolls targets to just below the sticky top bar */
 html[data-text="1"] { font-size: 112.5%; }
 html[data-text="2"] { font-size: 125%; }
+/* Indian scripts carry marks above and below the letters: give display type room and no negative tracking; break very long words */
+html:is(:lang(hi), :lang(ta), :lang(te), :lang(kn), :lang(ml)) .font-display { font-size: clamp(1.6rem, 3.4vw, 3rem); line-height: 1.32; letter-spacing: 0; overflow-wrap: break-word; }
+html:is(:lang(hi), :lang(ta), :lang(te), :lang(kn), :lang(ml)) body { line-height: 1.8; }
 html:lang(ar), html:lang(ur) { font-family: "Noto Sans Arabic Variable", "Plus Jakarta Sans Variable", system-ui, sans-serif; }
 body { @apply bg-canvas text-ink antialiased; font-size: 0.9375rem; line-height: 1.65; font-feature-settings: "tnum" 1; transition: background-color .25s, color .25s; }
 h1, h2, h3 { text-wrap: balance; }

@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: మీ మధ్య రక్త సంబంధం ఉన్నందున, మీ ఇద్దరిలోనూ మార్పు కనబడకపోయినా చాలా చిన్న అవకాశం మిగిలి ఉండవచ్చు. దీని అర్థాన్ని సలహాదారు వివరించగలరు.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

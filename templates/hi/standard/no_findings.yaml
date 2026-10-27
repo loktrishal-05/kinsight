@@ -1,0 +1,15 @@
+block_id: no_findings
+applies_when:
+  no_findings: true
+slots: {}
+text: जिन समस्याओं के लिए जाँच की गई, उनसे जुड़े कोई बदलाव आप दोनों में नहीं मिले। फिर भी, इससे सभी वंशानुगत समस्याओं की संभावना खत्म नहीं होती।
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

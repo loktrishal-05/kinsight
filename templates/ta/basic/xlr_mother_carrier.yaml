@@ -1,0 +1,24 @@
+block_id: xlr_mother_carrier
+applies_when:
+  formula_id: xlr_mother_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+  daughter_pct:
+    source: finding.inputs.daughter_carrier
+    format: percent0
+text: தாய்க்கு {condition_label} தொடர்பான மரபணுவில் மாற்றம் உள்ளது. ஒவ்வொரு ஆண் குழந்தைக்கும் பாதிப்பு ஏற்படும் வாய்ப்பு {risk_affected_pct} என மதிப்பிடப்பட்டுள்ளது. ஒவ்வொரு பெண் குழந்தையும் இந்த மாற்றத்தைச் சுமக்கும் வாய்ப்பு {daughter_pct} என மதிப்பிடப்பட்டுள்ளது.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -1,0 +1,21 @@
+block_id: ar_one_carrier_residual
+applies_when:
+  formula_id: ar_one_carrier_residual
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: ನಿಮ್ಮಲ್ಲಿ ಒಬ್ಬರಲ್ಲಿ {condition_label} ಎಂಬ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗೆ ಸಂಬಂಧಿಸಿದ ಜೀನ್‌ನಲ್ಲಿ ಬದಲಾವಣೆ ಇದೆ. ಇನ್ನೊಬ್ಬರಲ್ಲಿ ಬದಲಾವಣೆ ಕಂಡುಬಂದಿಲ್ಲ. ಆದರೆ ಯಾವುದೇ ಪರೀಕ್ಷೆಯೂ ಎಲ್ಲ ಬದಲಾವಣೆಗಳನ್ನು ಪತ್ತೆ ಮಾಡುವುದಿಲ್ಲ. ಇದನ್ನು ಪರಿಗಣಿಸಿದಾಗ, ಪ್ರತಿ ಗರ್ಭಧಾರಣೆಯಲ್ಲಿ ಮಗುವಿಗೆ ಈ ಸಮಸ್ಯೆ ಇರುವ ಸಾಧ್ಯತೆ {risk_affected_pct} ಎಂದು ಅಂದಾಜಿಸಲಾಗಿದೆ.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

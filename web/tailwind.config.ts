@@ -18,8 +18,8 @@ export default {
         note: { bg: v("note-bg"), fg: v("note-fg"), line: v("note-line") },
       },
       fontFamily: {
-        display: ['"Bricolage Grotesque Variable"', '"Reem Kufi"', '"Noto Sans Arabic Variable"', "system-ui", "sans-serif"],
-        sans: ['"Plus Jakarta Sans Variable"', '"Noto Sans Arabic Variable"', "system-ui", "Segoe UI", "sans-serif"],
+        display: ['"Bricolage Grotesque Variable"', '"Reem Kufi"', '"Noto Sans Arabic Variable"', '"Noto Sans Devanagari Variable"', '"Noto Sans Tamil Variable"', '"Noto Sans Telugu Variable"', '"Noto Sans Kannada Variable"', '"Noto Sans Malayalam Variable"', "system-ui", "sans-serif"],
+        sans: ['"Plus Jakarta Sans Variable"', '"Noto Sans Arabic Variable"', '"Noto Sans Devanagari Variable"', '"Noto Sans Tamil Variable"', '"Noto Sans Telugu Variable"', '"Noto Sans Kannada Variable"', '"Noto Sans Malayalam Variable"', "system-ui", "Segoe UI", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgb(var(--shadow) / .06), 0 8px 24px -12px rgb(var(--shadow) / .14)",

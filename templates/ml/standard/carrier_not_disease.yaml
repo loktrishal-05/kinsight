@@ -1,0 +1,14 @@
+block_id: carrier_not_disease
+applies_when:
+  never: true
+slots: {}
+text: ഒരു ജീൻ മാറ്റം വഹിക്കുന്നയാളാണ് എന്നത് ആ രോഗം ഉള്ളയാളാണ് എന്നതിന് തുല്യമല്ല.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

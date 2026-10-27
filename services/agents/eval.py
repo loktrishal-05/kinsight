@@ -46,7 +46,7 @@ def run_eval(couples: list[CoupleAssessment] | None = None) -> dict:
     couples = couples if couples is not None else golden_couples()
     total = ok_all = fidelity_ok = banned = 0
     errors: list[str] = []
-    for a, (lang, level) in itertools.product(couples, itertools.product(("en", "ar"), ("basic", "standard"))):
+    for a, (lang, level) in itertools.product(couples, itertools.product(sorted({lg for lg, _ in tpl}), ("basic", "standard"))):
         d = select_blocks(a, lang, level, tpl)
         rep = verify(d, a, panel, tpl, wording)
         total += 1
@@ -54,7 +54,8 @@ def run_eval(couples: list[CoupleAssessment] | None = None) -> dict:
         errors += rep.errors
         text = " ".join(rb.text for rb in render_draft(d, a, panel, tpl))
         want = {fmt_percent(f.risk_affected, lang) for f in a.findings if f.risk_affected is not None}
-        got = set(re.findall(r"\d+%|أقل من 1%|less than 1%", text))
+        # the language's own "less than 1%" phrase counts as one number, not as a stray "1%"
+        got = set(re.findall(re.escape(fmt_percent(0.001, lang)) + r"|\d+%", text))
         fidelity_ok += got <= want | {fmt_percent(f.inputs[k], lang) for f in a.findings for k in f.inputs if k == "daughter_carrier"}
         banned += sum(p in text.lower() for p in wording["banned"][lang])
     return {"drafts": total, "verified": ok_all, "numeric_fidelity": fidelity_ok / total,

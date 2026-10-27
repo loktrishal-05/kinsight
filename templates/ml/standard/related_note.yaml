@@ -1,0 +1,14 @@
+block_id: related_note
+applies_when:
+  note_code: related_partners
+slots: {}
+text: നിങ്ങൾ രക്തബന്ധമുള്ളവരാണ്. രക്തബന്ധമുള്ളത് ചില രോഗങ്ങൾ ഉണ്ടാകാനുള്ള സാധ്യത കൂട്ടാം.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

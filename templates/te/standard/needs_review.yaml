@@ -1,0 +1,19 @@
+block_id: needs_review
+applies_when:
+  formula_id:
+  - ar_needs_review
+  - xlr_needs_review
+slots:
+  condition_label:
+    source: finding.condition_label
+text: "{condition_label}కు సంబంధించిన ఫలితం, అవకాశం ఎంత ఉందో అంచనా వేయడానికి సరిపడా స్పష్టంగా లేదు. తదుపరి ఏం చేయవచ్చో తెలుసుకోవడంలో సలహాదారు సహాయం చేయగలరు."
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

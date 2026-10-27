@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { BCP47 } from "@/lib/voice";
 
 // Optional voice (P5-6) using browser speech APIs where present; otherwise a plain-text notice. Flag: NEXT_PUBLIC_VOICE != "0".
 const on = process.env.NEXT_PUBLIC_VOICE !== "0";
@@ -14,7 +15,7 @@ export function ReadAloud({ text }: { text: string }) {
       <button className="btn-quiet" onClick={() => {
         if (typeof window === "undefined" || !("speechSynthesis" in window)) return setMsg(t("voice.unsupported"));
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = lang === "ar" ? "ar-AE" : lang;
+        u.lang = BCP47[lang] ?? lang;
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(u);
       }}>{t("voice.read")}</button>
@@ -34,7 +35,7 @@ export function Speak({ onText }: { onText: (s: string) => void }) {
         const R = W.SpeechRecognition ?? W.webkitSpeechRecognition;
         if (!R) return setMsg(t("voice.unsupported")); // falls back cleanly to typing
         const r = new R();
-        r.lang = lang === "ar" ? "ar-AE" : lang;
+        r.lang = BCP47[lang] ?? lang;
         r.onresult = (e: any) => onText(e.results[0][0].transcript);
         r.onerror = () => setMsg(t("voice.unsupported"));
         r.start();

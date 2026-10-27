@@ -1,0 +1,14 @@
+block_id: fictional_notice
+applies_when:
+  always: true
+slots: {}
+text: यहाँ सभी लोग और नतीजे बनाए हुए हैं। ये असली नहीं हैं।
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

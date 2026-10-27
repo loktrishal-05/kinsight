@@ -5,7 +5,7 @@ export type Finding = { condition_id: string; formula_id: string; risk_affected:
   inputs: Record<string, number>; inheritance: "AR" | "XLR"; status_a: string; status_b: string };
 export type QuizQ = { id: string; text: string; options: { id: string; text: string }[]; answer: string };
 export type Scenario = {
-  id: string; title: { en: string; ar: string }; blurb: { en: string; ar: string }; tier: 1 | 2 | 3; related: boolean; kinship_phi: number;
+  id: string; title: Record<string, string>; blurb: Record<string, string>; tier: 1 | 2 | 3; related: boolean; kinship_phi: number;
   engine_version: string; config_hash: string; findings: Finding[];
   results_a: { condition_id: string; status: "carrier" | "not_detected" | "uncertain" }[];
   results_b: { condition_id: string; status: "carrier" | "not_detected" | "uncertain" }[];
@@ -20,13 +20,16 @@ export const DATA = raw as unknown as {
   label: string; scenarios: Scenario[];
   cohort: { persons: number; couples: number; conditions: number; carriers: CarrierRow[]; tiers: Record<string, number>;
     tiers_by_language: Record<string, Record<string, number>>; related_share: number; manifest: any };
-  queue: QueueRow[];
+  queue: QueueRow[]; labels: Record<string, Record<string, string>>;
   capacity: { assumptions: any; grid: CapacityRow[]; weekly: { week: number; served: number; median_wait: number | null }[]; label: string };
   comprehension: { cells: { language: string; level: string; age_band: string; n: number; pass_rate: number }[]; gap_points: number; target_gap_points: number; label: string };
 };
 
 export const conditionLabel = (id: string, lang: string) => {
   const c = DATA.cohort.carriers.find((x) => x.condition_id === id);
-  return c ? (lang === "ar" ? c.label_ar : c.label_en) : id;
+  return DATA.labels[lang]?.[id] ?? (c ? (lang === "ar" ? c.label_ar : c.label_en) : id);
 };
+/** A result row's condition name in the reading language (rows carry English and Arabic; other languages come from the engine's labels). */
+export const rowLabel = (r: { condition_id: string; label?: string; label_ar?: string }, lang: string) =>
+  DATA.labels[lang]?.[r.condition_id] ?? (lang === "ar" && r.label_ar ? r.label_ar : r.label ?? r.condition_id);
 export const scenarioById = (id: string) => DATA.scenarios.find((s) => s.id === id) ?? DATA.scenarios[2];

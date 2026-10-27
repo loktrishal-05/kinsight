@@ -22,7 +22,13 @@ class VerifyReport(BaseModel):
 
 
 def load_wording(path: Path = WORDING) -> dict:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    """configs/wording.yaml (en, ar) plus any templates/<lang>/wording.yaml for further languages."""
+    w = yaml.safe_load(path.read_text(encoding="utf-8"))
+    for p in sorted((path.parents[1] / "templates").glob("*/wording.yaml")):
+        extra = yaml.safe_load(p.read_text(encoding="utf-8"))
+        for k in ("banned", "stigma"):
+            w[k].setdefault(p.parent.name, extra.get(k, []))
+    return w
 
 
 def _syllables(w: str) -> int:
@@ -36,7 +42,8 @@ def fk_grade(text: str) -> float:
 
 
 def max_sentence_words(text: str) -> int:
-    return max((len(s.split()) for s in re.split(r"[.!?؟؛]+", text) if s.strip()), default=0)
+    # Sentence ends in Latin, Arabic and Devanagari (danda) punctuation.
+    return max((len(s.split()) for s in re.split(r"[.!?؟؛।॥]+", text) if s.strip()), default=0)
 
 
 def required_ids(draft: DraftExplanation, assessment: CoupleAssessment, templates: dict) -> set[str]:
@@ -109,6 +116,7 @@ def verify(draft: DraftExplanation, assessment: CoupleAssessment, panel: Panel, 
             errs.append(f"readability: grade {score:.1f} above band")
     else:
         score = float(max_sentence_words(full))
+        # Non-English scripts: longest sentence in words (the Arabic band applies to every other language too).
         if score > wording["readability"]["ar_max_sentence_words"][draft.reading_level]:
             errs.append(f"readability: sentence of {int(score)} words above band")
     return VerifyReport(ok=not errs, errors=errs, readability=score)

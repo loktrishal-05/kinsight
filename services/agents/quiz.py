@@ -38,7 +38,16 @@ class QuizResult(BaseModel):
 
 
 def load_bank(root: Path = TEMPLATES) -> list[dict]:
-    return yaml.safe_load((root / "quiz_bank.yaml").read_text(encoding="utf-8"))["questions"]
+    """The en/ar bank, with each templates/<lang>/quiz.yaml overlay ({id: {text, options}}) merged in for further languages."""
+    bank = yaml.safe_load((root / "quiz_bank.yaml").read_text(encoding="utf-8"))["questions"]
+    for p in sorted(root.glob("*/quiz.yaml")):
+        lang, tr = p.parent.name, yaml.safe_load(p.read_text(encoding="utf-8"))
+        for q in bank:
+            if q["id"] in tr:
+                q["text"][lang] = tr[q["id"]]["text"]
+                for o, t in zip(q.get("options", []), tr[q["id"]].get("options", [])):
+                    o[lang] = t
+    return bank
 
 
 def build_quiz(assessment: CoupleAssessment, lang: str, bank: list[dict] | None = None) -> Quiz:

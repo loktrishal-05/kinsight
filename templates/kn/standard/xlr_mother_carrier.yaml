@@ -1,0 +1,24 @@
+block_id: xlr_mother_carrier
+applies_when:
+  formula_id: xlr_mother_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+  daughter_pct:
+    source: finding.inputs.daughter_carrier
+    format: percent0
+text: ತಾಯಿಯ ಎಕ್ಸ್ ವರ್ಣತಂತುವಿನಲ್ಲಿರುವ ಜೀನ್‌ನಲ್ಲಿ {condition_label} ಎಂಬ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗೆ ಸಂಬಂಧಿಸಿದ ಬದಲಾವಣೆ ಇದೆ. ಪ್ರತಿ ಗಂಡು ಮಗುವಿಗೆ ಈ ಸಮಸ್ಯೆ ಇರುವ ಸಾಧ್ಯತೆ {risk_affected_pct} ಎಂದು ಅಂದಾಜಿಸಲಾಗಿದೆ. ಪ್ರತಿ ಹೆಣ್ಣು ಮಗು ಈ ಜೀನ್ ಬದಲಾವಣೆಯ ವಾಹಕವಾಗಿರುವ ಸಾಧ್ಯತೆ {daughter_pct} ಎಂದು ಅಂದಾಜಿಸಲಾಗಿದೆ.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

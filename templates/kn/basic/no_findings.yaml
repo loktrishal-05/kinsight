@@ -1,0 +1,15 @@
+block_id: no_findings
+applies_when:
+  no_findings: true
+slots: {}
+text: ಈ ಪರೀಕ್ಷೆಗಳಲ್ಲಿ ನಿಮ್ಮಿಬ್ಬರಲ್ಲೂ ಜೀನ್ ಬದಲಾವಣೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಆದರೂ ವಂಶಪಾರಂಪರ್ಯವಾಗಿ ಬರುವ ಎಲ್ಲ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳೂ ಇಲ್ಲ ಎಂದು ಹೇಳಲಾಗದು.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

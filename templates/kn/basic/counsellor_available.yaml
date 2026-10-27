@@ -1,0 +1,14 @@
+block_id: counsellor_available
+applies_when:
+  never: true
+slots: {}
+text: ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ವಂಶವಾಹಿ ಸಲಹೆಗಾರರ ಜೊತೆ ಮಾತನಾಡಲು ಕೇಳಬಹುದು. ಮುಂದೆ ಏನು ಮಾಡಬೇಕು ಎಂಬುದು ನಿಮ್ಮ ಆಯ್ಕೆ.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

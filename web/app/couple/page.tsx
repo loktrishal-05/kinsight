@@ -5,6 +5,7 @@ import { Notice, PageHeader, Steps } from "@/components/ui";
 import { IconArray, Punnett, TierChip } from "@/components/visuals";
 import { ReadAloud } from "@/components/Voice";
 import { api } from "@/lib/api";
+import { rowLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
 
 export default function CoupleView() {
@@ -32,7 +33,7 @@ export default function CoupleView() {
       {c?.findings?.map((f) => (
         <article key={f.condition_id} data-demo="finding" className="card grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold">{lang === "ar" && f.label_ar ? f.label_ar : f.label ?? f.condition_id}</h2>
+            <h2 className="text-lg font-semibold">{rowLabel(f, lang)}</h2>
             {f.risk_affected !== null ? (
               <p className="flex items-baseline gap-3">
                 <span className="text-5xl font-bold tabular-nums text-brand-700" dir={f.risk_affected > 0 && f.risk_affected < 0.01 ? undefined : "ltr"}>{pct(f.risk_affected)}</span>

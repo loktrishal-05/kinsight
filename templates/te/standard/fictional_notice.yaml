@@ -1,0 +1,14 @@
+block_id: fictional_notice
+applies_when:
+  always: true
+slots: {}
+text: ఇక్కడ చూపిన వ్యక్తులూ ఫలితాలూ అన్నీ కల్పితమైనవి.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

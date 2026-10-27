@@ -1,0 +1,20 @@
+block_id: ar_both_not_detected
+applies_when:
+  formula_id: ar_both_not_detected
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: आप दोनों में {condition_label} से जुड़ा कोई बदलाव नहीं मिला। हर गर्भावस्था में बच्चे को यह समस्या होने की संभावना का अनुमान {risk_affected_pct} है। आप दोनों में खून का रिश्ता होने के कारण असल संभावना इस अनुमान से अधिक हो सकती है।
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -17,7 +17,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from services.agents.quiz import build_quiz  # noqa: E402
-from services.agents.render import load_templates, render_draft, select_blocks  # noqa: E402
+from services.agents.render import load_labels, load_templates, render_draft, select_blocks  # noqa: E402
 from services.agents.verify import load_wording, verify  # noqa: E402
 from services.analytics.capacity import POLICIES, simulate  # noqa: E402
 from services.cohort.panel import CONFIGS, load_panel, load_rules  # noqa: E402
@@ -25,6 +25,7 @@ from services.genetics import Pedigree, assess_couple  # noqa: E402
 
 OUT = ROOT / "web/lib/fixtures/data.json"
 PANEL, RULES, TPL, WORD = load_panel(), load_rules(), load_templates(), load_wording()
+LANGS = sorted({lang for lang, _ in TPL})  # every language with templates (en, ar, hi, kn, ml, ta, te)
 COND = {c.id: c for c in PANEL.conditions}
 AR1 = next(c for c in PANEL.conditions if c.inheritance == "AR" and c.counselling_tier == 1)
 AR2 = next(c for c in PANEL.conditions if c.inheritance == "AR" and c.counselling_tier == 2)
@@ -101,7 +102,7 @@ def scenarios() -> list[dict]:
             d = select_blocks(asm, lang, level, TPL)
             assert verify(d, asm, PANEL, TPL, WORD).ok, (sid, lang, level)
             expl[f"{lang}/{level}"] = [b.text for b in render_draft(d, asm, PANEL, TPL)]
-        for lang in ("en", "ar"):
+        for lang in LANGS:
             qz = build_quiz(asm, lang)
             quiz[lang] = [{"id": q.id, "text": q.text, "options": [o.model_dump() for o in q.options], "answer": qz.key[q.id]}
                           for q in qz.questions]
@@ -201,7 +202,9 @@ def comprehension() -> dict:
 
 def build() -> dict:
     return {"label": "All people and results are fictional.", "scenarios": scenarios(), "cohort": cohort_stats(),
-            "queue": queue(), "capacity": capacity(), "comprehension": comprehension()}
+            "queue": queue(), "capacity": capacity(), "comprehension": comprehension(),
+            # condition names for languages beyond en/ar (en and ar come from the panel config)
+            "labels": {lg: load_labels(lg)["conditions"] for lg in LANGS if load_labels(lg).get("conditions") and lg != "en"}}
 
 
 def redteam() -> list[dict]:

@@ -1,0 +1,14 @@
+block_id: uncertainty_note
+applies_when:
+  has_findings: true
+slots: {}
+text: ಈ ಸಂಖ್ಯೆಗಳು ಅಂದಾಜುಗಳು. ಸಾಧ್ಯತೆ ಇದೆ ಎಂದರೆ ಆರೋಗ್ಯ ಸಮಸ್ಯೆ ಇದೆ ಎಂದು ಖಚಿತಪಡಿಸಿದಂತಲ್ಲ.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

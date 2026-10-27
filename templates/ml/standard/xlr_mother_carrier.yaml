@@ -1,0 +1,24 @@
+block_id: xlr_mother_carrier
+applies_when:
+  formula_id: xlr_mother_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+  daughter_pct:
+    source: finding.inputs.daughter_carrier
+    format: percent0
+text: അമ്മ എക്സ് ക്രോമസോമിലെ ഒരു ജീനിൽ {condition_label} എന്ന അവസ്ഥയുമായി ബന്ധപ്പെട്ട മാറ്റം വഹിക്കുന്നയാളാണ്. ഓരോ ആൺകുഞ്ഞിനും ഈ അവസ്ഥ ഉണ്ടാകാനുള്ള സാധ്യത {risk_affected_pct} ആണ്. ഓരോ പെൺകുഞ്ഞും ഈ ജീൻ മാറ്റം വഹിക്കുന്നയാളാകാനുള്ള സാധ്യത {daughter_pct} ആണ്.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

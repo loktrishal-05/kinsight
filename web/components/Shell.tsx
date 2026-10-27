@@ -10,6 +10,7 @@ import DemoOverlay from "./DemoOverlay";
 import { useDemo } from "@/lib/demo";
 import { PlayCircle } from "lucide-react";
 import CommandPalette from "./CommandPalette";
+import LanguageSelect from "./LanguageSelect";
 import SettingsMenu from "./SettingsMenu";
 import { GROUPS } from "./nav";
 
@@ -96,11 +97,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               </button>
             )}
             <label className="hidden items-center gap-2 text-xs font-medium text-muted xl:flex">{t("top.viewing")}{personaSelect("h-9 w-44 py-0")}</label>
-            <div role="group" aria-label={t("welcome.language")} className="seg">
-              {LANGUAGES.filter((l) => !l.hidden).map((l) => (
-                <button key={l.code} aria-pressed={lang === l.code} aria-label={l.name} title={l.name} onClick={() => setLang(l.code)}>{l.short}</button>
-              ))}
-            </div>
+            <LanguageSelect />
             <div role="group" aria-label={t("welcome.level")} className="seg hidden sm:flex">
               {(["basic", "standard"] as const).map((l) => <button key={l} aria-pressed={level === l} onClick={() => setLevel(l)}>{t(`level.${l}`)}</button>)}
             </div>

@@ -1,0 +1,14 @@
+block_id: carrier_not_disease
+applies_when:
+  never: true
+slots: {}
+text: క్యారియర్ అంటే జన్యువులో మార్పు ఉన్న వ్యక్తి. క్యారియర్‌గా ఉండటం, ఆ వ్యాధి ఉండటం ఒకటే కాదు.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

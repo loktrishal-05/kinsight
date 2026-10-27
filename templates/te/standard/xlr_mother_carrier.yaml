@@ -1,0 +1,24 @@
+block_id: xlr_mother_carrier
+applies_when:
+  formula_id: xlr_mother_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+  daughter_pct:
+    source: finding.inputs.daughter_carrier
+    format: percent0
+text: తల్లికి ఎక్స్ క్రోమోజోమ్‌పై ఉన్న జన్యువులో {condition_label}కు సంబంధించిన మార్పు ఉంది. ప్రతి కొడుకుకూ ఈ సమస్య వచ్చే అవకాశం {risk_affected_pct} అని, ప్రతి కూతురూ క్యారియర్ అయ్యే అవకాశం {daughter_pct} అని అంచనా.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

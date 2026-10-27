@@ -17,7 +17,8 @@ def test_scenarios_cover_every_tier_and_every_draft_verifies():
     d = json.loads((ROOT / "web/lib/fixtures/data.json").read_text(encoding="utf-8"))
     assert {s["tier"] for s in d["scenarios"]} == {1, 2, 3} and len(d["scenarios"]) >= 7
     for s in d["scenarios"]:
-        assert set(s["explanations"]) == {"en/basic", "en/standard", "ar/basic", "ar/standard"}
+        langs = {k.split("/")[0] for k in s["explanations"]}
+        assert {"en", "ar"} <= langs and set(s["explanations"]) == {f"{lg}/{lv}" for lg in langs for lv in ("basic", "standard")}
         assert all(q["answer"] in [o["id"] for o in q["options"]] for q in s["quiz"]["en"])
 
 

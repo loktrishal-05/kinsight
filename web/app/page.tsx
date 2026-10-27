@@ -20,7 +20,7 @@ export default function Landing() {
           <a href="#how" className="ms-4 hidden text-sm font-semibold text-ink/70 hover:text-ink md:block">{t("landing.nav.how")}</a>
           <div className="ms-auto flex items-center gap-2">
             <LangSwitch />
-            <Link href="/signin" data-testid="nav-signin" className="inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-bold text-canvas transition hover:bg-brand-800">{t("signin.cta")}</Link>
+            <Link href="/signin" data-testid="nav-signin" className="inline-flex h-10 items-center whitespace-nowrap rounded-full bg-ink px-4 text-sm font-bold text-canvas sm:px-5 transition hover:bg-brand-800">{t("signin.cta")}</Link>
           </div>
         </nav>
       </header>

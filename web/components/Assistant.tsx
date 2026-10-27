@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api, MOCK } from "@/lib/api";
 import { answer, detectLang, suggestions, type Lang, type Link as L } from "@/lib/assistant";
-import { useI18n } from "@/lib/i18n";
+import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { BCP47, canListen, canSpeak, listen, speak, stopSpeaking } from "@/lib/voice";
 
 type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean };
@@ -41,7 +41,7 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
   const input = useRef<HTMLInputElement>(null);
   const expl = useQuery({ queryKey: ["expl", uiLang, level], queryFn: () => api.explanation(uiLang, level) });
   const cons = useQuery({ queryKey: ["consents"], queryFn: api.consents });
-  const fallback: Lang = mode === "auto" ? (uiLang === "ar" ? "ar" : "en") : mode;
+  const fallback: Lang = mode === "auto" ? uiLang : mode;
   const micLang: Lang = mode === "auto" ? fallback : mode;
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
     setSpeaking(true);
     const r = await speak(m.text, m.lang, () => setSpeaking(true));
     setSpeaking(false);
-    if (r === "no-voice") setNote(t("assistant.noVoice").replace("{l}", m.lang === "ar" ? "العربية" : "English"));
+    if (r === "no-voice") setNote(t("assistant.noVoice").replace("{l}", LANGUAGES.find((x) => x.code === m.lang)?.name ?? m.lang));
     if (r === "unsupported") setNote(t("assistant.noSpeech"));
   };
 
@@ -104,7 +104,7 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
           <p className="truncate text-xs text-muted">{t("assistant.tag")}</p>
         </div>
         <div role="group" aria-label={t("assistant.language")} className="seg">
-          {([["auto", t("assistant.auto")], ["en", "EN"], ["ar", "AR"]] as [Mode, string][]).map(([m, label]) => (
+          {([["auto", t("assistant.auto")], ["en", "EN"], ["ar", "AR"], ...LANGUAGES.filter((l) => l.code === uiLang && !["en", "ar"].includes(l.code)).map((l) => [l.code, l.short])] as [Mode, string][]).map(([m, label]) => (
             <button key={m} aria-pressed={mode === m} onClick={() => setMode(m)}>{label}</button>
           ))}
         </div>

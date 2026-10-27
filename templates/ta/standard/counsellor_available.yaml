@@ -1,0 +1,14 @@
+block_id: counsellor_available
+applies_when:
+  never: true
+slots: {}
+text: மரபியல் ஆலோசகருடன் பேச எப்போது வேண்டுமானாலும் கேட்கலாம். அடுத்து என்ன செய்வது என்பது உங்கள் விருப்பம்.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

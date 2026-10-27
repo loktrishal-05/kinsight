@@ -1,0 +1,19 @@
+block_id: needs_review
+applies_when:
+  formula_id:
+  - ar_needs_review
+  - xlr_needs_review
+slots:
+  condition_label:
+    source: finding.condition_label
+text: "{condition_label} എന്ന അവസ്ഥയുടെ പരിശോധനാഫലം സാധ്യത കണക്കാക്കാൻ വേണ്ടത്ര വ്യക്തമല്ല. അടുത്തതായി എന്തു ചെയ്യാമെന്ന് മനസ്സിലാക്കാൻ ഒരു കൗൺസിലർക്ക് സഹായിക്കാം."
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

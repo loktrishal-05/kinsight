@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: നിങ്ങൾ രക്തബന്ധമുള്ളവരാണ്. അതിനാൽ ജീൻ മാറ്റം കണ്ടെത്തിയില്ലെങ്കിലും വളരെ ചെറിയൊരു സാധ്യത ബാക്കി ഉണ്ടാകാം. ഒരു കൗൺസിലർക്ക് ഇത് വിശദീകരിക്കാം.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

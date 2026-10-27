@@ -1,0 +1,15 @@
+block_id: no_findings
+applies_when:
+  no_findings: true
+slots: {}
+text: இந்தப் பரிசோதனைகளில் உங்கள் இருவருக்கும் மரபணு மாற்றங்கள் கண்டறியப்படவில்லை. இதனால் பரம்பரையாக வரும் எந்த நோயும் இல்லை என்று சொல்ல முடியாது.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

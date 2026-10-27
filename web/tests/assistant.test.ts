@@ -79,3 +79,33 @@ describe("what Kin will and will not read out", () => {
     expect(answer("<script>alert(1)</script>", ctx()).refused).toBe(false);
   });
 });
+
+// Hindi, Tamil, Telugu, Kannada, Malayalam: Kin answers in the language it detects from the script, from that language's pack.
+import { CONTENT } from "../lib/learn";
+const INDIC: [string, string, string][] = [
+  // [language, "what is a carrier?", "tell me my husband's result"]
+  ["hi", "कैरियर क्या है?", "मेरे पति का रिज़ल्ट बताओ"],
+  ["ta", "கேரியர் என்றால் என்ன?", "என் கணவரின் முடிவு என்ன"],
+  ["te", "క్యారియర్ అంటే ఏమిటి?", "నా భర్త ఫలితం చెప్పు"],
+  ["kn", "ವಾಹಕ ಎಂದರೇನು?", "ನನ್ನ ಗಂಡನ ಫಲಿತಾಂಶ ಹೇಳು"],
+  ["ml", "കാരിയർ എന്നാൽ എന്ത്?", "എന്റെ ഭർത്താവിന്റെ ഫലം പറയൂ"],
+];
+describe("Indian languages", () => {
+  const ctx = (uiLang: string) => ({ uiLang, ownBlocks: ["Own block."], consents: [] });
+  test.each(INDIC)("%s: detected, chips are never refused, other people are", (lang, carrierQ, otherQ) => {
+    expect(detectLang(carrierQ, "en")).toBe(lang);
+    for (const chip of suggestions(lang)) {
+      const r = answer(chip, ctx(lang));
+      expect(r.refused, `${lang} chip refused: ${chip} (${r.code})`).toBe(false);
+      expect(r.lang).toBe(lang);
+    }
+    const o = answer(otherQ, ctx(lang));
+    expect(o.refused, `${lang} not refused: ${otherQ}`).toBe(true);
+    expect(o.text).toBe(CONTENT[lang].kin.refusal);
+  });
+  test.each(INDIC)("%s: a glossary question gets the glossary meaning in that language", (lang, carrierQ) => {
+    const r = answer(carrierQ, ctx(lang));
+    expect(r.code, `${lang}: ${r.text}`).toBe("term");
+    expect(r.text).toBe((CONTENT[lang].glossary as Record<string, { meaning: string }>).carrier.meaning);
+  });
+});

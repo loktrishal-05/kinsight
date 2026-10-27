@@ -10,7 +10,7 @@ import { TALK_STARTERS } from "@/lib/learn";
 
 export default function Family() {
   const { t, lang } = useI18n();
-  const l = lang === "ar" ? "ar" : "en";
+  const l = lang;
   const qc = useQueryClient();
   const [copied, setCopied] = useState("");
   const ped = useQuery({ queryKey: ["pedigree"], queryFn: api.pedigree });

@@ -36,6 +36,13 @@ Challenge 03. All people and results are fictional; no real genomes are used.
 non-empty username and password signs in, no real accounts), and the app starts at `/home`. Sign-in video prompts:
 docs/GENERATION_PROMPTS.md (drop the clip at web/public/media/signin.mp4).
 
+## Languages
+English, Arabic, Hindi, Tamil, Telugu, Kannada and Malayalam (language menu in the top bar). Everything follows the chosen language:
+interface text (web/messages/<lang>.json), Learn content and Kin's replies and safety keywords (web/content/<lang>.json), the guided
+demo narration, and the engine's verified explanations, quiz and condition names (templates/<lang>/). The verifier checks every
+language (numbers equal the engine's, required blocks, banned and stigmatising wording per language, readability). Translations other
+than English are machine drafts marked placeholder, pending native-speaker and genetics review (docs/REVIEWS.md).
+
 ## Guided demo
 Start the web app (mock mode) and click "Watch the guided demo" on the home page, or open `http://localhost:3000/?demo=1`
 (`?demo=ar` for Arabic). It drives every feature in 42 narrated steps; Space pauses, arrow keys step, Esc stops.

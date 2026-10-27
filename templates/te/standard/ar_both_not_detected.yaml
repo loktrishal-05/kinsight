@@ -1,0 +1,20 @@
+block_id: ar_both_not_detected
+applies_when:
+  formula_id: ar_both_not_detected
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: మీ ఇద్దరిలోనూ {condition_label}కు సంబంధించిన మార్పు కనబడలేదు. ప్రతి గర్భంలో బిడ్డకు ఈ సమస్య వచ్చే అవకాశం {risk_affected_pct} అని అంచనా. మీ మధ్య రక్త సంబంధం ఉన్నందున నిజమైన అవకాశం ఈ అంచనా కంటే ఎక్కువగా ఉండవచ్చు.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

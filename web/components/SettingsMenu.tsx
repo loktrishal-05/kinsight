@@ -47,7 +47,7 @@ export default function SettingsMenu() {
             <label className="block text-xs font-semibold text-muted">
               {t("settings.case")}
               <select className="field mt-1" value={api.scenario()} onChange={(e) => { api.setScenario(e.target.value); location.reload(); }}>
-                {api.scenarios().map((s) => <option key={s.id} value={s.id}>{s.title[lang === "ar" ? "ar" : "en"]}</option>)}
+                {api.scenarios().map((s) => <option key={s.id} value={s.id}>{t(`scen.${s.id}.title`)}</option>)}
               </select>
             </label>
           )}

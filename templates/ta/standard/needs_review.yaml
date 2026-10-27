@@ -1,0 +1,19 @@
+block_id: needs_review
+applies_when:
+  formula_id:
+  - ar_needs_review
+  - xlr_needs_review
+slots:
+  condition_label:
+    source: finding.condition_label
+text: "{condition_label} தொடர்பான வாய்ப்பை மதிப்பிடும் அளவுக்கு முடிவு தெளிவாக இல்லை. அடுத்த படியைப் பற்றி முடிவு செய்ய ஆலோசகர் உதவலாம்."
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

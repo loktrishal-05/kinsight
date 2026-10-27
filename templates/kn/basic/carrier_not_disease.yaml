@@ -1,0 +1,14 @@
+block_id: carrier_not_disease
+applies_when:
+  never: true
+slots: {}
+text: ಜೀನ್ ಬದಲಾವಣೆಯನ್ನು ಹೊಂದಿರುವವರನ್ನು ವಾಹಕ ಎನ್ನುತ್ತಾರೆ. ವಾಹಕ ಎಂದರೆ ಆ ಆರೋಗ್ಯ ಸಮಸ್ಯೆ ಇದೆ ಎಂದಲ್ಲ.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

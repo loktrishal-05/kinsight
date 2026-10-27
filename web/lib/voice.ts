@@ -2,7 +2,7 @@
 // never blocks the chat. Recognition and synthesis run in the browser; KinSight sends no audio anywhere.
 import type { Lang } from "./assistant";
 
-export const BCP47: Record<Lang, string> = { en: "en-US", ar: "ar-AE" };
+export const BCP47: Record<string, string> = { en: "en-US", ar: "ar-AE", hi: "hi-IN", ta: "ta-IN", te: "te-IN", kn: "kn-IN", ml: "ml-IN" };
 
 type Rec = { lang: string; continuous: boolean; interimResults: boolean; maxAlternatives: number; start(): void; stop(): void; abort(): void;
   onresult: ((e: any) => void) | null; onerror: ((e: any) => void) | null; onend: (() => void) | null };

@@ -1,0 +1,14 @@
+block_id: related_note
+applies_when:
+  note_code: related_partners
+slots: {}
+text: आप दोनों में खून का रिश्ता है, और इससे कुछ समस्याओं की संभावना बढ़ सकती है।
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

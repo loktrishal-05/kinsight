@@ -1,0 +1,15 @@
+block_id: no_findings
+applies_when:
+  no_findings: true
+slots: {}
+text: ఈ పరీక్షల్లో మీ ఇద్దరిలోనూ మార్పులు కనబడలేదు. అయినా, వంశపారంపర్యంగా వచ్చే సమస్యలన్నీ లేవని చెప్పలేం.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

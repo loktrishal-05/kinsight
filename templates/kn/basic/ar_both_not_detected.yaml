@@ -1,0 +1,20 @@
+block_id: ar_both_not_detected
+applies_when:
+  formula_id: ar_both_not_detected
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: ನಿಮ್ಮಿಬ್ಬರಲ್ಲೂ {condition_label} ಎಂಬ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗೆ ಸಂಬಂಧಿಸಿದ ಜೀನ್ ಬದಲಾವಣೆ ಕಂಡುಬಂದಿಲ್ಲ. ಮಗುವಿಗೆ ಈ ಸಮಸ್ಯೆ ಇರುವ ಸಾಧ್ಯತೆ {risk_affected_pct} ಎಂದು ಅಂದಾಜಿಸಲಾಗಿದೆ. ನಿಮ್ಮಿಬ್ಬರ ನಡುವೆ ರಕ್ತಸಂಬಂಧವಿದೆ. ಹಾಗಾಗಿ ನಿಜವಾದ ಸಾಧ್ಯತೆ ಇದಕ್ಕಿಂತ ಹೆಚ್ಚಿರಬಹುದು.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

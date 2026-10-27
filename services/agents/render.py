@@ -1,6 +1,7 @@
 """Template renderer (spec section 7). The renderer, not a model, fills slots from CoupleAssessment."""
 from __future__ import annotations
 
+from functools import cache
 from pathlib import Path
 
 import yaml
@@ -53,11 +54,18 @@ def load_glossary(root: Path = TEMPLATES) -> dict:
     return yaml.safe_load((root / "glossary.yaml").read_text(encoding="utf-8"))
 
 
+@cache
+def load_labels(lang: str, root: Path = TEMPLATES) -> dict:
+    """Per-language labels (templates/<lang>/labels.yaml): condition names and the 'less than 1%' phrase. Empty when absent."""
+    p = root / lang / "labels.yaml"
+    return yaml.safe_load(p.read_text(encoding="utf-8")) if p.exists() else {}
+
+
 def fmt_percent(x: float, lang: str = "en") -> str:
     if x == 0:
         return "0%"
     if x < 0.01:
-        return "أقل من 1%" if lang == "ar" else "less than 1%"
+        return load_labels(lang).get("less_than_one") or ("أقل من 1%" if lang == "ar" else "less than 1%")
     return f"{round(x * 100)}%"
 
 
@@ -67,7 +75,7 @@ def _source(path: str, assessment: CoupleAssessment, panel: Panel, lang: str, id
     f = assessment.findings[idx]
     if path == "finding.condition_label":
         c = panel.get(f.condition_id)
-        return c.label_ar if lang == "ar" else c.label_en
+        return load_labels(lang).get("conditions", {}).get(c.id) or (c.label_ar if lang == "ar" else c.label_en)
     if path == "finding.risk_affected":
         return f.risk_affected
     if path.startswith("finding.inputs."):

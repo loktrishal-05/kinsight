@@ -60,7 +60,7 @@ export const mock = {
     return {};
   },
   async quiz(lang: string) {
-    const q = sc().quiz[lang === "ar" ? "ar" : "en"];
+    const q = sc().quiz[lang] ?? sc().quiz.en;
     return { questions: q.map(({ id, text, options }) => ({ id, text, options })) };
   },
   async submitQuiz(answers: Record<string, string>) {

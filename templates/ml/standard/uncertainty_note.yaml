@@ -1,0 +1,14 @@
+block_id: uncertainty_note
+applies_when:
+  has_findings: true
+slots: {}
+text: ഈ കണക്കുകൾ ഏകദേശമാണ്. ഇത്തരമൊരു സാധ്യത കണക്കാക്കുന്നത് രോഗം ഉണ്ടെന്ന് നിർണയിക്കുന്നതല്ല.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

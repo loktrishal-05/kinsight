@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: ನಿಮ್ಮಿಬ್ಬರ ನಡುವೆ ರಕ್ತಸಂಬಂಧವಿರುವುದರಿಂದ, ಇಬ್ಬರಲ್ಲೂ ಜೀನ್ ಬದಲಾವಣೆ ಕಂಡುಬರದಿದ್ದರೂ ಬಹಳ ಕಡಿಮೆ ಸಾಧ್ಯತೆ ಉಳಿಯಬಹುದು. ಇದರ ಅರ್ಥವನ್ನು ಸಲಹೆಗಾರರು ವಿವರಿಸಬಹುದು.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -1,0 +1,19 @@
+block_id: needs_review
+applies_when:
+  formula_id:
+  - ar_needs_review
+  - xlr_needs_review
+slots:
+  condition_label:
+    source: finding.condition_label
+text: '{condition_label} ಎಂಬ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಯ ಸಾಧ್ಯತೆಯನ್ನು ಅಂದಾಜಿಸಲು ಪರೀಕ್ಷೆಯ ಫಲಿತಾಂಶ ಸಾಕಷ್ಟು ಸ್ಪಷ್ಟವಾಗಿಲ್ಲ. ಮುಂದಿನ ಹೆಜ್ಜೆಯನ್ನು ನಿರ್ಧರಿಸಲು ಸಲಹೆಗಾರರು ನೆರವಾಗಬಹುದು.'
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

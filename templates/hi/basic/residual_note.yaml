@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: आप दोनों में खून का रिश्ता है। इसलिए कोई बदलाव न मिलने पर भी बहुत थोड़ी संभावना रह सकती है। काउंसलर इसे समझा सकते हैं।
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

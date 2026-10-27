@@ -8,10 +8,10 @@ export type L = { en: string; ar: string };
 const L = (en: string, ar: string): L => ({ en, ar });
 
 export type Ctx = {
-  lang: "en" | "ar";
+  lang: string;
   go: (href: string) => void;
   choose: (p: Persona) => Promise<void>;
-  setLang: (l: "en" | "ar") => void;
+  setLang: (l: string) => void;
   setLevel: (l: "basic" | "standard") => void;
   setTheme: (t: "light" | "dark") => void;
   setText: (n: 0 | 1 | 2) => void;
@@ -103,7 +103,7 @@ export const STEPS: Step[] = [
       await fill('[data-demo="palette-input"]', "privacy"); c.log("palette:opened");
     } },
   { id: "result", route: "/result", persona: "person_a", target: "results", covers: ["my-result", "neutral-wording"], title: L("My result, in neutral words", "نتيجتي بكلمات محايدة"),
-    text: L("Person A sees what was found for them. The words are found and not found, never positive or negative, and the colours are calm because a result is information, not a verdict.",
+    text: L("Person A sees what was found for them. The words are found and not found, and the colours are calm because a result is information, not a verdict.",
             "يرى الشخص أ ما وُجد له. الكلمات هي وُجد ولم يُوجد، وليست إيجابي أو سلبي، والألوان هادئة لأن النتيجة معلومة لا حكم."),
     run: async (c) => { c.log("persona:A"); } },
   { id: "explain", route: "/result", persona: "person_a", target: "explanation", covers: ["explanation", "read-aloud", "counselling-request"], title: L("A verified explanation", "شرح موثّق"),

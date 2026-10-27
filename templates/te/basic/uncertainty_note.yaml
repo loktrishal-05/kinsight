@@ -1,0 +1,14 @@
+block_id: uncertainty_note
+applies_when:
+  has_findings: true
+slots: {}
+text: ఈ సంఖ్యలు అంచనాలు మాత్రమే. అవకాశం ఉందంటే వ్యాధి ఉందని నిర్ధారించినట్లు కాదు.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

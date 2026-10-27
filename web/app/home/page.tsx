@@ -15,13 +15,12 @@ const GROUPS: { label: string; ids: readonly (typeof PERSONAS)[number][] }[] = [
 ];
 
 export default function Home() {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const { persona, choose } = useSession();
   const router = useRouter();
   const [scenario, setScenario] = useState("s3");
   const demo = useDemo();
   useEffect(() => setScenario(api.scenario()), []);
-  const l = lang === "ar" ? "ar" : "en";
   return (
     <div>
       <section data-demo="hero" aria-labelledby="home-title" className="flex flex-col items-start gap-4">
@@ -50,8 +49,8 @@ export default function Home() {
                           {scenario === s.id && <Check className="h-2.5 w-2.5 text-onbrand" />}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{s.title[l]}</span><TierChip tier={s.tier} /></span>
-                          <span className="mt-0.5 block text-sm text-muted">{s.blurb[l]}</span>
+                          <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{t(`scen.${s.id}.title`)}</span><TierChip tier={s.tier} /></span>
+                          <span className="mt-0.5 block text-sm text-muted">{t(`scen.${s.id}.blurb`)}</span>
                         </span>
                       </button>
                     </li>

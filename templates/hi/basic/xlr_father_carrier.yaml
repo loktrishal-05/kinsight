@@ -1,0 +1,20 @@
+block_id: xlr_father_carrier
+applies_when:
+  formula_id: xlr_father_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: पिता के जीन में {condition_label} से जुड़ा बदलाव है। हर बेटे को पिता से यह समस्या होने की संभावना {risk_affected_pct} है।
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

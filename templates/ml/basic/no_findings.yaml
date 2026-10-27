@@ -1,0 +1,15 @@
+block_id: no_findings
+applies_when:
+  no_findings: true
+slots: {}
+text: ഈ പരിശോധനകളിൽ നിങ്ങൾ രണ്ടുപേരിലും ജീൻ മാറ്റങ്ങൾ കണ്ടെത്തിയില്ല. എങ്കിലും പാരമ്പര്യമായി വരുന്ന എല്ലാ രോഗങ്ങളും ഇല്ലെന്ന് ഇതുകൊണ്ട് പറയാനാവില്ല.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

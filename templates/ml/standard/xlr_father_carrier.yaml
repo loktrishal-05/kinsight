@@ -1,0 +1,20 @@
+block_id: xlr_father_carrier
+applies_when:
+  formula_id: xlr_father_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: അച്ഛന് എക്സ് ക്രോമസോമിലെ ഒരു ജീനിൽ {condition_label} എന്ന അവസ്ഥയുമായി ബന്ധപ്പെട്ട മാറ്റമുണ്ട്. അച്ഛനിലൂടെ ഓരോ ആൺകുഞ്ഞിനും ഈ അവസ്ഥ ഉണ്ടാകാനുള്ള സാധ്യത {risk_affected_pct} ആണ്.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

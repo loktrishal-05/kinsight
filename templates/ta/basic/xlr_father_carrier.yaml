@@ -1,0 +1,20 @@
+block_id: xlr_father_carrier
+applies_when:
+  formula_id: xlr_father_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: தந்தைக்கு {condition_label} தொடர்பான மரபணுவில் மாற்றம் உள்ளது. தந்தை வழியாக ஒவ்வொரு ஆண் குழந்தைக்கும் பாதிப்பு ஏற்படும் வாய்ப்பு {risk_affected_pct} என மதிப்பிடப்பட்டுள்ளது.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

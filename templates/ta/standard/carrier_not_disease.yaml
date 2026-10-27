@@ -1,0 +1,14 @@
+block_id: carrier_not_disease
+applies_when:
+  never: true
+slots: {}
+text: மரபணு மாற்றத்தைச் சுமப்பவராக இருப்பது என்பது அந்த நோய் இருப்பதற்குச் சமம் அல்ல.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

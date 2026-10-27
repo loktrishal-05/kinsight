@@ -1,0 +1,14 @@
+block_id: fictional_notice
+applies_when:
+  always: true
+slots: {}
+text: ഇവിടെ കാണിച്ചിരിക്കുന്ന ആളുകളും ഫലങ്ങളും എല്ലാം സാങ്കൽപ്പികമാണ്.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

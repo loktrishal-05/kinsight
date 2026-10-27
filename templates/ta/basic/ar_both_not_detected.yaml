@@ -1,0 +1,20 @@
+block_id: ar_both_not_detected
+applies_when:
+  formula_id: ar_both_not_detected
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: உங்கள் இருவருக்கும் {condition_label} தொடர்பான மரபணு மாற்றம் கண்டறியப்படவில்லை. குழந்தைக்குப் பாதிப்பு ஏற்படும் வாய்ப்பு {risk_affected_pct} என மதிப்பிடப்பட்டுள்ளது. நீங்கள் இரத்த உறவினர்கள். அதனால் உண்மையான வாய்ப்பு இதைவிட அதிகமாக இருக்கலாம்.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

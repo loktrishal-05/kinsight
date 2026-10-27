@@ -1,0 +1,14 @@
+block_id: counsellor_available
+applies_when:
+  never: true
+slots: {}
+text: మీరు ఎప్పుడైనా జన్యు సలహాదారుతో మాట్లాడాలని అడగవచ్చు. తరువాత ఏం చేయాలనేది మీ నిర్ణయం.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

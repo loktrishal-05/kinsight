@@ -1,0 +1,14 @@
+block_id: counsellor_available
+applies_when:
+  never: true
+slots: {}
+text: आप किसी भी समय जेनेटिक काउंसलर से बात करने का अनुरोध कर सकते हैं। आगे क्या करना है, यह आपकी अपनी पसंद है।
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

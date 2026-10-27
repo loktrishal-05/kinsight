@@ -1,0 +1,14 @@
+block_id: related_note
+applies_when:
+  note_code: related_partners
+slots: {}
+text: ನಿಮ್ಮಿಬ್ಬರ ನಡುವೆ ರಕ್ತಸಂಬಂಧವಿದೆ. ರಕ್ತಸಂಬಂಧವಿದ್ದಾಗ ಕೆಲವು ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗಳ ಸಾಧ್ಯತೆ ಹೆಚ್ಚಿರಬಹುದು.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

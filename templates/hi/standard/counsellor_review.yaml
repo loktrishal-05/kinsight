@@ -1,0 +1,14 @@
+block_id: counsellor_review
+applies_when:
+  tier: 3
+slots: {}
+text: इस नतीजे को अंतिम रूप देने से पहले एक योग्य काउंसलर आपके साथ इसकी समीक्षा करेंगे।
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

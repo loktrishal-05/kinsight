@@ -1,0 +1,14 @@
+block_id: related_note
+applies_when:
+  note_code: related_partners
+slots: {}
+text: మీ మధ్య రక్త సంబంధం ఉంది. దీనివల్ల కొన్ని ఆరోగ్య సమస్యలు వచ్చే అవకాశం పెరగవచ్చు.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -4,6 +4,7 @@ import { CheckCircle2, MessageSquareText } from "lucide-react";
 import { Notice, PageHeader, StatusChip } from "@/components/ui";
 import { ReadAloud } from "@/components/Voice";
 import { api } from "@/lib/api";
+import { rowLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
 
 export default function MyResult() {
@@ -20,7 +21,7 @@ export default function MyResult() {
         <ul className="px-5">
           {results.data?.map((r) => (
             <li key={r.condition_id} className="row">
-              <span className="font-medium">{lang === "ar" && r.label_ar ? r.label_ar : r.label ?? r.condition_id}</span>
+              <span className="font-medium">{rowLabel(r, lang)}</span>
               <StatusChip status={r.status} />
             </li>
           ))}

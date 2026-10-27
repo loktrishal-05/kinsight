@@ -1,0 +1,14 @@
+block_id: counsellor_review
+applies_when:
+  tier: 3
+slots: {}
+text: ఈ ఫలితాన్ని ఖరారు చేసే ముందు సలహాదారు మీతో కలిసి దీన్ని పరిశీలిస్తారు.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

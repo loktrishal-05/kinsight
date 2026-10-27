@@ -1,0 +1,14 @@
+block_id: counsellor_review
+applies_when:
+  tier: 3
+slots: {}
+text: இந்த முடிவு உறுதி செய்யப்படும் முன், ஆலோசகர் உங்களுடன் இதைப் பற்றிப் பேசிப் பார்ப்பார்.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

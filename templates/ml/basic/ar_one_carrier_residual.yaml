@@ -1,0 +1,21 @@
+block_id: ar_one_carrier_residual
+applies_when:
+  formula_id: ar_one_carrier_residual
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: നിങ്ങളിൽ ഒരാൾക്ക് {condition_label} എന്ന അവസ്ഥയുമായി ബന്ധപ്പെട്ട ജീൻ മാറ്റമുണ്ട്. മറ്റേയാളിൽ മാറ്റം കണ്ടെത്തിയില്ല. എന്നാൽ ഒരു പരിശോധനയ്ക്കും എല്ലാ മാറ്റങ്ങളും കണ്ടെത്താനാവില്ല. ഓരോ ഗർഭത്തിലും കുഞ്ഞിന് ഈ അവസ്ഥ ഉണ്ടാകാനുള്ള സാധ്യത ഏകദേശം {risk_affected_pct} ആണ്.
+must_include_ids:
+- carrier_not_disease
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

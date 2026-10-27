@@ -1,0 +1,14 @@
+block_id: counsellor_review
+applies_when:
+  tier: 3
+slots: {}
+text: இந்த முடிவு இறுதி செய்யப்படும் முன், தகுதிபெற்ற ஆலோசகர் உங்களுடன் சேர்ந்து இதை மதிப்பாய்வு செய்வார்.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

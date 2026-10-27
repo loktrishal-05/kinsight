@@ -12,6 +12,36 @@
     "dir": "rtl"
   },
   {
+    "code": "hi",
+    "name": "हिन्दी",
+    "short": "हि",
+    "dir": "ltr"
+  },
+  {
+    "code": "ta",
+    "name": "தமிழ்",
+    "short": "த",
+    "dir": "ltr"
+  },
+  {
+    "code": "te",
+    "name": "తెలుగు",
+    "short": "తె",
+    "dir": "ltr"
+  },
+  {
+    "code": "kn",
+    "name": "ಕನ್ನಡ",
+    "short": "ಕ",
+    "dir": "ltr"
+  },
+  {
+    "code": "ml",
+    "name": "മലയാളം",
+    "short": "മ",
+    "dir": "ltr"
+  },
+  {
     "code": "ur",
     "name": "اردو (placeholder)",
     "short": "UR",

@@ -5,15 +5,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { api, MOCK } from "./api";
 import { STEPS, waitFor, sleep, type Ctx } from "./demoScript";
-import { useI18n } from "./i18n";
+import { LANGUAGES, useI18n } from "./i18n";
 import { usePrefs } from "./prefs";
 import { useSession } from "./session";
 import { speak, stopSpeaking } from "./voice";
 
 type Demo = {
-  available: boolean; active: boolean; done: boolean; index: number; playing: boolean; speed: number; voice: boolean; demoLang: "en" | "ar";
-  start: (lang?: "en" | "ar") => void; stop: () => void; next: () => void; prev: () => void; toggle: () => void;
-  setSpeed: (s: number) => void; setVoice: (v: boolean) => void; setDemoLang: (l: "en" | "ar") => void; restart: () => void;
+  available: boolean; active: boolean; done: boolean; index: number; playing: boolean; speed: number; voice: boolean; demoLang: string;
+  start: (lang?: string) => void; stop: () => void; next: () => void; prev: () => void; toggle: () => void;
+  setSpeed: (s: number) => void; setVoice: (v: boolean) => void; setDemoLang: (l: string) => void; restart: () => void;
 };
 const C = createContext<Demo | null>(null);
 const fast = () => { try { return localStorage.getItem("ks_demo_fast") === "1"; } catch { return false; } };
@@ -21,7 +21,7 @@ const fast = () => { try { return localStorage.getItem("ks_demo_fast") === "1"; 
 export function DemoProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const path = usePathname();
-  const { setLang, setLevel } = useI18n();
+  const { setLang, setLevel, t, lang: uiLang } = useI18n();
   const { set: setPrefs } = usePrefs();
   const { persona, choose } = useSession();
   const [active, setActive] = useState(false);
@@ -30,10 +30,11 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
   const [voice, setVoice] = useState(false);
-  const [demoLang, setDemoLangState] = useState<"en" | "ar">("en");
+  const [demoLang, setDemoLangState] = useState<string>("en");
+  useEffect(() => setDemoLangState(uiLang), [uiLang]);
   const token = useRef(0);
-  const live = useRef({ playing, speed, voice, path, persona, demoLang });
-  live.current = { playing, speed, voice, path, persona, demoLang };
+  const live = useRef({ playing, speed, voice, path, persona, demoLang, t });
+  live.current = { playing, speed, voice, path, persona, demoLang, t };
 
   const log = (note: string) => { const w = window as any; (w.__demoLog ??= []).push(note); };
 
@@ -59,7 +60,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     const el = s.target ? await waitFor(`[data-demo="${s.target}"]`, 2500) : null;
     // Align to the top so the free space, where the caption card sits, is below the target.
     el?.scrollIntoView({ block: "start", behavior: quick ? "auto" : "smooth" });
-    const text = s.text[live.current.demoLang];
+    const text = live.current.t(`demo.${s.id}.text`);
     const dwell = quick ? 250 : Math.min(13000, Math.max(5000, text.length * 60)) / live.current.speed;
     const t0 = Date.now();
     if (live.current.voice && !quick) await speak(text, live.current.demoLang);
@@ -74,7 +75,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   runRef.current = runStep;
   useEffect(() => { if (active && !done) void runRef.current(index); }, [active, done, index]);
 
-  const start = useCallback((lang?: "en" | "ar") => {
+  const start = useCallback((lang?: string) => {
     if (lang) { setDemoLangState(lang); setLang(lang); }
     (window as any).__demoLog = [];
     setDone(false); setIndex(0); setPlaying(true); setActive(true);
@@ -92,7 +93,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   useEffect(() => { // ?demo=1 (or ?demo=ar) starts the demo on load
     if (!MOCK) return;
     const q = new URLSearchParams(location.search).get("demo");
-    if (q) start(q === "ar" ? "ar" : "en");
+    if (q) start(LANGUAGES.some((l) => l.code === q) ? q : undefined); // ?demo=1, or ?demo=<language code>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {

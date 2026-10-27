@@ -1,0 +1,20 @@
+block_id: xlr_father_carrier
+applies_when:
+  formula_id: xlr_father_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: తండ్రికి ఎక్స్ క్రోమోజోమ్‌పై ఉన్న జన్యువులో {condition_label}కు సంబంధించిన మార్పు ఉంది. తండ్రి ద్వారా ప్రతి కొడుకుకూ ఈ సమస్య వచ్చే అవకాశం {risk_affected_pct} అని అంచనా.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -1,0 +1,14 @@
+block_id: uncertainty_note
+applies_when:
+  has_findings: true
+slots: {}
+text: இந்த எண்கள் மதிப்பீடுகள் மட்டுமே. இத்தகைய வாய்ப்பு மதிப்பீடு, நோய் இருப்பதை உறுதி செய்யும் முடிவு அல்ல.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

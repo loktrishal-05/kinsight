@@ -1,0 +1,20 @@
+block_id: xlr_father_carrier
+applies_when:
+  formula_id: xlr_father_carrier
+slots:
+  condition_label:
+    source: finding.condition_label
+  risk_affected_pct:
+    source: finding.risk_affected
+    format: percent0
+text: ತಂದೆಯ ಜೀನ್‌ನಲ್ಲಿ ಬದಲಾವಣೆ ಇದೆ. ಇದು {condition_label} ಎಂಬ ಆರೋಗ್ಯ ಸಮಸ್ಯೆಗೆ ಸಂಬಂಧಿಸಿದೆ. ತಂದೆಯ ಮೂಲಕ ಪ್ರತಿ ಗಂಡು ಮಗುವಿಗೆ ಈ ಸಮಸ್ಯೆ ಇರುವ ಸಾಧ್ಯತೆ {risk_affected_pct} ಎಂದು ಅಂದಾಜಿಸಲಾಗಿದೆ.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

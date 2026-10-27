@@ -1,0 +1,14 @@
+block_id: counsellor_review
+applies_when:
+  tier: 3
+slots: {}
+text: ഈ ഫലം അന്തിമമാക്കുന്നതിനു മുമ്പ് ഒരു കൗൺസിലർ നിങ്ങളോടൊപ്പം ഇത് പരിശോധിക്കും.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

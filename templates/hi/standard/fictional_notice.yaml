@@ -1,0 +1,14 @@
+block_id: fictional_notice
+applies_when:
+  always: true
+slots: {}
+text: यहाँ दिखाए गए सभी लोग और नतीजे काल्पनिक हैं।
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

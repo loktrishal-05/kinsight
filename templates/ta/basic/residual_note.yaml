@@ -1,0 +1,15 @@
+block_id: residual_note
+applies_when:
+  never: true
+slots: {}
+text: நீங்கள் இரத்த உறவினர்கள். அதனால் மரபணு மாற்றம் கண்டறியப்படாவிட்டாலும், மிகச் சிறிய வாய்ப்பு இருக்கலாம். இதைப் பற்றி ஆலோசகர் விளக்கலாம்.
+must_include_ids:
+- counsellor_available
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

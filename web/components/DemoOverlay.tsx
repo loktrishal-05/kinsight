@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDemo } from "@/lib/demo";
 import { STEPS } from "@/lib/demoScript";
-import { useI18n } from "@/lib/i18n";
+import { LANGUAGES, useI18n } from "@/lib/i18n";
 
 type Rect = { x: number; y: number; w: number; h: number } | null;
 
@@ -51,8 +51,8 @@ export default function DemoOverlay() {
           <div className="h-1 bg-sunk"><div className="h-full bg-brand-600 transition-all" style={{ width: `${((d.index + 1) / STEPS.length) * 100}%` }} /></div>
           <div className="space-y-2 p-4" dir={l === "ar" ? "rtl" : "ltr"}>
             <p className="text-xs font-semibold text-muted tabular-nums">{t("demo.step")} {d.index + 1} / {STEPS.length}</p>
-            <h2 className="text-base font-bold leading-snug">{step.title[l]}</h2>
-            <p className="text-sm text-ink/85">{step.text[l]}</p>
+            <h2 className="text-base font-bold leading-snug">{t(`demo.${step.id}.title`)}</h2>
+            <p className="text-sm text-ink/85">{t(`demo.${step.id}.text`)}</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 border-t border-line px-3 py-2">
             <button className="btn-quiet h-8 w-8 px-0" onClick={d.prev} disabled={d.index === 0} aria-label={t("demo.prev")}><ChevronLeft aria-hidden className="h-4 w-4 rtl:rotate-180" /></button>
@@ -66,9 +66,9 @@ export default function DemoOverlay() {
             <button className="btn-quiet h-8 w-8 px-0" aria-pressed={d.voice} onClick={() => d.setVoice(!d.voice)} aria-label={t("demo.narrate")} title={t("demo.narrate")}>
               {d.voice ? <Volume2 aria-hidden className="h-4 w-4" /> : <VolumeX aria-hidden className="h-4 w-4" />}
             </button>
-            <div role="group" aria-label={t("demo.lang")} className="seg">
-              {(["en", "ar"] as const).map((x) => <button key={x} aria-pressed={l === x} onClick={() => d.setDemoLang(x)}>{x.toUpperCase()}</button>)}
-            </div>
+            <select className="field h-8 w-auto py-0 text-xs" value={l} onChange={(e) => d.setDemoLang(e.target.value)} aria-label={t("demo.lang")}>
+              {LANGUAGES.filter((x) => !x.hidden).map((x) => <option key={x.code} value={x.code}>{x.name}</option>)}
+            </select>
             <button className="btn-quiet ms-auto h-8 w-8 px-0" onClick={d.stop} aria-label={t("demo.stop")}><X aria-hidden className="h-4 w-4" /></button>
           </div>
         </section>
@@ -82,7 +82,7 @@ export default function DemoOverlay() {
               {STEPS.map((s) => (
                 <li key={s.id} className="flex items-start gap-2">
                   <Check aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                  {s.route ? <Link href={s.route} onClick={d.stop} className="hover:underline">{s.title[l]}</Link> : s.title[l]}
+                  {s.route ? <Link href={s.route} onClick={d.stop} className="hover:underline">{t(`demo.${s.id}.title`)}</Link> : t(`demo.${s.id}.title`)}
                 </li>
               ))}
             </ol>

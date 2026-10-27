@@ -8,7 +8,7 @@ import { GLOSSARY, MYTHS } from "@/lib/learn";
 
 export default function Learn() {
   const { t, lang } = useI18n();
-  const l = lang === "ar" ? "ar" : "en";
+  const l = lang;
   const [q, setQ] = useState("");
   const [risk, setRisk] = useState(0.25);
   const terms = GLOSSARY.filter((g) => (g.term[l] + g.meaning[l]).toLowerCase().includes(q.trim().toLowerCase()));

@@ -1,0 +1,316 @@
+{
+  "glossary": {
+    "gene": {
+      "term": "Gene",
+      "meaning": "A small part of our body's instruction book. We each have two copies of most genes, one from each parent."
+    },
+    "carrier": {
+      "term": "Carrier",
+      "meaning": "Someone who has a change in one copy of a gene but usually has no sign of the condition. Being a carrier is not the same as having the condition."
+    },
+    "recessive": {
+      "term": "Recessive inheritance",
+      "meaning": "A condition appears only when a child receives a changed copy from both parents. Each carrier parent passes it on about half the time."
+    },
+    "xlinked": {
+      "term": "X-linked",
+      "meaning": "A gene on the X chromosome. Sons and daughters can be affected differently because they carry different sex chromosomes."
+    },
+    "related": {
+      "term": "Being related",
+      "meaning": "Relatives are more likely to share the same gene changes because they have common ancestors. This can raise the chance for some conditions."
+    },
+    "estimate": {
+      "term": "Estimate",
+      "meaning": "A chance worked out from known facts. It is not a diagnosis and not a promise about any one child."
+    },
+    "uncertain": {
+      "term": "Result not clear",
+      "meaning": "Sometimes a test cannot give a clear answer. No chance is given until a counsellor helps work out the next step."
+    },
+    "confirmatory": {
+      "term": "Confirmatory test",
+      "meaning": "A further test that can clarify a result. A counsellor can explain what it involves."
+    },
+    "counsellor": {
+      "term": "Genetic counsellor",
+      "meaning": "A trained professional who explains results, answers questions and supports your choices without telling you what to do."
+    },
+    "consent": {
+      "term": "Consent",
+      "meaning": "Your choice about who may see what. You can stop sharing at any time."
+    }
+  },
+  "myths": [
+    {
+      "myth": "A carrier is sick.",
+      "fact": "Most carriers have no sign of the condition. Being a carrier is not the same as having it."
+    },
+    {
+      "myth": "A chance means it will happen.",
+      "fact": "A chance is not a certainty. A one-in-four chance means most pregnancies are not affected."
+    },
+    {
+      "myth": "Someone is to blame for a gene change.",
+      "fact": "Gene changes are common and nobody chooses them. Nobody caused this."
+    },
+    {
+      "myth": "The result tells us what to decide.",
+      "fact": "The result gives information. What to do next is always your choice, with support if you want it."
+    },
+    {
+      "myth": "Everyone will find out.",
+      "fact": "Nothing is shared unless you choose. You can stop sharing in one tap."
+    },
+    {
+      "myth": "No findings means zero chance.",
+      "fact": "No test finds everything, and being related can leave a very small chance. A counsellor can explain."
+    }
+  ],
+  "talk": {
+    "t1": "I had a health screening and I would like to tell you about it. Nothing is wrong with you or with me.",
+    "t2": "The screening looks at family health, not at blame. There is a counsellor who can explain it better than I can.",
+    "t3": "You may want to talk to a counsellor yourself. It is private and it is your choice.",
+    "t4": "I would like us to decide together what to do next, at our own pace."
+  },
+  "kin": {
+    "greet": "Hello, I am Kin. I can explain your own result in plain words, explain terms, show who you share with, or take you to a page. I never tell anyone what to decide.",
+    "thanks": "You are welcome. Ask me anything about your own result any time.",
+    "help": "I can explain your own result, explain a term such as carrier or estimate, show who you share with, or open a page. What would you like?",
+    "noResult": "I do not have an explanation to read yet. Open My result first, then ask me again.",
+    "noShare": "You are not sharing anything right now.",
+    "sharing": "You are sharing: ",
+    "nav": "Opening ",
+    "counsellor": "A genetic counsellor can go through your result with you and answer questions. You can ask for one at any time, and what you do next is your choice.",
+    "family": "You can invite a relative so that they see only what you choose, and the family page has gentle ways to start the conversation. Nothing is shared without your agreement.",
+    "how": "KinSight explains a screening result in plain words, shows what it means for a couple, and keeps a counsellor in the loop. A computer program works out every number, and approved sentences explain it.",
+    "settings": "Use the gear icon at the top for dark mode, bigger text, high contrast and less motion. The language menu at the top switches language.",
+    "sick": "Being a carrier is not the same as having the condition. Most carriers have no sign of it.",
+    "chips": [
+      "What does my result mean?",
+      "What is a carrier?",
+      "Who can see my results?",
+      "How do I find a counsellor?"
+    ],
+    "refusal": "I can only help with your own result. I cannot share other people's information, give medical advice, or tell you what to decide. A genetic counsellor can talk this through with you.",
+    "pages": {
+      "/result": "My result",
+      "/couple": "Couple view",
+      "/understand": "Check understanding",
+      "/next": "Next steps",
+      "/summary": "Take-home summary",
+      "/family": "Family circle",
+      "/consents": "Consent centre",
+      "/privacy": "Privacy centre",
+      "/access": "Finding services",
+      "/learn": "Learn",
+      "/methods": "Methods and evidence"
+    },
+    "aliases": {
+      "gene": [
+        "gene"
+      ],
+      "carrier": [
+        "carrier"
+      ],
+      "recessive": [
+        "recessive"
+      ],
+      "xlinked": [
+        "x-linked",
+        "x linked",
+        "x chromosome"
+      ],
+      "related": [
+        "being related",
+        "related",
+        "kinship"
+      ],
+      "estimate": [
+        "estimate"
+      ],
+      "uncertain": [
+        "not clear",
+        "unclear",
+        "uncertain"
+      ],
+      "confirmatory": [
+        "confirmatory"
+      ],
+      "counsellor": [
+        "counsellor",
+        "counselor"
+      ],
+      "consent": [
+        "consent"
+      ]
+    },
+    "words": {
+      "greet": [
+        "hello",
+        "hi",
+        "good morning"
+      ],
+      "thanks": [
+        "thank you",
+        "thanks"
+      ],
+      "nav": [
+        "open",
+        "go to",
+        "take me to",
+        "show me",
+        "where is"
+      ],
+      "define": [
+        "what is",
+        "what does",
+        "meaning of",
+        "explain"
+      ],
+      "sick": [
+        "is a carrier sick",
+        "does a carrier have the disease"
+      ],
+      "consents": [
+        "who can see",
+        "shared with",
+        "sharing",
+        "consent",
+        "privacy"
+      ],
+      "counsellor": [
+        "counsellor",
+        "appointment",
+        "talk to someone",
+        "clinic"
+      ],
+      "family": [
+        "family",
+        "relatives",
+        "tell my family",
+        "invite"
+      ],
+      "about": [
+        "what is kinsight",
+        "how does this work"
+      ],
+      "settings": [
+        "dark mode",
+        "text size",
+        "bigger text",
+        "contrast",
+        "language"
+      ],
+      "result": [
+        "my result",
+        "what does it mean",
+        "what was found",
+        "explain my result"
+      ],
+      "guard_injection": [
+        "ignore previous instructions",
+        "system prompt",
+        "pretend",
+        "reveal your rules",
+        "act as"
+      ],
+      "guard_bulk": [
+        "everyone's results",
+        "all users",
+        "download all",
+        "export",
+        "database"
+      ],
+      "guard_other_person": [
+        "my partner",
+        "husband",
+        "wife",
+        "fiance",
+        "brother",
+        "sister",
+        "mother",
+        "father",
+        "cousin",
+        "relative",
+        "someone else",
+        "his",
+        "her"
+      ],
+      "guard_decision": [
+        "should i",
+        "should we",
+        "marry",
+        "marriage",
+        "wedding",
+        "cancel the marriage",
+        "have children",
+        "get pregnant",
+        "abortion",
+        "what would you do",
+        "recommend"
+      ],
+      "guard_clinical": [
+        "diagnosis",
+        "treatment",
+        "cure",
+        "medicine",
+        "medication",
+        "dose",
+        "symptoms",
+        "surgery"
+      ]
+    },
+    "pageWords": {
+      "/result": [
+        "my result",
+        "result"
+      ],
+      "/couple": [
+        "couple"
+      ],
+      "/understand": [
+        "quiz",
+        "understanding",
+        "questions"
+      ],
+      "/next": [
+        "next steps",
+        "what happens next",
+        "referral"
+      ],
+      "/summary": [
+        "summary",
+        "print"
+      ],
+      "/family": [
+        "family",
+        "tree",
+        "invite"
+      ],
+      "/consents": [
+        "consent",
+        "sharing"
+      ],
+      "/privacy": [
+        "privacy",
+        "who looked"
+      ],
+      "/access": [
+        "services",
+        "appointment",
+        "clinic"
+      ],
+      "/learn": [
+        "learn",
+        "glossary",
+        "myths"
+      ],
+      "/methods": [
+        "methods",
+        "formula",
+        "how is it calculated"
+      ]
+    }
+  }
+}

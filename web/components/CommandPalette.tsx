@@ -20,8 +20,8 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
   const all = useMemo<Entry[]>(() => {
     const go = (href: string) => () => { router.push(href); onClose(); };
     const pages = NAV_ITEMS.map((n) => ({ id: `p-${n.key}`, label: t(`nav.${n.key}`), hint: t("palette.page"), run: go(n.href) }));
-    const terms = GLOSSARY.map((g) => ({ id: `g-${g.id}`, label: g.term[lang === "ar" ? "ar" : "en"], hint: t("palette.term"), run: go(`/learn#${g.id}`) }));
-    const cases = MOCK ? api.scenarios().map((s) => ({ id: `s-${s.id}`, label: s.title[lang === "ar" ? "ar" : "en"], hint: t("palette.case"),
+    const terms = GLOSSARY.map((g) => ({ id: `g-${g.id}`, label: g.term[lang], hint: t("palette.term"), run: go(`/learn#${g.id}`) }));
+    const cases = MOCK ? api.scenarios().map((s) => ({ id: `s-${s.id}`, label: t(`scen.${s.id}.title`), hint: t("palette.case"),
       run: () => { api.setScenario(s.id); router.push("/result"); onClose(); setTimeout(() => location.reload(), 50); } })) : [];
     const kin = { id: "kin", label: t("assistant.open"), hint: t("palette.page"), run: () => { window.dispatchEvent(new Event("kin:toggle")); onClose(); } };
     const tour = { id: "demo", label: t("demo.start"), hint: t("palette.page"), run: () => { onClose(); window.dispatchEvent(new Event("demo:start")); } };

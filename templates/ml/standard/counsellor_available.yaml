@@ -1,0 +1,14 @@
+block_id: counsellor_available
+applies_when:
+  never: true
+slots: {}
+text: ഒരു ജനിതക കൗൺസിലറുമായി സംസാരിക്കാൻ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും ആവശ്യപ്പെടാം. ഇനി എന്തു ചെയ്യണമെന്നത് നിങ്ങളുടെ തീരുമാനമാണ്.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder

@@ -1,0 +1,14 @@
+block_id: related_note
+applies_when:
+  note_code: related_partners
+slots: {}
+text: நீங்கள் இரத்த உறவினர்கள். இரத்த உறவு இருப்பதால் சில நோய்கள் ஏற்படும் வாய்ப்பு அதிகரிக்கலாம்.
+must_include_ids: []
+forbidden_ids:
+- directive_marriage
+- blame
+reviewed_by:
+  language: null
+  genetics: null
+  date: null
+status: placeholder
