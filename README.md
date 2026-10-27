@@ -473,7 +473,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Cinematic landing, demo sign-in, guided demo | Done and tested |
 | Seven languages end to end | Done; translations pending native-speaker and genetics review |
 | **Volunteer comprehension study** | **Tooling built and tested; study not yet run.** `/study` (consent, case, five-question check, rating), `/study/results` (summary and CSV export) and `scripts/analyse_study.py` are ready ([docs/study/protocol.md](docs/study/protocol.md)). It still needs real participants and an ethics check, so the scorecard reports comprehension as not measured and no comprehension claims are made. |
-| Clinical validation, in-region hosting, accredited reviewers | Out of scope for a fictional demo; see [docs/pilot_plan.md](docs/pilot_plan.md) |
+| Clinical validation, in-region hosting, accredited reviewers, real sign-in and data feed | Out of scope for a fictional demo. What a real pilot would need, with gates and decisions: [docs/PILOT_READINESS.md](docs/PILOT_READINESS.md) · [docs/pilot_plan.md](docs/pilot_plan.md) |
 
 ## Documentation
 
@@ -483,7 +483,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Research, evaluator questions, feature plan | [docs/RESEARCH.md](docs/RESEARCH.md) |
 | Architecture (detail) | [docs/architecture.md](docs/architecture.md) |
 | Model card · limitations | [docs/model_card.md](docs/model_card.md) · [docs/limitations.md](docs/limitations.md) |
-| Pilot plan · study protocol | [docs/pilot_plan.md](docs/pilot_plan.md) · [docs/study/protocol.md](docs/study/protocol.md) |
+| Pilot readiness · pilot plan · study protocol | [docs/PILOT_READINESS.md](docs/PILOT_READINESS.md) · [docs/pilot_plan.md](docs/pilot_plan.md) · [docs/study/protocol.md](docs/study/protocol.md) |
 | Scorecard · rules check · demo script | [docs/SCORECARD.md](docs/SCORECARD.md) · [docs/RULES_CHECK.md](docs/RULES_CHECK.md) · [docs/demo_script.md](docs/demo_script.md) |
 | Deviations · open questions · reviews | [docs/DEVIATIONS.md](docs/DEVIATIONS.md) · [docs/OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) · [docs/REVIEWS.md](docs/REVIEWS.md) |
 | Design system · product brief | [web/DESIGN.md](web/DESIGN.md) · [web/PRODUCT.md](web/PRODUCT.md) |

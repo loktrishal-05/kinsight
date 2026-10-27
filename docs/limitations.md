@@ -3,13 +3,13 @@
 - All data is synthetic. No real genomes, no real people, no clinical validation.
 - Panel frequencies, sensitivities and the consanguinity shares are illustrative (the 1990s UAE-study defaults are dated; change them freely in `configs/`).
 - Genetics formulas are standard results, not reviewed by a genetics professional in this project. The review gate in `docs/REVIEWS.md` is open.
-- Arabic text and templates are placeholders pending a native-speaker review; none is marked approved.
-- The comprehension numbers shown by the pipeline come from scripted test inputs and are not evidence about people. Real evidence would come only from the small volunteer study (`docs/study/protocol.md`), which has not been run and needs the college's ethics check first.
+- Every non-English text (Arabic, Hindi, Tamil, Telugu, Kannada, Malayalam: interface, templates, quiz, Learn, Kin, study consent) is a machine draft marked placeholder pending native-speaker and genetics review; none is marked approved.
+- The comprehension numbers shown by the pipeline come from scripted test inputs and are not evidence about people. Real evidence would come only from the small volunteer study (`docs/study/protocol.md`; tooling at `/study` is built and tested), which has not been run and needs the college's ethics check first.
 - The capacity simulator is a labelled illustrative model with stated assumptions, not a forecast.
 - Differential-privacy noise uses a budget ledger but suppression is deterministic, so this is not a claim of end-to-end formal privacy.
 - Audit chain detects modification, deletion and forks; detecting tail truncation needs an externally stored head hash (supported, not provisioned).
 - Demo authentication uses fictional personas and signed short-lived tokens; production would need real identity and in-region hosting.
 - Optional items are built behind flags (`configs/flags.yaml`): voice depends on browser speech support; the partner check is an unaudited demo; FHIR export is a function with no route; the third language (Urdu) is an English-copy placeholder; Mode B needs an injected model and judge and is off.
 - Dependencies: Python 3.10+, LangGraph 1.x, FastAPI, SQLAlchemy 2, Next.js 14 (see lock files).
-- Copilot guard and red-team set (P5-4): keyword rules were tuned on the 109 prompts in tests/redteam/prompts.yaml, so a pass is a regression gate, not evidence of robustness. A model judge plus fresh adversarial prompts is needed before any real use.
+- Copilot guard and red-team set (P5-4): keyword rules were tuned on the 109 prompts in tests/redteam/prompts.yaml (English 87, Arabic 22; Hindi, Tamil, Telugu, Kannada and Malayalam have working guards and smoke tests but no adversarial set), so a pass is a regression gate, not evidence of robustness. A model judge plus fresh adversarial prompts is needed before any real use.
 - Demo reset restores the case, quiz and referral state but keeps consent rows and the audit chain, so re-running the live demo flow on the same database fails on duplicate grants; use 'docker compose down -v' for a clean demo.
