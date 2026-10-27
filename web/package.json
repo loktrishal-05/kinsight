@@ -20,7 +20,7 @@
     "@fontsource/reem-kufi": "^5.3.0",
     "@tanstack/react-query": "5.59.0",
     "lucide-react": "^0.453.0",
-    "next": "14.2.15",
+    "next": "14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "three": "^0.169.0",

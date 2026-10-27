@@ -9,12 +9,19 @@
 It turns a premarital or preconception screening result into plain words, shows what it means for a couple,<br/>
 keeps a genetic counsellor in the loop, and never tells anyone what to decide.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-kinsight--five.vercel.app-1d7f7a?style=for-the-badge)](https://kinsight-five.vercel.app)
+
 [![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-14-18272c)
 ![Languages](https://img.shields.io/badge/languages-7-33417f)
 ![Tests](https://img.shields.io/badge/tests-585%20passing-1d7f7a)
 
 Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
+
+### 🔗 Try it live: **[kinsight-five.vercel.app](https://kinsight-five.vercel.app)**
+
+<sub>No install and no account. Click **Sign in**, then **Use the demo account**, or press **Watch the guided demo** for a
+self-driving 3-minute tour of every feature. Switch language from the menu in the top bar (seven languages).</sub>
 
 <img src="docs/screenshots/01-landing.jpg" alt="KinSight landing page: a sunlit 3D lattice screen behind the headline" width="100%" />
 
@@ -415,6 +422,9 @@ kinsight/
 ```
 
 ## Getting started
+
+**Online:** the demo is deployed at **[kinsight-five.vercel.app](https://kinsight-five.vercel.app)** (Vercel, `web/` as the root
+directory, demo mode with fictional data, redeployed automatically on every push to `main`). Run it yourself with the steps below.
 
 **Web app only (mock API, fastest):**
 
