@@ -142,7 +142,7 @@ KinSight is a **deterministic core with humans in the loop**. Every number comes
 from approved templates checked by a verifier; consent is enforced on every read; counsellors gate high-impact results.
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph Users
     P["Couples and individuals<br/>(phone first)"]
     R[Relatives]
