@@ -77,6 +77,8 @@ Thumbs.db
 *.db
 shots
 
-# impeccable review captures (regenerated)
-web/.impeccable/review/
-web/.impeccable/questions/
+# Local design-tool state
+web/.impeccable/
+
+# Local copies of redundant directory placeholders
+.gitkeep
