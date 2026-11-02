@@ -489,7 +489,6 @@ npx playwright test                     # end-to-end on desktop and phone (build
 
 | Topic | File |
 |---|---|
-| Build specification and plan | [docs/SPEC.txt](docs/SPEC.txt) · [docs/PLAN.md](docs/PLAN.md) |
 | Research, evaluator questions, feature plan | [docs/RESEARCH.md](docs/RESEARCH.md) |
 | Architecture (detail) | [docs/architecture.md](docs/architecture.md) |
 | Model card · limitations | [docs/model_card.md](docs/model_card.md) · [docs/limitations.md](docs/limitations.md) |
@@ -497,7 +496,6 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Scorecard · rules check · demo script | [docs/SCORECARD.md](docs/SCORECARD.md) · [docs/RULES_CHECK.md](docs/RULES_CHECK.md) · [docs/demo_script.md](docs/demo_script.md) |
 | Deviations · open questions · reviews | [docs/DEVIATIONS.md](docs/DEVIATIONS.md) · [docs/OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) · [docs/REVIEWS.md](docs/REVIEWS.md) |
 | Design system · product brief | [web/DESIGN.md](web/DESIGN.md) · [web/PRODUCT.md](web/PRODUCT.md) |
-| Sign-in film prompts | [docs/GENERATION_PROMPTS.md](docs/GENERATION_PROMPTS.md) |
 | Data sources and licences | [DATA_SOURCES.md](DATA_SOURCES.md) |
 
 <div align="center">

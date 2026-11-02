@@ -82,3 +82,8 @@ web/.impeccable/
 
 # Local copies of redundant directory placeholders
 .gitkeep
+
+# Local project brief and media-production notes
+/docs/SPEC.txt
+/docs/PLAN.md
+/docs/GENERATION_PROMPTS.md
