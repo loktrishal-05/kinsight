@@ -1,4 +1,4 @@
-"""Lifecycle routes (PRD): pairing, lab tracker, certificate countdown, receipt, one-time family link.
+"""Synthetic lifecycle routes for pairing, tracking, triage, counselling safety and demo operations.
 
 Demo state lives in memory per app instance and holds synthetic data only. Every state change is written to the audit chain.
 """
@@ -7,14 +7,15 @@ Demo state lives in memory per app instance and holds synthetic data only. Every
 # ruff: noqa: B008
 
 import time
+from typing import Annotated, Literal
 
 from fastapi import Depends, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy.orm import Session
 
 from services.consent import sharing
-from services.lifecycle import cfg, ledger, tracking
-from services.lifecycle.cascade import CascadeTokens
+from services.lifecycle import cfg, ledger, safety, tracking, triage
+from services.lifecycle.cascade import CascadeTokens, WhisperQueue
 from services.lifecycle.pairing import PairingStore
 
 from .auth import secret
@@ -37,10 +38,99 @@ class Token(BaseModel):
     token: str = Field(min_length=1, max_length=512)
 
 
+class LifecycleBody(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+
+Identifier = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_.:>-]+$")]
+Class = Annotated[int, Field(ge=1, le=5)]
+VaultDigits = Annotated[str, Field(min_length=4, max_length=8, pattern=r"^[0-9]+$")]
+
+
+class GeneCall(LifecycleBody):
+    gene: Identifier
+    inheritance: Literal["AR", "XLR"]
+    zygosity: Literal["HET", "HOM", "HEMI"]
+    acmg_class: Class
+    requires_orthogonal: bool = False
+    orthogonal_verified: bool = False
+    allele: str = Field(default="", max_length=64, pattern=r"^[A-Za-z0-9_.:>+-]*$")
+
+
+class Triage(LifecycleBody):
+    a: list[GeneCall] = Field(max_length=200)
+    b: list[GeneCall] = Field(max_length=200)
+    phi: float = Field(ge=0, le=0.5)
+    pregnant_days: int | None = Field(default=None, ge=0, le=300)
+    dcs: float | None = Field(default=None, ge=0, le=100)
+    teach_back_failures: int = Field(default=0, ge=0, le=10)
+
+
+class Whisper(LifecycleBody):
+    contact: str = Field(min_length=7, max_length=21, pattern=r"^\+?[0-9]{7,20}$")
+    gene_family: str = Field(min_length=1, max_length=64, pattern=r"^[A-Z0-9_]+$")
+
+
+class Dispatch(LifecycleBody):
+    advance_hours: int = Field(ge=0, le=100)
+
+
+class Checkin(LifecycleBody):
+    instrument: Literal["dcs", "low_literacy_dcs", "pagis"]
+    answers: list[Annotated[int, Field(ge=0, le=4)] | Literal["yes", "unsure", "no"]] | None = Field(
+        default=None, min_length=1, max_length=16)
+    total: float | None = Field(default=None, ge=0, le=200)
+
+    @model_validator(mode="after")
+    def valid_instrument(self):
+        if self.instrument == "pagis":
+            valid = self.total is not None and self.answers is None
+        elif self.instrument == "dcs":
+            valid = self.total is None and self.answers is not None and all(type(a) is int for a in self.answers)
+        else:
+            valid = (self.total is None and self.answers is not None and len(self.answers) == 10
+                     and all(isinstance(a, str) for a in self.answers))
+        if not valid:
+            raise ValueError("Invalid instrument input")
+        return self
+
+
+class Reclassify(LifecycleBody):
+    archived: dict[Identifier, Class] = Field(max_length=200)
+    feed: dict[Identifier, Class] = Field(max_length=200)
+
+
+class VaultPin(LifecycleBody):
+    pin: VaultDigits
+
+
+class SafeVault(VaultPin):
+    decoy_pin: VaultDigits
+
+    @model_validator(mode="after")
+    def different_pins(self):
+        if self.pin == self.decoy_pin:
+            raise ValueError("PINs must differ")
+        return self
+
+
+class Tamm(LifecycleBody):
+    pairing_ref: Identifier
+    role: Literal["pcp", "counsellor"]
+
+
+class BreakGlass(LifecycleBody):
+    attestors: list[Identifier] = Field(min_length=1, max_length=4)
+    reason: str = Field(min_length=1, max_length=300)
+
+
 def register(app, roles, db_session, limit) -> None:
     pairs = PairingStore()
     samples: dict[str, tracking.Sample] = {}
     holder: list[CascadeTokens] = []
+    whispers = WhisperQueue()
+    vaults: dict[str, tuple[str, str]] = {}
+    vault_failures: dict[str, int] = {}
 
     def tokens() -> CascadeTokens:  # lazy: the secret is read at request time, like the other routes
         if not holder:
@@ -58,6 +148,86 @@ def register(app, roles, db_session, limit) -> None:
     def tracker_view(s: tracking.Sample) -> dict:
         return {"stages": cfg()["lab_stages"], "stage": s.stage, "qc_failure": s.qc_failure,
                 "times": {str(k): v for k, v in s.times.items()}}
+
+    @app.post("/api/lifecycle/triage")
+    async def triage_evaluate(body: Triage, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        out = triage.evaluate([triage.GeneCall(**c.model_dump()) for c in body.a],
+                              [triage.GeneCall(**c.model_dump()) for c in body.b], body.phi,
+                              pregnant_days=body.pregnant_days, dcs=body.dcs,
+                              teach_back_failures=body.teach_back_failures)
+        audit(db, identity, "triage", "triage_evaluated")
+        return {**out, "is_synthetic": True}
+
+    @app.post("/api/lifecycle/whisper")
+    async def whisper(body: Whisper, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        audit(db, identity, "whisper", "whisper_queued")  # No voucher reference links the audit actor to a row.
+        whispers.enqueue(body.contact, body.gene_family, time.time())
+        return {"status": "queued"}
+
+    @app.post("/api/lifecycle/whisper/dispatch")
+    async def whisper_dispatch(body: Dispatch, identity=Depends(roles("demo_operator")),
+                               db: Session = Depends(db_session)):
+        audit(db, identity, "whisper", "whisper_dispatched")
+        return {"dispatched": len(whispers.due(time.time() + body.advance_hours * 3600))}
+
+    @app.post("/api/lifecycle/checkin")
+    async def checkin(body: Checkin, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        if body.instrument == "pagis":
+            score, flagged = body.total, safety.pagis_flag(body.total)
+        else:
+            score = (safety.dcs_score(body.answers) if body.instrument == "dcs"
+                     else safety.low_literacy_dcs(body.answers))
+            flagged = safety.dcs_flag(score)
+        audit(db, identity, "checkin", "checkin_recorded")
+        return {"score": score, "flagged": flagged, "support_offered": flagged}
+
+    @app.post("/api/lifecycle/reclassify")
+    async def reclassify(body: Reclassify, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        out = safety.reclassification(body.archived, body.feed)
+        audit(db, identity, "reclassification", "reclassification_checked")
+        return {"alerts": out}
+
+    @app.put("/api/lifecycle/safe-vault")
+    async def safe_vault(body: SafeVault, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        hashes = safety.hash_pin(body.pin), safety.hash_pin(body.decoy_pin)
+        audit(db, identity, "safe-vault", "safe_vault_configured")
+        vaults[identity.actor.id] = hashes
+        return {"status": "configured"}
+
+    @app.post("/api/lifecycle/safe-vault/unlock")
+    async def vault_unlock(body: VaultPin, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        actor = identity.actor.id
+        if vault_failures.get(actor, 0) >= 5:
+            audit(db, identity, "safe-vault", "safe_vault_limited")
+            raise HTTPException(429, "Request limit reached")
+        hashes = vaults.get(actor)
+        view = safety.check_pins(body.pin, *hashes) if hashes else "none"
+        if view == "none":
+            vault_failures[actor] = vault_failures.get(actor, 0) + 1
+            audit(db, identity, "safe-vault", "safe_vault_refused")
+            raise PermissionError("Access unavailable")
+        audit(db, identity, "safe-vault", "safe_vault_unlocked")
+        return {"view": view}
+
+    @app.post("/api/lifecycle/tamm")
+    async def tamm(body: Tamm, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        out = safety.tamm_attestation(body.pairing_ref, body.role, time.time())
+        audit(db, identity, body.pairing_ref, "tamm_attested")
+        return {**out, "is_synthetic": True}
+
+    @app.post("/api/lifecycle/break-glass")
+    async def break_glass(body: BreakGlass, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        try:
+            out = safety.break_glass(body.attestors, body.reason)
+        except PermissionError:
+            audit(db, identity, "break-glass", "break_glass_refused")
+            raise
+        audit(db, identity, "break-glass", "break_glass_granted")
+        return {**out, "is_synthetic": True}
 
     @app.get("/api/lifecycle/tracker")
     async def tracker(identity=Depends(roles(*PERSON))):
