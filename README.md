@@ -30,6 +30,9 @@ Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 
 ---
 
+> **Hosting.** The website on Vercel talks to the API on Render (`kinsight-api`, Postgres `kinsight-db`, see `render.yaml`):
+> `NEXT_PUBLIC_MOCK=0` and `KINSIGHT_API_URL` are set on the Vercel project. The free Render plan sleeps when idle, so the first request can take up to a minute.
+
 ## Contents
 
 - [Why KinSight](#why-kinsight)
