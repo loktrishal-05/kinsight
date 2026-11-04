@@ -3,6 +3,7 @@
 import { z } from "zod";
 import * as safety from "./safety";
 import type { PairingStatus } from "./api";
+import { liveReclassify } from "./clinvar";
 import { DATA, conditionLabel, scenarioById, type Scenario } from "./fixtures";
 
 const day = 86400;
@@ -65,6 +66,7 @@ export const mock = {
     return { score: flagged ? 50 : 0, flagged, support_offered: flagged };
   },
   async whisper(body: z.infer<typeof safety.WhisperRequestS>) { safety.WhisperRequestS.parse(body); return { status: "queued" as const }; },
+  reclassifyLive: (archived: Record<string, number>) => liveReclassify(archived),
   async reclassify(body: z.infer<typeof safety.ReclassifyRequestS>) {
     const v = safety.ReclassifyRequestS.parse(body);
     return { alerts: Object.entries(v.archived).filter(([id, from]) => Object.prototype.hasOwnProperty.call(v.feed, id) && v.feed[id] !== from).map(([variant, from]) => ({ variant, from, to: v.feed[variant], direction: v.feed[variant] > from ? "upgraded" as const : "downgraded" as const, needs_clinician_review: true })) };

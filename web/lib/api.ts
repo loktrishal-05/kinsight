@@ -56,6 +56,7 @@ export const api = {
   triage: async (body: Zod.infer<typeof safety.TriageRequestS>) => safety.TriageS.parse(await impl.triage(safety.TriageRequestS.parse(body))),
   whisper: async (body: Zod.infer<typeof safety.WhisperRequestS>) => safety.WhisperS.parse(await impl.whisper(safety.WhisperRequestS.parse(body))),
   checkin: async (body: Zod.infer<typeof safety.CheckinRequestS>) => safety.CheckinS.parse(await impl.checkin(safety.CheckinRequestS.parse(body))),
+  reclassifyLive: async (archived: Record<string, number>) => safety.ReclassifyS.parse(await impl.reclassifyLive(archived)),
   reclassify: async (body: Zod.infer<typeof safety.ReclassifyRequestS>) => safety.ReclassifyS.parse(await impl.reclassify(safety.ReclassifyRequestS.parse(body))),
   safeVault: async (body: Zod.infer<typeof safety.VaultRequestS>) => safety.VaultS.parse(await impl.safeVault(safety.VaultRequestS.parse(body))),
   unlockVault: async (body: Zod.infer<typeof safety.UnlockRequestS>) => safety.UnlockS.parse(await impl.unlockVault(safety.UnlockRequestS.parse(body))),
