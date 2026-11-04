@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy.orm import Session
 
 from services.consent import sharing
-from services.lifecycle import cfg, ledger, safety, tracking, triage
+from services.lifecycle import cfg, clinvar, ledger, safety, tracking, triage
 from services.lifecycle.cascade import CascadeTokens, WhisperQueue
 from services.lifecycle.pairing import PairingStore
 
@@ -301,3 +301,22 @@ def register(app, roles, db_session, limit) -> None:
         out = tokens().redeem(body.token, time.time())  # PermissionError -> 403 with no reason
         audit(db, identity, out["condition_id"], "cascade_redeemed")
         return {**out, "is_synthetic": True}
+
+    class LiveCheck(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        archived: dict[str, int] = Field(min_length=1, max_length=clinvar.MAX_IDS)  # ClinVar variation id -> class on the report
+
+    @app.post("/api/lifecycle/reclassify/live")
+    async def reclassify_live(body: LiveCheck, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+        """Compare the classes on file with ClinVar right now. Only variation ids are sent to NCBI."""
+        if any(not 1 <= v <= 5 or not k.isdigit() for k, v in body.archived.items()):
+            raise HTTPException(422, "Invalid request")
+        limit(db, identity)
+        try:
+            live = clinvar.fetch(list(body.archived))
+        except clinvar.SourceUnavailable:
+            raise HTTPException(503, "Live source unavailable") from None
+        feed = {k: v["acmg_class"] for k, v in live.items() if v["acmg_class"]}
+        audit(db, identity, "clinvar", "reclassify_live")
+        return {"alerts": safety.reclassification(body.archived, feed), "checked": len(live),
+                "source": "NCBI ClinVar", "classes": live, "is_synthetic": False}

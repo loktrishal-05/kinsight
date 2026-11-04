@@ -315,3 +315,29 @@ def test_person_submissions_are_rate_limited(api, method, path, persona, body):
         row.requests = settings().rate_limit_requests
         db.commit()
     assert c.request(method, "/api/lifecycle/" + path, json=body, headers=h[persona]).status_code == 429
+
+
+def test_reclassify_live_uses_clinvar_and_sends_only_ids(api, monkeypatch):
+    from services.lifecycle import clinvar
+
+    seen = {}
+
+    def fake(ids):
+        seen["ids"] = ids
+        return {"7105": {"acmg_class": 5, "label": "Pathogenic", "last_evaluated": "2004/03/03"},
+                "42": {"acmg_class": 3, "label": "Uncertain significance", "last_evaluated": ""}}
+
+    monkeypatch.setattr(clinvar, "fetch", fake)
+    c, h, _ = api
+    body = {"archived": {"7105": 3, "42": 5}}
+    assert c.post("/api/lifecycle/reclassify/live", json=body, headers=h["person_a"]).status_code == 403
+    r = c.post("/api/lifecycle/reclassify/live", json=body, headers=h["counsellor"])
+    assert r.status_code == 200 and seen["ids"] == ["7105", "42"]
+    assert {a["variant"]: a["direction"] for a in r.json()["alerts"]} == {"7105": "upgraded", "42": "downgraded"}
+    assert c.post("/api/lifecycle/reclassify/live", json={"archived": {"abc": 3}}, headers=h["counsellor"]).status_code == 422
+
+    def down(ids):
+        raise clinvar.SourceUnavailable("x")
+
+    monkeypatch.setattr(clinvar, "fetch", down)
+    assert c.post("/api/lifecycle/reclassify/live", json=body, headers=h["counsellor"]).status_code == 503
