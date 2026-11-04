@@ -1,102 +1,87 @@
-# Gap analysis: Silah-Genomics master PRD vs KinSight
+# Silah-Genomics master PRD vs KinSight: final status
 
-Source: `silah_genomics_complete_master_prd.pdf` (research monograph, 64-section blueprint, OOB-1..10, P-01..P-18, 30 judge Q&As).
-KinSight already covers the challenge's six mandates in a synthetic demo. This file lists what the PRD adds that was missing.
+Source: `silah_genomics_complete_master_prd.pdf` (research monograph, 64-section blueprint, FR-001..030, NFR-001..018, OOB-1..10,
+P-01..P-18, 30 judge questions). KinSight already covered the challenge's six mandates as a synthetic demo; this file records what the
+PRD added and where each item stands now.
 
-Legend: **Done** = in repo before this pass. **Core added** = deterministic module + tests in `services/lifecycle/` (this pass),
-wired to `/api/lifecycle/*` (flag `lifecycle`) and the `/journey` screen where noted. **Open** = not started. **External** = needs a real system or approval, only simulated.
+**Legend.** **Done**: built, wired to the API and screens, tested. **Simulated**: built against synthetic data with the real rule or
+maths, but the real external system is not connected. **External**: needs a real system, licence or approval; not built. **Not done**:
+a gap that remains.
+
+KinSight is a fictional demo. Nothing in this table is a claim of clinical validity.
 
 ## Core features
 
 | PRD | Item | Status |
 |---|---|---|
-| CF-1 / FR-004 | Bilateral consent, PIN pairing, 3 per 30 days, 1-tap revoke | Consent + revoke Done; PIN pairing **Core added** (`pairing.py`); QR is a UI job |
-| CF-2 / FR-007 | Zero-leakage compatibility (APSI/SMPC) | Demo PSI Done (`psi_demo.py`, flagged off); compound-het detection **Core added** (`triage` RULE-05); real enclave **External** |
-| CF-2 / FR-008 | Kinship, consanguinity-adjusted residual risk | Done (`genetics/kinship.py`, `assess.py`); homomorphic KING **External** |
-| CF-3 / FR-009,010 | Plain-language explainer, 100-icon array, twin view | Done; dual-vault (individual vs couple) **Open** at storage level |
-| CF-4 / FR-012 | Teach-back | Done (5 questions; PRD says 4 plus a hard gate before certificate download: **Open**) |
-| CF-4 / FR-013,014 | Values clarification, culturally grounded options | Options explorer Done; RGCS-DA scoring and Fiqh / 120-day clock content **Open** (needs licensed items + reviewed text) |
-| CF-5 / FR-015 | Deterministic escalation rules | Tier rules Done; PRD rule set (orthogonal hold, multi-gene, pregnancy window, DCS) **Core added** (`triage.py`) |
-| CF-5 / FR-016,017 | Priority booking, pre-consult brief | Brief Done; booking **Open** |
-| CF-6 / FR-018,019 | Confirmatory orders, closed-loop referral | Referral state machine Done; 72 h stall check **Core added** (`tracking.referral_stalled`) |
-| CF-6 / FR-020 | TAMM attendance-only webhook | **Core added** (`safety.tamm_attestation`, fixed key allow-list) |
-| CF-6 / FR-021 | 24 h single-use cascade token | **Core added** (`cascade.CascadeTokens`, HMAC not AES-CBC, see module note) |
-| FR-024,025 | MMIC / DCS / GCOS metrics, equity dashboard | Equity dashboard Done; DCS scoring **Core added**; MMIC, GCOS-24 **Open** |
-| FR-026 | Malaffi sealed publishing | **External** (FHIR export function exists, no route) |
-| FR-027 | Citizen audit timeline | Hash-chained audit Done; "who accessed my data" screen Done (`/access`) |
+| CF-1 / FR-001..004 | Bilateral consent, 9-digit PIN pairing (15 min, 3 per 30 days), one-tap revoke, audit | **Done** (`/journey`, `services/lifecycle/pairing.py`). UAE Pass biometric login: **External**; demo personas are used |
+| CF-2 / FR-006,007 | Zero-leakage compatibility | **Simulated**: an unaudited commutative-encryption PSI demo (`consent/psi_demo.py`, flag off) and shared-gene intersection only; compound heterozygotes detected (`triage` RULE-05). Lab-signed APSI/SMPC in an enclave: **External** |
+| CF-2 / FR-008 | Kinship, consanguinity-adjusted residual risk | **Done** (`genetics/`). Homomorphic KING estimator: **External** |
+| CF-3 / FR-009,010 | Plain-language explainer, 100-icon array, twin view | **Done**. Physically separate individual and couple vaults: **Not done** (separation is by consent policy and field projection, not by schema) |
+| CF-4 / FR-012 | Teach-back | **Done** (5 questions, gentle re-explanation, counsellor offer); the certificate card is **locked until the check is passed** (`/journey`) |
+| CF-4 / FR-013,014 | Values clarification, options | Options explorer and values questions **Done**. RGCS-DA item wording and Fiqh / Awqaf guidance text: **External** (licensed items and reviewed religious text); only the calendar facts are built (`/plan`, gestational clock, 10-12 week window, day 120) |
+| CF-5 / FR-015 | Deterministic escalation rules | **Done** (`lifecycle/triage.py`, `/clinic`): orthogonal hold, multi-gene risk, compound heterozygote, private findings as counts, pregnancy window, decisional support |
+| CF-5 / FR-016,017 | Priority booking, pre-consult brief | **Done** (`/plan` booking within the SLA, stored; brief in the counsellor console) |
+| CF-6 / FR-018,019 | Confirmatory orders, closed-loop referral | Referral state machine with evidence-to-close and 72 h stall check **Done**. Real FHIR ServiceRequest to labs and Al Amal: **External** |
+| CF-6 / FR-020 | TAMM attendance-only webhook | **Simulated** (`/clinic` completion notice, fixed key allow-list, no genetic fields). Real TAMM endpoint: **External** |
+| CF-6 / FR-021 | 24 h single-use family token | **Done** (signed token, stored nonce; HMAC instead of the PRD's AES-CBC) |
+| FR-024 | MMIC, DCS, GCOS-24 metrics | **Done** (scoring in `lifecycle/measures.py` and `safety.py`, `/plan` and `/checkin`). No marriage-cancellation metric exists anywhere. Item wording is not reproduced (licensed) |
+| FR-025 | Equity dashboard, gap alert at 10 points | **Done** (analyst dashboard, small cells suppressed, gap alert tested at the threshold) |
+| FR-026 | Malaffi sealed publishing | **External** (a FHIR export function exists, with no route on purpose) |
+| FR-027 | Citizen audit timeline | **Done** (hash-chained audit, `/access`) |
+| FR-030 | Break-glass | **Simulated** (`/clinic`, dual attestation, audit; no real SIEM) |
 
 ## Secondary and future
 
 | PRD | Item | Status |
 |---|---|---|
-| SF-1 / FR-023 | Waiting-period check-in (PAGIS) | Flag rule + synthetic check-in API **Core added** (`safety.pagis_flag`); screen **Open** |
-| SF-2 / FR-022 | Variant reclassification alerts | **Core added** (`safety.reclassification`); feed + push **Open** |
-| SF-3 / FR-028 | Multi-loop pedigree builder | Pedigree view and kinship Done; conversational Nasab-Graph builder **Open** |
-| FR-029 | Audio-visual low-literacy mode | Read-aloud + two reading levels Done; Gulf-dialect audio, 10-item low-literacy DCS scoring **Core added** |
-| FR-030 | Break-glass | **Core added** (`safety.break_glass`, dual attestation) |
-| FF-1..3 | Long-read, newborn, cross-GCC | Out of scope per PRD |
+| SF-1 / FR-023 | Waiting-period check-in (PAGIS flag) | **Done** (`/checkin`); item wording from the licensed form |
+| SF-2 / FR-022 | Variant reclassification alerts | **Done with live data**: current classes come from NCBI ClinVar (`/clinic`, `POST /api/lifecycle/reclassify/live`). Automatic nightly feed and push to citizens: **Not done** |
+| SF-3 / FR-028 | Multi-loop pedigree builder | **Done** (`/nasab`: loop questions answered with taps, relatedness from the existing engine). Several loops at once use the largest loop with a warning, not a full multi-loop pedigree |
+| FR-029 | Low-literacy audio-visual mode | Read-aloud, two reading levels and the 10-item yes/unsure/no scoring **Done**. Spoken Emirati-dialect audio: **External** (needs recorded, reviewed audio) |
+| FF-1..3 | Long-read, newborn, cross-GCC | Out of scope per the PRD |
 
-## Out-of-the-box (OOB) and problems
+## Out-of-the-box items and problems
 
 | PRD | Item | Status |
 |---|---|---|
-| OOB-1 | Wifaaq-Zero pre-engagement handshake | PIN pairing **Core added**; UI + enclave **Open / External** |
-| OOB-2 | Silah-Whisper anonymous vouchers | **Core added** (`cascade.WhisperQueue`: no sender column, 24-72 h jitter) |
-| OOB-3 | Safe Vault: screenshot block, watermark, decoy PIN | Decoy PIN hashing **Core added**; FLAG_SECURE / watermark are native-app features **Open** |
-| OOB-4 | Nasab-Graph builder | **Open** |
-| OOB-5 | Itemised billing, split-pay, double-entry ledger | **Core added** (`ledger.py`, Decimal, idempotent, QC refund, blinded receipt); Shafafiya **External** |
-| OOB-6 | 8-stage live lab tracker | **Core added** (`tracking.py`); screen + feed **Open** |
-| OOB-7 | Privacy passbook with push alerts | Audit chain + `/access` Done; push alerts **Open** |
-| OOB-8 | 90-day certificate countdown | **Core added** (`tracking.certificate_status`); screen **Open** |
-| OOB-9 | Majlis elders mode | **Open**, needs reviewed Gulf-dialect content |
-| OOB-10 | Lifecycle re-engagement | **Core added** (`tracking.reengagement_due`); notifications **Open** |
+| OOB-1 | Wifaaq-Zero pre-engagement handshake | PIN pairing **Done**; enclave and QR/NFC: **External / Not done** |
+| OOB-2 | Silah-Whisper anonymous vouchers | **Done** (no sender column, random 24-72 h delay, stored) |
+| OOB-3 | Safe Vault | Decoy PIN with lockout **Done**. Screenshot blocking and forensic watermark are native-app features: **Not done** |
+| OOB-4 | Nasab-Graph | **Done** (see SF-3) |
+| OOB-5 | Itemised billing and double-entry ledger | **Simulated**: exact-money ledger, idempotent posting, QC refund, blinded receipt (`/journey`). Shafafiya and payment rails: **External** |
+| OOB-6 | 8-stage live lab tracker | **Done** (`/journey`, stored); live HL7 feed: **External** |
+| OOB-7 | DNA privacy passbook with push alerts | Audit trail **Done**; push notifications: **Not done** |
+| OOB-8 | 90-day certificate countdown | **Done** (`/journey`, alerts at 60/30/14/7 days) |
+| OOB-9 | Majlis elders mode | **Not done**: needs reviewed Gulf-dialect content; not invented |
+| OOB-10 | Lifecycle re-engagement | **Done** (`/plan`, 6/12-month milestones); automatic notifications: **Not done** |
 | P-01..P-18 | Day-to-day problems | Mapped to the rows above |
+
+## Non-functional requirements
+
+| NFR | Status |
+|---|---|
+| Privacy, k-anonymity, audit chain (NFR-002, 008) | **Done** (suppression under 10 in the demo; the PRD's k of 50 is a config change) |
+| Offline operation (NFR-014) | **Partly done**: installable PWA that caches the app shell and static files; API data is deliberately never cached; encrypted offline queues: **Not done** |
+| Accessibility, RTL, readability (NFR-011..013) | Seven languages, Arabic RTL, large text and contrast **Done**; formal WCAG audit: **Not done** |
+| Sovereign hosting, HSM, FIPS, ADHICS audit (NFR-001, 009, 015, 018) | **External**; the demo runs on Vercel, Render and Neon |
+| Performance and 99.95% availability (NFR-003, 005) | **Not measured**; the free hosting tier sleeps when idle |
+
+## Data sources
+
+- **Live and real**: NCBI ClinVar classes and gnomAD v4 allele frequencies (only variant ids are sent; no person data).
+- **Synthetic by design**: people, results, the 30-condition panel and cohort. The panel stays fictional so the golden files and the
+  non-stigma and evaluation suites remain valid; replacing it needs a real condition list and genetics review.
+
+## Persistence and hosting
+
+Pairings, the lab sample, token nonces, vouchers, vault hashes and bookings are stored through `services/lifecycle/store.py`
+(SQLAlchemy; Postgres through `DATABASE_URL`, SQLite locally). Alembic revisions `0002` and `0003` create the tables. The web app is on
+Vercel, the API on Render (`render.yaml`), Postgres on Neon (free tier).
 
 ## Not adopted on purpose
 
-- Pregnancy and "Class 4/5 only" rules take effect in `triage.py`; the existing tier engine is unchanged so golden files still hold.
-- Instrument item text (DCS, PAGIS, RGCS-DA) is not reproduced; only scoring is implemented. Licensing is needed for items.
-- PRD cost, ROI and accuracy figures (for example 69.3% deflection, AED 350M saved) come from the PRD's citations and are not claims of this repo.
-- Everything stays synthetic; UAE Pass, Malaffi, TAMM, Shafafiya, M42 and HSM integrations are not built and cannot be without sandbox access.
-
-## Wired in this pass
-
-`/api/lifecycle/{tracker,certificate,pairing,receipt,cascade}` (role-gated, rate-limited, every change in the audit chain) and the
-`/journey` screen (lab tracker, certificate countdown, PIN pairing with stop-sharing, own-lines receipt, one-time family link) in
-seven languages plus Urdu. State is persisted (see below), synthetic.
-
-The remaining synthetic APIs are now wired under `/api/lifecycle/`: `triage`, `whisper`, `whisper/dispatch`, `checkin`,
-`reclassify`, `safe-vault`, `safe-vault/unlock`, `tamm`, and `break-glass`. All are role-gated and audited; person submissions
-are rate-limited. Whisper accepts `contact` (7–20 digits with an optional `+`), returns only a queued status, and keeps voucher
-references and content out of the audit chain. Safe Vault stores only per-actor scrypt hashes and locks unlock attempts after
-five failures for the app session, including after PIN reconfiguration. Real and decoy unlocks share the same audit action.
-Request bodies reject unknown fields and bound lists, identifiers and scores: triage lists and reclassification maps allow
-up to 200 entries, DCS allows 1–16 answers, low-literacy DCS requires 10 answers, and PAGIS totals accept 0–200.
-Instrument item text and clinical advice are not included. These routes have integration coverage; screens are separate work.
-
-## Persistence
-
-Pairings, the lab sample, single-use cascade token nonces, Whisper vouchers and safe-vault PIN hashes are stored through
-`services/lifecycle/store.py` (SQLAlchemy). Set `DATABASE_URL` to a Postgres URL (`postgresql+psycopg://...`) and the tables are
-created at startup; Alembic revision `0002` does the same (`alembic upgrade head`). Locally it falls back to SQLite. Vouchers still
-have no column that identifies the sender, token use is a primary-key insert (safe across workers), and PIN lockouts survive
-restarts and reconfiguration. The 101 lifecycle API tests also pass against a real Postgres 16
-(`KINSIGHT_TEST_DATABASE_URL=postgresql+psycopg://... pytest tests/integration/test_lifecycle_api.py`). The audit chain and consent
-tables were already database-backed. Not yet persisted: the receipt (computed per request) and the research cohort.
-
-## Live data
-
-Variant reclassification (SF-2 / FR-022) now reads **live NCBI ClinVar** classes: `POST /api/lifecycle/reclassify/live` (server,
-`services/lifecycle/clinvar.py`, hourly cache, optional `NCBI_API_KEY`) and a browser lookup in mock mode (`web/lib/clinvar.ts`).
-Only ClinVar variation ids are sent; no person, family or result data leaves the system. Everything else (people, results,
-panel frequencies) stays synthetic by design. Population frequencies read **live gnomAD v4**: `POST /api/lifecycle/frequency` (`services/lifecycle/gnomad.py`, 24 h cache)
-and a browser lookup in mock mode (`web/lib/gnomad.ts`); the clinic screen shows worldwide and Middle Eastern carrier share (2q(1-q)).
-gnomAD is not an Emirati cohort, so it is a reference, not a replacement: `configs/panel.yaml` stays fictional on purpose (golden files
-and the synthetic cohort depend on it).
-
-## Next build steps (in order)
-
-1. Screens for triage (counsellor), Whisper vouchers, reclassification alerts, PAGIS check-in, decoy PIN; persist lifecycle state in Postgres.
-3. Hard gate: no couple report download until teach-back passes (PRD Q2).
-4. Conversational pedigree builder; MMIC and GCOS-24 scoring; reclassification feed + alert.
-5. Dual-vault storage split in the migrations.
+- Instrument item text (DCS, PAGIS, RGCS-DA, GCOS-24) is not reproduced; only scoring is implemented.
+- PRD cost, ROI and accuracy figures come from the PRD's own citations and are not claims of this repository.
+- Religious or legal guidance text is not generated; only dates and calendar facts are computed.
+- Everything about real people stays out: no real genomes, no real accounts.
