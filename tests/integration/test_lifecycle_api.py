@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -17,7 +19,18 @@ def api(monkeypatch):
     monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
     monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
     monkeypatch.setenv("KINSIGHT_DEMO_AUTH", "1")
-    app = create_app("sqlite://")
+    url = os.environ.get("KINSIGHT_TEST_DATABASE_URL")  # optional: run this file against a real Postgres
+    if url:
+        from sqlalchemy import create_engine
+
+        from services.consent.models import Base
+        from services.lifecycle.store import LifecycleBase
+
+        engine = create_engine(url)
+        LifecycleBase.metadata.drop_all(engine)
+        Base.metadata.drop_all(engine)
+        engine.dispose()
+    app = create_app(url or "sqlite://")
     with TestClient(app) as client:
         heads = {}
         for persona in PERSONAS:
@@ -361,3 +374,33 @@ def test_frequency_route_roles_validation_and_outage(api, monkeypatch):
 
     monkeypatch.setattr(gnomad, "fetch", down)
     assert c.post("/api/lifecycle/frequency", json=body, headers=h["analyst"]).status_code == 503
+
+
+def test_state_survives_a_restart(monkeypatch, tmp_path):
+    monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
+    monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
+    monkeypatch.setenv("KINSIGHT_DEMO_AUTH", "1")
+    url = f"sqlite:///{tmp_path / 'lifecycle.db'}"
+
+    def session(app, client, persona):
+        token = client.post("/api/auth/persona", json={"persona": persona}).json()["access_token"]
+        return {"Authorization": "Bearer " + token}
+
+    with TestClient(create_app(url)) as c:
+        a, b, rel = (session(None, c, p) for p in ("person_a", "person_b", "relative"))
+        pairing = c.post("/api/lifecycle/pairing", headers=a).json()
+        c.post(f"/api/lifecycle/pairing/{pairing['id']}/confirm", json={"pin": pairing["pin"]}, headers=b)
+        advanced = c.post("/api/lifecycle/tracker/advance", headers=a).json()["stage"]
+        tok = c.post("/api/lifecycle/cascade", json={"condition_id": "cah"}, headers=a).json()["token"]
+        assert c.post("/api/lifecycle/cascade/redeem", json={"token": tok}, headers=rel).status_code == 200
+        c.put("/api/lifecycle/safe-vault", json={"pin": "1234", "decoy_pin": "5678"}, headers=a)
+    with TestClient(create_app(url)) as c:                      # a fresh app on the same database
+        a, b, rel = (session(None, c, p) for p in ("person_a", "person_b", "relative"))
+        assert c.get(f"/api/lifecycle/pairing/{pairing['id']}", headers=a).json()["status"] == "active"
+        assert c.get("/api/lifecycle/tracker", headers=a).json()["stage"] == advanced
+        assert c.post("/api/lifecycle/cascade/redeem", json={"token": tok}, headers=rel).status_code == 403  # still single use
+        assert c.post("/api/lifecycle/safe-vault/unlock", json={"pin": "1234"}, headers=a).json()["view"] == "real"
+        assert c.post(f"/api/lifecycle/pairing/{pairing['id']}/revoke", headers=b).json()["status"] == "revoked"
+    with TestClient(create_app(url)) as c:
+        a = session(None, c, "person_a")
+        assert c.get(f"/api/lifecycle/pairing/{pairing['id']}", headers=a).json()["status"] == "revoked"

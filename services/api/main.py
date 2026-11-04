@@ -46,6 +46,7 @@ from services.consent.policy import (
 )
 from services.consent.roles import PERSONAS
 from services.consent.settings import settings
+from services.lifecycle.store import LifecycleBase
 
 from . import lifecycle_routes
 from .auth import Identity, issue_token, secret, verify_token
@@ -95,6 +96,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         secret("KINSIGHT_TOKEN_SECRET")
         secret("KINSIGHT_AUDIT_SALT")
         Base.metadata.create_all(engine)
+        LifecycleBase.metadata.create_all(engine)
         if isinstance(adapter, DemoBackend):
             with sessions() as seed_db:
                 adapter.seed(seed_db)
