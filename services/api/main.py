@@ -83,6 +83,10 @@ bearer = HTTPBearer(auto_error=False)
 
 def create_app(database_url: str | None = None, backend: Backend | None = None) -> FastAPI:
     url = database_url or os.environ.get("DATABASE_URL", "sqlite:///kinsight-consent.db")
+    # Hosts such as Render hand out postgres:// or postgresql://; SQLAlchemy needs the psycopg driver named.
+    for plain in ("postgres://", "postgresql://"):
+        if url.startswith(plain):
+            url = "postgresql+psycopg://" + url[len(plain):]
     options = {"connect_args": {"check_same_thread": False}} if url.startswith("sqlite") else {}
     if url in {"sqlite://", "sqlite:///:memory:"}:
         options["poolclass"] = StaticPool
