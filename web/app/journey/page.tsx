@@ -1,4 +1,5 @@
 "use client";
+import Restricted from "@/components/Restricted";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ import { useSession } from "@/lib/session";
 export default function Journey() {
   const { t } = useI18n();
   const { persona } = useSession();
-  if (persona !== "person_a" && persona !== "person_b" && persona !== "demo_operator") return <Notice>{t("lifecycle.restricted")}</Notice>;
+  if (persona !== "person_a" && persona !== "person_b" && persona !== "demo_operator") return <Restricted text={t("lifecycle.restricted")} />;
   return <JourneyCards key={persona} persona={persona} />;
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Notice, PageHeader } from "@/components/ui";
@@ -10,7 +11,7 @@ import { useSession } from "@/lib/session";
 export default function Clinic() {
   const { t } = useI18n();
   const { persona } = useSession();
-  if (persona !== "counsellor" && persona !== "demo_operator") return <Notice>{t("safety.clinicRestricted")}</Notice>;
+  if (persona !== "counsellor" && persona !== "demo_operator") return <Restricted text={t("safety.clinicRestricted")} />;
   return <ClinicCards key={persona} />;
 }
 
