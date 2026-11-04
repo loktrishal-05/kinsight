@@ -9,15 +9,29 @@ State is stored through services/lifecycle/store.py (Postgres via DATABASE_URL, 
 import time
 from typing import Annotated, Literal
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy.orm import Session
 
 from services.consent import sharing
-from services.lifecycle import cfg, clinvar, gnomad, ledger, safety, store, tracking, triage
+from services.lifecycle import (
+    booking,
+    cfg,
+    clinvar,
+    gestation,
+    gnomad,
+    ledger,
+    measures,
+    nasab,
+    safety,
+    store,
+    tracking,
+    triage,
+)
 from services.lifecycle.cascade import CascadeTokens
 
 from .auth import secret
+from .interfaces import Unavailable
 
 PERSON = ("person", "demo_operator")
 
@@ -123,6 +137,41 @@ class BreakGlass(LifecycleBody):
     reason: str = Field(min_length=1, max_length=300)
 
 
+class Mmic(LifecycleBody):
+    knowledge_correct: int = Field(ge=0, le=cfg()["measures"]["max_knowledge_items"])
+    knowledge_total: int = Field(ge=1, le=cfg()["measures"]["max_knowledge_items"])
+    attitude: Literal["favourable", "unfavourable"]
+    acted: bool
+
+    @model_validator(mode="after")
+    def valid_counts(self):
+        if self.knowledge_correct > self.knowledge_total:
+            raise ValueError("Invalid knowledge count")
+        return self
+
+
+GcosAnswers = Annotated[list[Annotated[int, Field(ge=cfg()["measures"]["gcos_min"], le=cfg()["measures"]["gcos_max"])]],
+                        Field(min_length=cfg()["measures"]["gcos_items"], max_length=cfg()["measures"]["gcos_items"])]
+
+
+class Gcos(LifecycleBody):
+    answers: GcosAnswers
+    pre: GcosAnswers | None = None
+
+
+class Nasab(LifecycleBody):
+    relations: list[Literal["none", "second_cousins", "first_cousins_once_removed", "first_cousins",
+                            "double_first_cousins", "uncle_niece_or_aunt_nephew"]] = Field(max_length=cfg()["nasab"]["max_loops"])
+
+
+class Gestation(LifecycleBody):
+    days_since_lmp: int = Field(ge=0, le=cfg()["gestation"]["max_days"])
+
+
+class Booking(LifecycleBody):
+    slot_at: int = Field(ge=0, le=cfg()["booking"]["max_slot_timestamp"])
+
+
 def register(app, roles, db_session, limit) -> None:
     def tokens(db: Session) -> CascadeTokens:  # secret read at request time; single-use nonces live in the database
         t = CascadeTokens(secret("KINSIGHT_TOKEN_SECRET"))
@@ -139,6 +188,83 @@ def register(app, roles, db_session, limit) -> None:
     def tracker_view(s: tracking.Sample) -> dict:
         return {"stages": cfg()["lab_stages"], "stage": s.stage, "qc_failure": s.qc_failure,
                 "times": {str(k): v for k, v in s.times.items()}}
+
+    @app.post("/api/lifecycle/measures/mmic")
+    async def mmic(body: Mmic, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        out = measures.mmic(**body.model_dump())
+        audit(db, identity, "mmic", "mmic_scored")
+        return out
+
+    @app.post("/api/lifecycle/measures/gcos")
+    async def gcos(body: Gcos, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        out = {"total": measures.gcos24(body.answers)}
+        if body.pre is not None:
+            out["gain"] = measures.gcos24_gain(body.pre, body.answers)
+        audit(db, identity, "gcos", "gcos_scored")
+        return out
+
+    @app.post("/api/lifecycle/nasab")
+    async def nasab_evaluate(body: Nasab, identity=Depends(roles("person", "relative")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        out = nasab.evaluate(body.relations)
+        audit(db, identity, "nasab", "nasab_evaluated")
+        return out
+
+    @app.post("/api/lifecycle/gestation")
+    async def gestation_evaluate(body: Gestation, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        out = gestation.evaluate(body.days_since_lmp)
+        audit(db, identity, "gestation", "gestation_evaluated")
+        return out
+
+    @app.get("/api/lifecycle/booking/slots")
+    async def booking_slots(sla_hours: int | None = Query(default=None, ge=1, le=cfg()["booking"]["max_sla_hours"]),
+                            identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        out = booking.slots(time.time(), sla_hours)
+        audit(db, identity, "booking", "booking_slots_viewed")
+        return {"slots": out}
+
+    def booking_view(row):
+        return {"id": row.id, "slot_at": row.slot_at, "status": row.status}
+
+    @app.post("/api/lifecycle/booking")
+    async def book(body: Booking, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        row = store.booking_active(db, identity.actor.id)
+        if row is not None:
+            if row.slot_at != body.slot_at:
+                raise HTTPException(409, "Active booking already exists")
+        else:
+            if body.slot_at not in booking.slots(time.time(), None):
+                raise HTTPException(422, "Slot unavailable")
+            try:
+                row = store.booking_create(db, identity.actor.id, body.slot_at)
+            except ValueError:
+                raise HTTPException(409, "Active booking already exists") from None
+        audit(db, identity, row.id, "booking_created")
+        return booking_view(row)
+
+    @app.post("/api/lifecycle/booking/{id}/cancel")
+    async def cancel_booking(id: Identifier, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        limit(db, identity)
+        row = store.booking_cancel(db, identity.actor.id, id)
+        audit(db, identity, row.id, "booking_cancelled")
+        return booking_view(row)
+
+    @app.get("/api/lifecycle/reengagement")
+    async def reengagement(months_since: int = Query(ge=0, le=cfg()["reengage_max_months"]), identity=Depends(roles("person")),
+                           db: Session = Depends(db_session)):
+        limit(db, identity)
+        # Fixed epoch and the same mean-month duration as tracking avoid clock/rounding drift.
+        married_at = -months_since * cfg()["reengage_days_per_month"] * tracking.DAY
+        done = {m for m in cfg()["reengage_months"]
+                if any(m < later <= months_since for later in cfg()["reengage_months"])}
+        due = tracking.reengagement_due(married_at, 0, done)
+        audit(db, identity, "reengagement", "reengagement_checked")
+        return {"due_month": due}
 
     @app.post("/api/lifecycle/triage")
     async def triage_evaluate(body: Triage, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
@@ -235,9 +361,16 @@ def register(app, roles, db_session, limit) -> None:
         return {**tracker_view(s), "is_synthetic": True}
 
     @app.get("/api/lifecycle/certificate")
-    async def certificate(elapsed_days: int = 30, identity=Depends(roles(*PERSON))):
+    async def certificate(elapsed_days: int = 30, identity=Depends(roles(*PERSON)),
+                          db: Session = Depends(db_session)):
         elapsed = max(0, min(elapsed_days, 365))
-        return {**tracking.certificate_status(0, elapsed * tracking.DAY), "is_synthetic": True}
+        try:
+            state = await app.state.backend.invoke("teach_back_status", identity.actor.id, None, db)
+        except Unavailable:
+            state = {"locked": False}  # Adapter cannot answer quiz state for this persona in the synthetic demo.
+        locked = bool(state["locked"])
+        return {**tracking.certificate_status(0, elapsed * tracking.DAY), "is_synthetic": True,
+                "locked": locked, "locked_reason": "teach_back" if locked else None}
 
     @app.post("/api/lifecycle/pairing", status_code=201)
     async def pairing_start(identity=Depends(roles("person")), db: Session = Depends(db_session)):

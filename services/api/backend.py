@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from services.agents.case_graph import Deps, build_case_graph, cfg_of, pending, record_referral, resume_case, start_case
 from services.agents.copilot import answer as copilot_answer
 from services.agents.eval import _couple
-from services.agents.quiz import build_quiz
+from services.agents.quiz import build_quiz, grade
 from services.agents.referral import ReferralError, ReferralState, mark_overdue
 from services.agents.render import load_glossary, load_templates
 from services.analytics.capacity import compare
@@ -125,17 +125,32 @@ class DemoBackend:
         return {"questions": [q_.model_dump() for q_ in q.questions]}
 
     def op_quiz_answers(self, subject, payload, session):
-        if "teach_back" not in pending(self.graph, CASE):
+        waiting = "teach_back" in pending(self.graph, CASE)
+        if not waiting and not (self.values().get("quiz_result") or {}).get("passed"):
             return {"status": "not_waiting"}
         lang = self.values()["template_set"].split("/")[0]
         quiz = build_quiz(self.assessment, lang)
         picks = payload["answers"]
         answers = {q.id: "abc"[i] for q, i in zip(quiz.questions, picks) if i < len(q.options)}
-        resume_case(self.graph, CASE, answers)
+        if waiting:
+            resume_case(self.graph, CASE, answers)
+        else:
+            # The demo case is shared; a second person's own teach-back still needs grading.
+            result = grade(quiz, answers, self.case_cfg["quiz"]["pass_min"])
+            if not result.passed:
+                return {"status": "counsellor_offered"}
         v = self.values()
         if "teach_back" in pending(self.graph, CASE):
             return {"status": "reexplain"}
+        if (v.get("quiz_result") or {}).get("passed") and payload.get("actor_id"):
+            actors = set(v.get("teach_back_passed_actors", [])) | {payload["actor_id"]}
+            self.graph.update_state(cfg_of(CASE), {"teach_back_passed_actors": sorted(actors)})
         return {"status": "counsellor_offered" if v.get("counsellor_offered") else "passed"}
+
+    def op_teach_back_status(self, subject, payload, session):
+        if subject not in self.results:
+            return {"locked": False}  # Demo backend cannot determine quiz state for other personas.
+        return {"locked": subject not in self.values().get("teach_back_passed_actors", [])}
 
     def op_case_status(self, subject, payload, session):
         v = self.values()

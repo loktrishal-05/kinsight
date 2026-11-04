@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Notice, PageHeader } from "@/components/ui";
@@ -58,7 +59,8 @@ function JourneyCards({ persona }: { persona: string }) {
     </section>
     <section className="card space-y-4" aria-labelledby="certificate-title">
       <h2 id="certificate-title" className="text-lg font-semibold">{t("lifecycle.certificate")}</h2>
-      {certificate.data && <>
+      {certificate.data?.locked && <div role="status"><p>{t("plan.locked")}</p><p>{t("plan.unlockNote")}</p><Link className="btn-quiet" href="/understand">{t("plan.understand")}</Link></div>}
+      {certificate.data && !certificate.data.locked && <>
         <p>{certificate.data.days_left} / 90 {t("lifecycle.days")}</p>
         <progress className="h-3 w-full accent-brand-600" max={90} value={certificate.data.days_left} aria-label={t("lifecycle.days")} />
         <p role="status">{certificate.data.expired ? t("lifecycle.expired") : certificate.data.alert_at ? t(`lifecycle.alert.${certificate.data.alert_at}`) : null}</p>

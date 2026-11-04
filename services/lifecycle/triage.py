@@ -36,7 +36,7 @@ def evaluate(a: list[GeneCall], b: list[GeneCall], phi: float, *, pregnant_days:
     unconfirmed = [g for g in shared if any(
         c[g].requires_orthogonal and not c[g].orthogonal_verified for c in (ar_a, ar_b))]
     rules: list[str] = []
-    if pregnant_days is not None and pregnant_days < t["pregnancy_window_days"] and shared:
+    if pregnant_days is not None and pregnant_days < cfg()["gestation"]["day_120"] and shared:
         rules.append("RULE-07_PREGNANCY_WINDOW")
     if unconfirmed:
         rules.append("RULE-03_ORTHOGONAL_HOLD")

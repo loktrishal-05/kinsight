@@ -426,3 +426,184 @@ def test_health_names_the_database_kind_without_secrets(api):
     assert database_kind(make_url("postgresql://u:p@dpg-abc-a/db"))["provider"] == "render"
     assert database_kind(make_url("postgresql://u:p@db.example.org/db"))["provider"] == "external"
     assert "secret" not in str(database_kind(make_url("postgresql://u:secret@h/db")))
+
+
+ADDED_ROUTES = [
+    ("POST", "measures/mmic", {"knowledge_correct": 5, "knowledge_total": 10, "attitude": "favourable", "acted": True}),
+    ("POST", "measures/gcos", {"answers": [1] * 24}),
+    ("POST", "nasab", {"relations": ["first_cousins"]}),
+    ("POST", "gestation", {"days_since_lmp": 70}),
+    ("GET", "booking/slots?sla_hours=12", None),
+    ("POST", "booking", {"slot_at": 0}),
+    ("POST", "booking/missing/cancel", None),
+    ("GET", "reengagement?months_since=6", None),
+]
+
+
+@pytest.mark.parametrize("method,path,body", ADDED_ROUTES)
+def test_added_routes_role_gates_and_auth(api, method, path, body):
+    c, h, _ = api
+    url = "/api/lifecycle/" + path
+    assert c.request(method, url, json=body).status_code == 401
+    allowed = {"person_a", "person_b", "relative"} if path == "nasab" else {"person_a", "person_b"}
+    for persona in set(PERSONAS) - allowed:
+        assert c.request(method, url, json=body, headers=h[persona]).status_code == 403
+    if body is not None:
+        assert c.request(method, url, json={**body, "extra": True}, headers=h["person_a"]).status_code == 422
+
+
+@pytest.mark.parametrize("path,body", [
+    ("measures/mmic", {"knowledge_correct": 11, "knowledge_total": 10, "attitude": "favourable", "acted": True}),
+    ("measures/mmic", {"knowledge_correct": 0, "knowledge_total": 0, "attitude": "favourable", "acted": True}),
+    ("measures/mmic", {"knowledge_correct": True, "knowledge_total": 10, "attitude": "favourable", "acted": True}),
+    ("measures/mmic", {"knowledge_correct": 5, "knowledge_total": 10, "attitude": "unknown", "acted": True}),
+    ("measures/mmic", {"knowledge_correct": 5, "knowledge_total": 10, "attitude": "favourable", "acted": 1}),
+    ("measures/gcos", {"answers": [1] * 23}), ("measures/gcos", {"answers": [1] * 25}),
+    ("measures/gcos", {"answers": [0] * 24}), ("measures/gcos", {"answers": [8] * 24}),
+    ("measures/gcos", {"answers": [True] * 24}), ("measures/gcos", {"answers": [1] * 24, "pre": [1]}),
+    ("nasab", {"relations": ["unknown"]}), ("nasab", {"relations": ["none"] * 5}),
+    ("gestation", {"days_since_lmp": -1}), ("gestation", {"days_since_lmp": 301}),
+    ("gestation", {"days_since_lmp": "70"}), ("booking", {"slot_at": -1}),
+    ("booking", {"slot_at": True}),
+])
+def test_added_strict_validation(api, path, body):
+    c, h, _ = api
+    assert c.post("/api/lifecycle/" + path, json=body, headers=h["person_a"]).status_code == 422
+
+
+@pytest.mark.parametrize("path", ["booking/slots?sla_hours=0", "booking/slots?sla_hours=121",
+    "booking/slots?sla_hours=abc", "reengagement?months_since=-1", "reengagement?months_since=1201",
+    "reengagement?months_since=1.5", "reengagement"])
+def test_added_query_bounds(api, path):
+    c, h, _ = api
+    assert c.get("/api/lifecycle/" + path, headers=h["person_a"]).status_code == 422
+
+
+def test_added_routes_results_and_audits(api):
+    c, h, app = api
+    assert c.post("/api/lifecycle/measures/mmic", headers=h["person_a"], json=ADDED_ROUTES[0][2]).json()["informed"]
+    assert c.post("/api/lifecycle/measures/gcos", headers=h["person_a"],
+                  json={"answers": [7] * 24, "pre": [1] * 24}).json() == {"total": 168, "gain": 144}
+    assert c.post("/api/lifecycle/nasab", headers=h["relative"], json={"relations": ["double_first_cousins"]}).json()["f"] == 0.125
+    assert c.post("/api/lifecycle/gestation", headers=h["person_a"], json={"days_since_lmp": 120}).json()["past_day_120"] is False
+    for months, due in [(0, None), (5, None), (6, 6), (7, 6), (12, 12), (13, 12)]:
+        assert c.get(f"/api/lifecycle/reengagement?months_since={months}", headers=h["person_a"]).json() == {"due_month": due}
+    with app.state.sessions() as db:
+        actions = set(db.scalars(select(AuditEvent.action)))
+        assert {"mmic_scored", "gcos_scored", "nasab_evaluated", "gestation_evaluated", "reengagement_checked"} <= actions
+        assert verify_chain(db)
+
+
+def test_booking_idempotency_ownership_cancel_and_audit(api):
+    c, h, app = api
+    url = "/api/lifecycle/booking"
+    offered = c.get(url + "/slots", headers=h["person_a"]).json()["slots"]
+    assert c.post(url, headers=h["person_a"], json={"slot_at": 1}).status_code == 422
+    body = {"slot_at": offered[0]}
+    response = c.post(url, headers=h["person_a"], json=body)
+    assert response.status_code == 200
+    booked = response.json()
+    assert c.post(url, headers=h["person_a"], json=body).json() == booked
+    assert c.post(url, headers=h["person_a"], json={"slot_at": offered[1]}).status_code == 409
+    cancel = url + f"/{booked['id']}/cancel"
+    assert c.post(cancel, headers=h["person_b"]).status_code == 403
+    assert c.post(cancel, headers=h["person_a"]).json()["status"] == "cancelled"
+    assert c.post(cancel, headers=h["person_a"]).json()["status"] == "cancelled"
+    assert c.post(url, headers=h["person_a"], json=body).json()["id"] != booked["id"]
+    with app.state.sessions() as db:
+        actions = set(db.scalars(select(AuditEvent.action)))
+        assert {"booking_slots_viewed", "booking_created", "booking_cancelled"} <= actions
+        assert verify_chain(db)
+
+
+def test_certificate_gate_tracks_the_person_and_fallback(api, monkeypatch):
+    from services.agents.case_graph import cfg_of
+    from services.agents.quiz import build_quiz
+    from services.api.backend import CASE, A, B, DemoBackend
+
+    c, h, app = api
+    assert not c.get("/api/lifecycle/certificate", headers=h["person_a"]).json()["locked"]
+    backend = DemoBackend()
+    app.state.backend = backend
+    assert c.get("/api/lifecycle/certificate", headers=h["person_a"]).json()["locked_reason"] == "teach_back"
+    with app.state.sessions() as db:
+        backend.op_decision(CASE, {"decision": "approve", "reason_code": "reviewed"}, db)
+        q = build_quiz(backend.assessment, "en")
+        answers = ["abc".index(q.key[item.id]) for item in q.questions]
+        assert backend.op_quiz_answers(CASE, {"answers": answers, "actor_id": A}, db)["status"] == "passed"
+    unlocked = c.get("/api/lifecycle/certificate", headers=h["person_a"]).json()
+    assert unlocked["locked"] is False and unlocked["locked_reason"] is None
+    assert c.get("/api/lifecycle/certificate", headers=h["person_b"]).json()["locked"] is True
+    assert backend.op_teach_back_status(B, None, None)["locked"]
+    with app.state.sessions() as db:
+        wrong = [(answer + 1) % 3 for answer in answers]
+        assert backend.op_quiz_answers(CASE, {"answers": wrong, "actor_id": B}, db)["status"] == "counsellor_offered"
+        assert backend.op_teach_back_status(B, None, db)["locked"]
+        assert backend.op_quiz_answers(CASE, {"answers": answers, "actor_id": B}, db)["status"] == "passed"
+    assert not c.get("/api/lifecycle/certificate", headers=h["person_b"]).json()["locked"]
+    assert not c.get("/api/lifecycle/certificate", headers=h["demo_operator"]).json()["locked"]
+    backend.graph.update_state(cfg_of(CASE), {"quiz_result": {"passed": False}, "teach_back_passed_actors": []})
+    assert c.get("/api/lifecycle/certificate", headers=h["person_a"]).json()["locked"]
+
+
+def test_booking_survives_restart_and_database_enforces_one_active(monkeypatch, tmp_path):
+    from sqlalchemy.exc import IntegrityError
+
+    from services.lifecycle.store import LcBooking
+
+    monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
+    monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
+    monkeypatch.setenv("KINSIGHT_DEMO_AUTH", "1")
+    url = f"sqlite:///{tmp_path / 'booking.db'}"
+    for iteration in range(2):
+        app = create_app(url)
+        with TestClient(app) as c:
+            token = c.post("/api/auth/persona", json={"persona": "person_a"}).json()["access_token"]
+            headers = {"Authorization": "Bearer " + token}
+            if iteration == 0:
+                at = c.get("/api/lifecycle/booking/slots", headers=headers).json()["slots"][0]
+                booked = c.post("/api/lifecycle/booking", headers=headers, json={"slot_at": at}).json()
+            else:
+                assert c.post("/api/lifecycle/booking", headers=headers, json={"slot_at": at}).json() == booked
+                with app.state.sessions() as db:
+                    db.add(LcBooking(id="duplicate", actor="synthetic-a", slot_at=at, status="active"))
+                    with pytest.raises(IntegrityError):
+                        db.commit()
+
+
+@pytest.mark.parametrize("method,path,body", ADDED_ROUTES)
+def test_added_routes_rate_limit(api, method, path, body):
+    c, h, app = api
+    c.get("/api/lifecycle/booking/slots", headers=h["person_a"])
+    with app.state.sessions() as db:
+        db.scalar(select(RateWindow)).requests = settings().rate_limit_requests
+        db.commit()
+    assert c.request(method, "/api/lifecycle/" + path, json=body, headers=h["person_a"]).status_code == 429
+
+
+
+def test_certificate_unlocks_through_quiz_api(api):
+    from services.agents.quiz import build_quiz
+    from services.api.backend import CASE, A, DemoBackend
+
+    backend = DemoBackend()
+    app = create_app("sqlite://", backend=backend)
+    with TestClient(app) as c:
+        headers = {}
+        for persona in ("person_a", "person_b"):
+            token = c.post("/api/auth/persona", json={"persona": persona}).json()["access_token"]
+            headers[persona] = {"Authorization": "Bearer " + token}
+        with app.state.sessions() as db:
+            backend.op_decision(CASE, {"decision": "approve", "reason_code": "reviewed"}, db)
+            db.commit()
+        quiz = build_quiz(backend.assessment, "en")
+        answers = ["abc".index(quiz.key[q.id]) for q in quiz.questions]
+        for persona, actor in (("person_a", A),):
+            before = c.get("/api/lifecycle/certificate", headers=headers[persona])
+            assert before.json()["locked"]
+            # The owner can answer their case quiz through the usual policy gate.
+            result = c.post(f"/api/cases/{CASE}/quiz/answers", headers=headers[persona], json={"answers": answers})
+            assert result.status_code == 200, result.text
+            assert result.json()["status"] == "passed"
+            assert not c.get("/api/lifecycle/certificate", headers=headers[persona]).json()["locked"]
+            assert actor in backend.values()["teach_back_passed_actors"]

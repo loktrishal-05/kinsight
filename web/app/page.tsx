@@ -34,6 +34,18 @@ export default function Landing() {
           <Journey />
         </div>
 
+        <section id="features" aria-labelledby="features-title" className="mx-auto max-w-5xl px-5 pb-24 sm:px-8">
+          <h2 id="features-title" className="font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-bold leading-tight tracking-[-0.03em]">{t("landing.f.title")}</h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {["f1", "f2", "f3", "f4", "f5", "f6"].map((k) => (
+              <li key={k} className="card">
+                <h3 className="font-semibold">{t(`landing.${k}.t`)}</h3>
+                <p className="mt-2 text-sm text-ink/75">{t(`landing.${k}.d`)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section aria-labelledby="close" className="relative isolate overflow-hidden border-t border-line bg-sand">
           <svg aria-hidden className="absolute inset-0 -z-10 h-full w-full text-brand-600/[.07]">
             <defs>

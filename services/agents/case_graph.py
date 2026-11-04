@@ -32,6 +32,7 @@ class CaseState(TypedDict, total=False):
     retries: int
     quiz: dict | None
     quiz_result: dict | None
+    teach_back_passed_actors: list[str]
     reexplain_count: int
     counsellor_offered: bool
     counsellor_decision: dict | None

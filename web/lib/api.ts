@@ -4,6 +4,7 @@ import { z } from "zod";
 import { mock } from "./mock";
 import { real } from "./real";
 import * as safety from "./safety";
+import * as plan from "./plan";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -30,7 +31,7 @@ export const PedigreeS = z.object({
 });
 
 export const TrackerS = z.object({ stages: z.array(z.string()).length(8), stage: z.number().int().min(1).max(8), qc_failure: z.string().nullable(), times: z.record(z.number()) });
-export const CertificateS = z.object({ days_left: z.number().min(0).max(90), expired: z.boolean(), alert_at: z.union([z.literal(60), z.literal(30), z.literal(14), z.literal(7)]).nullable(), genetic_compatibility: z.literal("permanent") });
+export const CertificateS = z.object({ days_left: z.number().min(0).max(90), expired: z.boolean(), alert_at: z.union([z.literal(60), z.literal(30), z.literal(14), z.literal(7)]).nullable(), genetic_compatibility: z.literal("permanent"), locked: z.boolean().optional(), locked_reason: z.literal("teach_back").optional() });
 export const PairingS = z.object({ id: z.string(), pin: z.string().regex(/^\d{9}$/), expires_in: z.number().nonnegative() });
 export const PairingStatusS = z.object({ status: z.enum(["pending", "active", "revoked", "expired"]) });
 const MoneyS = z.string().regex(/^\d+\.\d{2}$/);
@@ -53,6 +54,15 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  demoBooking: () => MOCK ? mock.currentBooking() : null,
+  bookingSlots: async (sla: number) => plan.SlotsS.parse(await impl.bookingSlots(plan.SlaS.parse(sla))),
+  book: async (body: Zod.infer<typeof plan.BookingRequestS>) => plan.BookingS.parse(await impl.book(plan.BookingRequestS.parse(body))),
+  cancelBooking: async (id: string) => plan.CancelS.parse(await impl.cancelBooking(z.string().min(1).parse(id))),
+  gestation: async (body: Zod.infer<typeof plan.GestationRequestS>) => plan.GestationS.parse(await impl.gestation(plan.GestationRequestS.parse(body))),
+  reengagement: async (months: number) => plan.ReengagementS.parse(await impl.reengagement(plan.MonthsS.parse(months))),
+  mmic: async (body: Zod.infer<typeof plan.MmicRequestS>) => plan.MmicS.parse(await impl.mmic(plan.MmicRequestS.parse(body))),
+  gcos: async (body: Zod.infer<typeof plan.GcosRequestS>) => plan.GcosS.parse(await impl.gcos(plan.GcosRequestS.parse(body))),
+  nasab: async (body: Zod.infer<typeof plan.NasabRequestS>) => plan.NasabS.parse(await impl.nasab(plan.NasabRequestS.parse(body))),
   triage: async (body: Zod.infer<typeof safety.TriageRequestS>) => safety.TriageS.parse(await impl.triage(safety.TriageRequestS.parse(body))),
   whisper: async (body: Zod.infer<typeof safety.WhisperRequestS>) => safety.WhisperS.parse(await impl.whisper(safety.WhisperRequestS.parse(body))),
   checkin: async (body: Zod.infer<typeof safety.CheckinRequestS>) => safety.CheckinS.parse(await impl.checkin(safety.CheckinRequestS.parse(body))),

@@ -6,6 +6,19 @@ certificate: { validity_days: 90, alert_days: [60, 30, 14, 7] }
 lab_stages: [booked, collected, received, dna_extracted, ngs_run, orthogonal_verification, bioinfo_qc, report_signed]
 refund_window_hours: 2
 instruments: { dcs_flag_above: 37.5, pagis_flag_below: 96 }
-triage: { pregnancy_window_days: 120, consang_phi_min: 0.0625, emergency_hours: 12, urgent_hours: 48 }
+triage: { consang_phi_min: 0.0625, emergency_hours: 12, urgent_hours: 48 }
 reengage_months: [6, 12]
 referral_stall_hours: 72
+gestation: { day_120: 120, cvs_start_days: 70, cvs_end_days: 84, max_days: 300, days_per_week: 7 }
+measures: { knowledge_cutoff_ratio: 0.5, max_knowledge_items: 1000, gcos_items: 24, gcos_min: 1, gcos_max: 7 }
+nasab: { max_loops: 4 }
+booking:
+  target_business_days: 5
+  max_slots: 5
+  max_sla_hours: 120
+  max_slot_timestamp: 253402300799
+  business_weekdays: [0, 1, 2, 3, 4]
+  # Synthetic UTC template includes weekend/on-call slots for emergency SLAs.
+  weekday_hours: { 0: [0, 6, 12, 18], 1: [0, 6, 12, 18], 2: [0, 6, 12, 18], 3: [0, 6, 12, 18], 4: [0, 6, 12, 18], 5: [0, 6, 12, 18], 6: [0, 6, 12, 18] }
+reengage_days_per_month: 30.4375
+reengage_max_months: 1200

@@ -96,6 +96,24 @@ again and again (sources in [docs/RESEARCH.md](docs/RESEARCH.md)):
 
 Plus a cinematic public landing page, and a demo sign-in with a background film.
 
+### Added from the Silah-Genomics master PRD
+
+A research PRD for the Abu Dhabi challenge asked for more of the day-to-day journey around a result. All of it is built on the same
+deterministic, consent-first core ([docs/PRD_GAP.md](docs/PRD_GAP.md) lists every PRD item and its status).
+
+| Screen | What it does |
+|---|---|
+| **My journey** (`/journey`) | Eight-stage lab tracker, 90-day certificate countdown (genetic compatibility never expires), 9-digit PIN pairing with one-tap stop sharing, own-lines receipt (blinded split view, double-entry ledger), one-time 24-hour family link |
+| **Care plan** (`/plan`) | Priority counselling booking within the clinical SLA, gestational calendar (10-12 week window, day 120), 6/12-month re-engagement, informed-choice and empowerment scoring |
+| **Family tree questions** (`/nasab`) | A few taps describe how partners are related; the existing kinship engine returns the relatedness |
+| **Check-in and privacy tools** (`/checkin`) | Waiting-period check-in scoring, safe vault with a decoy PIN, anonymous family notice (no sender link, random 24-72 h delay) |
+| **Clinic tools** (`/clinic`) | Deterministic escalation rules (orthogonal hold, multi-gene, compound heterozygote, pregnancy window), live ClinVar reclassification alerts, live gnomAD population frequencies, completion notice with no genetic fields, dual-clinician emergency access |
+
+**Live public data.** Reclassification alerts read **NCBI ClinVar** and the frequency card reads **gnomAD v4**, both live and key-free;
+only variant ids are sent. People, results and the panel stay fictional by design.
+
+**Offline basics.** The app installs as a PWA and keeps its shell and static assets for offline use; API responses are never cached.
+
 ## Screens
 
 <table>
@@ -377,9 +395,9 @@ Reproducible from the committed seed ([docs/SCORECARD.md](docs/SCORECARD.md), `p
 
 | Test suite | Count |
 |---|---|
-| Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis) | 491 |
-| Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring) | 32 |
-| End-to-end (Playwright, desktop + phone: demo path, landing, sign-in, volunteer study, Kin with stubbed speech) | 62 |
+| Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis, lifecycle API) | 705 |
+| Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring, lifecycle, live data clients) | 57 |
+| End-to-end (Playwright, desktop + phone: demo path, landing, sign-in, volunteer study, Kin with stubbed speech) | 64 |
 
 CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a production build and Playwright on every push.
 
@@ -393,7 +411,7 @@ CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a
 | Workflow | LangGraph case graph with durable checkpoints (SQLite locally, Postgres in Compose) |
 | Data | PostgreSQL 16, Redis 7, SQLAlchemy + Alembic migrations, YAML configuration |
 | Testing | pytest + Hypothesis, Vitest, Playwright |
-| Delivery | Docker Compose, GitHub Actions |
+| Delivery | Docker Compose, GitHub Actions; web on Vercel, API on Render (`render.yaml`), Postgres on Neon (free) |
 
 ## Repository layout
 
@@ -405,20 +423,21 @@ kinsight/
 │   ├── consent/      decide(), roles, sharing, hash-chained audit, aggregates
 │   ├── analytics/    comprehension and capacity simulation
 │   ├── cohort/       seeded synthetic families, couples and screening results
+│   ├── lifecycle/    pairing, lab tracker, certificate, ledger, triage rules, booking, measures, live ClinVar and gnomAD, DB store
 │   └── api/          FastAPI app, schemas, demo backend
-├── configs/          panel, escalation, wording, case, capacity, privacy, flags, llm
+├── configs/          panel, escalation, wording, case, capacity, privacy, flags, llm, lifecycle
 ├── templates/<lang>/ approved explanation blocks (basic, standard), labels, wording, quiz
 ├── web/
 │   ├── app/          landing (/), sign-in, home and every app route
 │   ├── components/   3D hero, Kin, pedigree, visuals, shell
-│   ├── lib/          API adapters (mock and live), i18n, demo script, assistant rules
+│   ├── lib/          API adapters (mock and live), i18n, assistant rules, live data clients
 │   ├── messages/     interface text per language
 │   ├── content/      Learn and Kin packs per language
 │   └── e2e/, tests/  Playwright and Vitest suites
 ├── scripts/          cohort, demo, fixtures export, scorecard
 ├── tests/            Python suites (unit, property, golden, integration, red-team, evals)
 ├── docs/             specification, research, architecture, model card, pilot, study protocol, screenshots
-└── docker-compose.yml, Dockerfile.api, Makefile
+└── docker-compose.yml, Dockerfile.api, render.yaml, Makefile
 ```
 
 ## Getting started
@@ -481,6 +500,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 |---|---|
 | Engine, consent, audit, case graph, API, web app, dashboards | Done and tested |
 | Cinematic landing, demo sign-in | Done and tested |
+| Silah-Genomics PRD layer (journey, care plan, family tree questions, check-in, clinic tools, live ClinVar and gnomAD, PWA basics) | Done and tested; see [docs/PRD_GAP.md](docs/PRD_GAP.md) for the few items that need real systems |
 | Seven languages end to end | Done; translations pending native-speaker and genetics review |
 | **Volunteer comprehension study** | **Tooling built and tested; study not yet run.** `/study` (consent, case, five-question check, rating), `/study/results` (summary and CSV export) and `scripts/analyse_study.py` are ready ([docs/study/protocol.md](docs/study/protocol.md)). It still needs real participants and an ethics check, so the scorecard reports comprehension as not measured and no comprehension claims are made. |
 | Clinical validation, in-region hosting, accredited reviewers, real sign-in and data feed | Out of scope for a fictional demo. What a real pilot would need, with gates and decisions: [docs/PILOT_READINESS.md](docs/PILOT_READINESS.md) · [docs/pilot_plan.md](docs/pilot_plan.md) |

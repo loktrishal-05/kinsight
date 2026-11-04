@@ -6,8 +6,9 @@ Vouchers deliberately have no column that identifies the person who triggered th
 from __future__ import annotations
 
 import json
+import uuid
 
-from sqlalchemy import Float, Integer, String, Text, select
+from sqlalchemy import Float, Index, Integer, String, Text, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -201,3 +202,38 @@ def vault_fail(db: Session, actor: str) -> None:
         db.add(r)
     r.failures += 1
     db.commit()
+
+
+class LcBooking(LifecycleBase):
+    __tablename__ = "lc_booking"
+    __table_args__ = (Index("lc_booking_one_active_actor", "actor", unique=True,
+                            sqlite_where=text("status = 'active'"), postgresql_where=text("status = 'active'")),)
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    actor: Mapped[str] = mapped_column(String, index=True)
+    slot_at: Mapped[float] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String)
+
+
+def booking_active(db: Session, actor: str) -> LcBooking | None:
+    return db.scalar(select(LcBooking).where(LcBooking.actor == actor, LcBooking.status == "active"))
+
+
+def booking_create(db: Session, actor: str, slot_at: int) -> LcBooking:
+    row = LcBooking(id=uuid.uuid4().hex, actor=actor, slot_at=slot_at, status="active")
+    db.add(row)
+    try:
+        db.flush()
+    except IntegrityError:
+        db.rollback()
+        row = booking_active(db, actor)
+        if row is None or row.slot_at != slot_at:
+            raise ValueError("Active booking already exists") from None
+    return row
+
+
+def booking_cancel(db: Session, actor: str, booking_id: str) -> LcBooking:
+    row = db.get(LcBooking, booking_id, with_for_update=True)
+    if row is None or row.actor != actor:
+        raise PermissionError("Access unavailable")
+    row.status = "cancelled"
+    return row
