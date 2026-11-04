@@ -4,6 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e-live",
   timeout: 40_000,
+  workers: 1,
   webServer: { command: "set NEXT_PUBLIC_MOCK=0&& npm run build && npm start -- -p 3200", port: 3200, reuseExistingServer: true, timeout: 240_000 },
   use: { baseURL: "http://localhost:3200", ...devices["Desktop Chrome"] },
 });
