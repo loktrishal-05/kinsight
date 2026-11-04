@@ -1,6 +1,6 @@
 """Synthetic lifecycle routes for pairing, tracking, triage, counselling safety and demo operations.
 
-Demo state lives in memory per app instance and holds synthetic data only. Every state change is written to the audit chain.
+State is stored through services/lifecycle/store.py (Postgres via DATABASE_URL, SQLite locally) and holds synthetic data only. Every state change is written to the audit chain.
 """
 
 # FastAPI evaluates dependency declarations when registering routes.
@@ -14,9 +14,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy.orm import Session
 
 from services.consent import sharing
-from services.lifecycle import cfg, clinvar, gnomad, ledger, safety, tracking, triage
-from services.lifecycle.cascade import CascadeTokens, WhisperQueue
-from services.lifecycle.pairing import PairingStore
+from services.lifecycle import cfg, clinvar, gnomad, ledger, safety, store, tracking, triage
+from services.lifecycle.cascade import CascadeTokens
 
 from .auth import secret
 
@@ -125,25 +124,17 @@ class BreakGlass(LifecycleBody):
 
 
 def register(app, roles, db_session, limit) -> None:
-    pairs = PairingStore()
-    samples: dict[str, tracking.Sample] = {}
-    holder: list[CascadeTokens] = []
-    whispers = WhisperQueue()
-    vaults: dict[str, tuple[str, str]] = {}
-    vault_failures: dict[str, int] = {}
-
-    def tokens() -> CascadeTokens:  # lazy: the secret is read at request time, like the other routes
-        if not holder:
-            holder.append(CascadeTokens(secret("KINSIGHT_TOKEN_SECRET")))
-        return holder[0]
+    def tokens(db: Session) -> CascadeTokens:  # secret read at request time; single-use nonces live in the database
+        t = CascadeTokens(secret("KINSIGHT_TOKEN_SECRET"))
+        t.used = store.UsedNonces(db)
+        return t
 
     def audit(db: Session, identity, ref: str, action: str) -> None:
         sharing.log_change(db, identity.actor, ref, action, secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
 
-    def sample_of(identity) -> tracking.Sample:
-        return samples.setdefault(identity.actor.id, tracking.Sample("DEMO-" + identity.actor.id[-1].upper(), stage=3,
-                                  times={1: time.time() - 4 * 86400, 2: time.time() - 3 * 86400}))
+    def sample_of(db: Session, identity) -> tracking.Sample:
+        return store.sample_get(db, identity.actor.id, time.time())
 
     def tracker_view(s: tracking.Sample) -> dict:
         return {"stages": cfg()["lab_stages"], "stage": s.stage, "qc_failure": s.qc_failure,
@@ -162,14 +153,14 @@ def register(app, roles, db_session, limit) -> None:
     async def whisper(body: Whisper, identity=Depends(roles("person")), db: Session = Depends(db_session)):
         limit(db, identity)
         audit(db, identity, "whisper", "whisper_queued")  # No voucher reference links the audit actor to a row.
-        whispers.enqueue(body.contact, body.gene_family, time.time())
+        store.whisper_enqueue(db, body.contact, body.gene_family, time.time())
         return {"status": "queued"}
 
     @app.post("/api/lifecycle/whisper/dispatch")
     async def whisper_dispatch(body: Dispatch, identity=Depends(roles("demo_operator")),
                                db: Session = Depends(db_session)):
         audit(db, identity, "whisper", "whisper_dispatched")
-        return {"dispatched": len(whispers.due(time.time() + body.advance_hours * 3600))}
+        return {"dispatched": store.whisper_due(db, time.time() + body.advance_hours * 3600)}
 
     @app.post("/api/lifecycle/checkin")
     async def checkin(body: Checkin, identity=Depends(roles("person")), db: Session = Depends(db_session)):
@@ -194,20 +185,20 @@ def register(app, roles, db_session, limit) -> None:
         limit(db, identity)
         hashes = safety.hash_pin(body.pin), safety.hash_pin(body.decoy_pin)
         audit(db, identity, "safe-vault", "safe_vault_configured")
-        vaults[identity.actor.id] = hashes
+        store.vault_set(db, identity.actor.id, *hashes)
         return {"status": "configured"}
 
     @app.post("/api/lifecycle/safe-vault/unlock")
     async def vault_unlock(body: VaultPin, identity=Depends(roles("person")), db: Session = Depends(db_session)):
         limit(db, identity)
         actor = identity.actor.id
-        if vault_failures.get(actor, 0) >= 5:
+        vault = store.vault_get(db, actor)
+        if vault is not None and vault.failures >= 5:
             audit(db, identity, "safe-vault", "safe_vault_limited")
             raise HTTPException(429, "Request limit reached")
-        hashes = vaults.get(actor)
-        view = safety.check_pins(body.pin, *hashes) if hashes else "none"
+        view = safety.check_pins(body.pin, vault.real_hash, vault.decoy_hash) if vault and vault.real_hash else "none"
         if view == "none":
-            vault_failures[actor] = vault_failures.get(actor, 0) + 1
+            store.vault_fail(db, actor)
             audit(db, identity, "safe-vault", "safe_vault_refused")
             raise PermissionError("Access unavailable")
         audit(db, identity, "safe-vault", "safe_vault_unlocked")
@@ -230,15 +221,16 @@ def register(app, roles, db_session, limit) -> None:
         return {**out, "is_synthetic": True}
 
     @app.get("/api/lifecycle/tracker")
-    async def tracker(identity=Depends(roles(*PERSON))):
-        return {**tracker_view(sample_of(identity)), "is_synthetic": True}
+    async def tracker(identity=Depends(roles(*PERSON)), db: Session = Depends(db_session)):
+        return {**tracker_view(sample_of(db, identity)), "is_synthetic": True}
 
     @app.post("/api/lifecycle/tracker/advance")
     async def tracker_advance(identity=Depends(roles(*PERSON)), db: Session = Depends(db_session)):
-        s = sample_of(identity)
+        s = sample_of(db, identity)
         if s.qc_failure or s.stage >= len(cfg()["lab_stages"]):
             raise HTTPException(409, "Nothing to advance")
         tracking.advance(s, time.time())
+        store.sample_save(db, identity.actor.id, s)
         audit(db, identity, s.barcode, "tracker_advance")
         return {**tracker_view(s), "is_synthetic": True}
 
@@ -250,30 +242,28 @@ def register(app, roles, db_session, limit) -> None:
     @app.post("/api/lifecycle/pairing", status_code=201)
     async def pairing_start(identity=Depends(roles("person")), db: Session = Depends(db_session)):
         limit(db, identity)
-        row = pairs.initiate(identity.actor.id, time.time())  # PermissionError -> 403
+        row = store.pairing_initiate(db, identity.actor.id, time.time())  # PermissionError -> 403
         audit(db, identity, row.id, "pairing_started")
         return {"id": row.id, "pin": row.pin, "expires_in": cfg()["pairing"]["ttl_seconds"], "is_synthetic": True}
 
     @app.post("/api/lifecycle/pairing/{id}/confirm")
     async def pairing_confirm(id: str, body: Pin, identity=Depends(roles("person")), db: Session = Depends(db_session)):
         limit(db, identity)
-        row = pairs.confirm(id, body.pin, identity.actor.id, time.time())
+        row = store.pairing_confirm(db, id, body.pin, identity.actor.id, time.time())
         audit(db, identity, row.id, "pairing_confirmed")
         return {"status": row.status, "is_synthetic": True}
 
     @app.post("/api/lifecycle/pairing/{id}/revoke")
     async def pairing_revoke(id: str, identity=Depends(roles("person")), db: Session = Depends(db_session)):
-        row = pairs.revoke(id, identity.actor.id)
+        row = store.pairing_revoke(db, id, identity.actor.id)
         audit(db, identity, row.id, "pairing_revoked")
         return {"status": row.status, "is_synthetic": True}
 
     @app.get("/api/lifecycle/pairing/{id}")
-    async def pairing_status(id: str, identity=Depends(roles("person"))):
-        row = pairs.rows.get(id)
-        if row is None or identity.actor.id not in {row.initiator, row.partner}:
+    async def pairing_status(id: str, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        row = store.pairing_get(db, id, identity.actor.id, time.time())
+        if row is None:
             raise HTTPException(403, "Access unavailable")
-        if row.status == "pending" and time.time() >= row.expires_at:
-            row.status = "expired"
         return {"status": row.status, "is_synthetic": True}
 
     @app.get("/api/lifecycle/receipt")
@@ -293,12 +283,12 @@ def register(app, roles, db_session, limit) -> None:
     async def cascade_mint(body: Condition, identity=Depends(roles("person")), db: Session = Depends(db_session)):
         limit(db, identity)
         audit(db, identity, body.condition_id, "cascade_minted")
-        return {"token": tokens().mint(body.condition_id, time.time()), "is_synthetic": True}
+        return {"token": tokens(db).mint(body.condition_id, time.time()), "is_synthetic": True}
 
     @app.post("/api/lifecycle/cascade/redeem")
     async def cascade_redeem(body: Token, identity=Depends(roles("relative", "person")), db: Session = Depends(db_session)):
         limit(db, identity)
-        out = tokens().redeem(body.token, time.time())  # PermissionError -> 403 with no reason
+        out = tokens(db).redeem(body.token, time.time())  # PermissionError -> 403 with no reason
         audit(db, identity, out["condition_id"], "cascade_redeemed")
         return {**out, "is_synthetic": True}
 

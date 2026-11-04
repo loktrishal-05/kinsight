@@ -63,7 +63,7 @@ wired to `/api/lifecycle/*` (flag `lifecycle`) and the `/journey` screen where n
 
 `/api/lifecycle/{tracker,certificate,pairing,receipt,cascade}` (role-gated, rate-limited, every change in the audit chain) and the
 `/journey` screen (lab tracker, certificate countdown, PIN pairing with stop-sharing, own-lines receipt, one-time family link) in
-seven languages plus Urdu. Demo state is in memory, synthetic, and resets on restart.
+seven languages plus Urdu. State is persisted (see below), synthetic.
 
 The remaining synthetic APIs are now wired under `/api/lifecycle/`: `triage`, `whisper`, `whisper/dispatch`, `checkin`,
 `reclassify`, `safe-vault`, `safe-vault/unlock`, `tamm`, and `break-glass`. All are role-gated and audited; person submissions
@@ -73,6 +73,16 @@ five failures for the app session, including after PIN reconfiguration. Real and
 Request bodies reject unknown fields and bound lists, identifiers and scores: triage lists and reclassification maps allow
 up to 200 entries, DCS allows 1–16 answers, low-literacy DCS requires 10 answers, and PAGIS totals accept 0–200.
 Instrument item text and clinical advice are not included. These routes have integration coverage; screens are separate work.
+
+## Persistence
+
+Pairings, the lab sample, single-use cascade token nonces, Whisper vouchers and safe-vault PIN hashes are stored through
+`services/lifecycle/store.py` (SQLAlchemy). Set `DATABASE_URL` to a Postgres URL (`postgresql+psycopg://...`) and the tables are
+created at startup; Alembic revision `0002` does the same (`alembic upgrade head`). Locally it falls back to SQLite. Vouchers still
+have no column that identifies the sender, token use is a primary-key insert (safe across workers), and PIN lockouts survive
+restarts and reconfiguration. The 101 lifecycle API tests also pass against a real Postgres 16
+(`KINSIGHT_TEST_DATABASE_URL=postgresql+psycopg://... pytest tests/integration/test_lifecycle_api.py`). The audit chain and consent
+tables were already database-backed. Not yet persisted: the receipt (computed per request) and the research cohort.
 
 ## Live data
 
