@@ -1,4 +1,6 @@
 // Real-API adapters (NEXT_PUBLIC_MOCK=0). They reshape the backend's strict responses for the screens; no figures are computed here.
+import type { z } from "zod";
+import type * as safety from "./safety";
 import type { Consent, Couple, Pedigree, Quiz, Result, Step } from "./api";
 
 // Tokens live in sessionStorage so a page reload keeps the demo persona (cleared when the tab closes).
@@ -26,6 +28,15 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  triage: (body: z.infer<typeof safety.TriageRequestS>) => json("/api/lifecycle/triage", post(body)),
+  whisper: (body: z.infer<typeof safety.WhisperRequestS>) => json("/api/lifecycle/whisper", post(body)),
+  checkin: (body: z.infer<typeof safety.CheckinRequestS>) => json("/api/lifecycle/checkin", post(body)),
+  reclassify: (body: z.infer<typeof safety.ReclassifyRequestS>) => json("/api/lifecycle/reclassify", post(body)),
+  safeVault: (body: z.infer<typeof safety.VaultRequestS>) => json("/api/lifecycle/safe-vault", { ...post(body), method: "PUT" }),
+  unlockVault: (body: z.infer<typeof safety.UnlockRequestS>) => json("/api/lifecycle/safe-vault/unlock", post(body)),
+  tamm: (body: z.infer<typeof safety.TammRequestS>) => json("/api/lifecycle/tamm", post(body)),
+  breakGlass: (body: z.infer<typeof safety.BreakGlassRequestS>) => json("/api/lifecycle/break-glass", post(body)),
+
   tracker: () => json("/api/lifecycle/tracker"),
   advanceTracker: () => json("/api/lifecycle/tracker/advance", post({})),
   certificate: (elapsed: number) => json(`/api/lifecycle/certificate?elapsed_days=${elapsed}`),
@@ -95,7 +106,7 @@ export const real = {
   dashboard: () => json("/api/analytics/dashboard"),
   async comprehension() {
     const d = await json("/api/analytics/comprehension");
-    return { groups: Object.entries(d.cells).map(([k, n]) => ({ language: k.split("_")[0], reading_level: k.split("_")[1], n: n ?? 0, pass_rate: "—" })), gap_points: "—", target_gap_points: 10, label: "Counts only (suppressed and noised); pass rates need quiz results." };
+    return { groups: Object.entries(d.cells).map(([k, n]) => ({ language: k.split("_")[0], reading_level: k.split("_")[1], n: n ?? 0, pass_rate: "â€”" })), gap_points: "â€”", target_gap_points: 10, label: "Counts only (suppressed and noised); pass rates need quiz results." };
   },
   capacity: () => json("/api/analytics/capacity/simulation"),
   auditVerify: async () => json("/api/governance/audit-verify"),

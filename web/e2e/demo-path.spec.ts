@@ -61,7 +61,7 @@ test("settings: dark theme, large text; search palette opens with Ctrl+K and nav
   await expect(page.locator("html")).toHaveAttribute("data-text", "2");
   await page.keyboard.press("Escape");
   await page.keyboard.press("Control+k");
-  await page.getByRole("dialog", { name: "Search" }).getByRole("textbox").fill("privacy");
+  await page.getByRole("dialog", { name: "Search" }).getByRole("textbox").fill("Privacy centre");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/privacy/);
 });
