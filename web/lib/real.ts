@@ -1,6 +1,7 @@
 // Real-API adapters (NEXT_PUBLIC_MOCK=0). They reshape the backend's strict responses for the screens; no figures are computed here.
 import type { z } from "zod";
 import type * as safety from "./safety";
+import type * as plan from "./plan";
 import type { Consent, Couple, Pedigree, Quiz, Result, Step } from "./api";
 
 // Tokens live in sessionStorage so a page reload keeps the demo persona (cleared when the tab closes).
@@ -28,6 +29,14 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  bookingSlots: (sla: number) => json(`/api/lifecycle/booking/slots?sla_hours=${sla}`),
+  book: (body: z.infer<typeof plan.BookingRequestS>) => json("/api/lifecycle/booking", post(body)),
+  cancelBooking: (id: string) => json(`/api/lifecycle/booking/${encodeURIComponent(id)}/cancel`, post({})),
+  gestation: (body: z.infer<typeof plan.GestationRequestS>) => json("/api/lifecycle/gestation", post(body)),
+  reengagement: (months: number) => json(`/api/lifecycle/reengagement?months_since=${months}`),
+  mmic: (body: z.infer<typeof plan.MmicRequestS>) => json("/api/lifecycle/measures/mmic", post(body)),
+  gcos: (body: z.infer<typeof plan.GcosRequestS>) => json("/api/lifecycle/measures/gcos", post(body)),
+  nasab: (body: z.infer<typeof plan.NasabRequestS>) => json("/api/lifecycle/nasab", post(body)),
   triage: (body: z.infer<typeof safety.TriageRequestS>) => json("/api/lifecycle/triage", post(body)),
   whisper: (body: z.infer<typeof safety.WhisperRequestS>) => json("/api/lifecycle/whisper", post(body)),
   checkin: (body: z.infer<typeof safety.CheckinRequestS>) => json("/api/lifecycle/checkin", post(body)),

@@ -1,7 +1,8 @@
 // Mock mode: serves responses built from the generated fixtures (engine + verified templates + demo cohort).
-// Nothing here computes a risk figure; every number comes from lib/fixtures/data.json. State survives reloads (sessionStorage).
+// Risk figures come from lib/fixtures/data.json or labelled fixed demo tables. State survives reloads (sessionStorage).
 import { z } from "zod";
 import * as safety from "./safety";
+import * as plan from "./plan";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
 import { liveFrequency } from "./gnomad";
@@ -25,10 +26,11 @@ type Link = { condition_id: string; expires_at: number; used: boolean };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
+  bookings: Record<string, plan.Booking>; bookingSequence: number;
   vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  bookings: {}, bookingSequence: 0, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -49,7 +51,43 @@ const getPair = (id: string) => {
   return pair;
 };
 
+// Labelled single-loop fictional fixtures. No pedigree calculation runs in the browser.
+const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
+const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  currentBooking() { const booking = S.bookings[S.persona]; return booking ? { ...booking } : null; },
+  async bookingSlots(sla: number) { return { slots: [...DEMO_SLOTS[plan.SlaS.parse(sla)]] }; },
+  async book(body: z.infer<typeof plan.BookingRequestS>) {
+    const { slot_at } = plan.BookingRequestS.parse(body);
+    if (!Object.values(DEMO_SLOTS).some((slots) => slots.includes(slot_at))) throw new Error("422");
+    if (S.bookings[S.persona]?.status === "booked") throw new Error("409");
+    const booking = { id: `demo-booking-${++S.bookingSequence}`, slot_at, status: "booked" };
+    S.bookings[S.persona] = booking; save(); return { ...booking };
+  },
+  async cancelBooking(id: string) {
+    const booking = S.bookings[S.persona];
+    if (!booking || booking.id !== id) throw new Error("404");
+    booking.status = "cancelled"; save(); return { status: booking.status };
+  },
+  async gestation(body: z.infer<typeof plan.GestationRequestS>) {
+    const { days_since_lmp: days } = plan.GestationRequestS.parse(body);
+    return { days, weeks: Math.floor(days / 7), in_cvs_window: days >= 70 && days <= 84, days_to_day_120: Math.max(0, 120 - days), past_day_120: days > 120 };
+  },
+  async reengagement(months: number) { plan.MonthsS.parse(months); return { due_month: months === 6 ? 6 : months === 12 ? 12 : null }; },
+  async mmic(body: z.infer<typeof plan.MmicRequestS>) {
+    const v = plan.MmicRequestS.parse(body);
+    // shortcut: illustrative knowledge threshold, use the clinic API for validated measure scoring.
+    const knowledge = v.knowledge_correct / v.knowledge_total >= 0.5;
+    const consistent = (v.attitude === "favourable") === v.acted;
+    return { informed: knowledge && consistent, dimension_flags: { knowledge, consistent } };
+  },
+  async gcos(body: z.infer<typeof plan.GcosRequestS>) { const v = plan.GcosRequestS.parse(body); return { total: v.answers.reduce((sum, answer) => sum + answer, 0) }; },
+  async nasab(body: z.infer<typeof plan.NasabRequestS>) {
+    const { relations } = plan.NasabRequestS.parse(body);
+    // shortcut: multiple loops show only the first labelled fixture, use the API for a combined pedigree estimate.
+    const relation = relations[0];
+    return { f: DEMO_NASAB[relation], phi: DEMO_NASAB[relation], label_key: `plan.relation.${relation}`, warnings: relations.length > 1 ? ["plan.demoLoops"] : [] };
+  },
   // Fixed fictional demo outputs only; these branches demonstrate rules, never clinical risk calculations.
   async triage(body: z.infer<typeof safety.TriageRequestS>) {
     const v = safety.TriageRequestS.parse(body);
@@ -92,7 +130,7 @@ export const mock = {
   async advanceTracker() { S.labStage = Math.min(8, S.labStage + 1); save(); return mock.tracker(); },
   async certificate(elapsed: number) {
     if (!Number.isInteger(elapsed) || elapsed < 0 || elapsed > 120) throw new Error("422");
-    return { ...DEMO_CERTIFICATES[elapsed] };
+    return { ...DEMO_CERTIFICATES[elapsed], locked: !S.passed, ...(!S.passed ? { locked_reason: "teach_back" as const } : {}) };
   },
   async startPairing() {
     const id = `demo-pair-${S.pairs.length + 1}`;
