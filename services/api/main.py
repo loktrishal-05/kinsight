@@ -84,7 +84,14 @@ bearer = HTTPBearer(auto_error=False)
 def database_kind(url) -> dict:
     """Which database the API uses, without host names, users or passwords."""
     host = url.host or ""
-    provider = "neon" if host.endswith("neon.tech") else "render" if host.endswith("render.com") else "other" if host else "local"
+    if not host:
+        provider = "local"
+    elif "neon" in host or "lakebase" in host:
+        provider = "neon"
+    elif host.endswith("render.com") or "." not in host:  # Render's internal URL is a bare name such as dpg-abc123-a
+        provider = "render"
+    else:
+        provider = "external"
     return {"dialect": url.get_backend_name(), "provider": provider}
 
 

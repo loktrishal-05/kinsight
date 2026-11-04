@@ -423,4 +423,6 @@ def test_health_names_the_database_kind_without_secrets(api):
     assert c.get("/api/health").json()["database"] == {"dialect": "sqlite", "provider": "local"}
     assert database_kind(make_url("postgresql+psycopg://u:secret@ep-x.us-east-2.aws.neon.tech/db")) == {"dialect": "postgresql", "provider": "neon"}
     assert database_kind(make_url("postgresql+psycopg://u:p@dpg-1.oregon-postgres.render.com/db"))["provider"] == "render"
+    assert database_kind(make_url("postgresql://u:p@dpg-abc-a/db"))["provider"] == "render"
+    assert database_kind(make_url("postgresql://u:p@db.example.org/db"))["provider"] == "external"
     assert "secret" not in str(database_kind(make_url("postgresql://u:secret@h/db")))
