@@ -14,10 +14,15 @@ const save = () => { keep("ks_tok", token); keep("ks_ptok", partnerToken); keep(
 const COUPLE = "demo-couple", CASE = "demo-case";
 const other = () => (me === "synthetic-a" ? "synthetic-b" : "synthetic-a");
 
-async function raw(path: string, init: RequestInit = {}, tok = token): Promise<Response> {
+// A fresh tab opened straight on a screen has no token yet: the quiet sign-in below runs first and every API call waits for it.
+let pendingLogin: Promise<unknown> | null = null;
+
+async function raw(path: string, init: RequestInit = {}, given?: string): Promise<Response> {
+  if (pendingLogin && !path.startsWith("/api/auth/")) await pendingLogin;
+  const tok = given === undefined ? token : given; // read after the wait: the quiet sign-in may have just set it
   return trackSlow(fetch(path, { ...init, headers: { "content-type": "application/json", ...(tok ? { authorization: `Bearer ${tok}` } : {}), ...init.headers } }));
 }
-async function json<T = any>(path: string, init: RequestInit = {}, tok = token): Promise<T> {
+async function json<T = any>(path: string, init: RequestInit = {}, tok?: string): Promise<T> {
   const r = await raw(path, init, tok);
   if (!r.ok) throw new Error(String(r.status));
   return r.json();
@@ -125,3 +130,9 @@ export const real = {
   async policy() { const d = await json("/api/governance/policy"); return { rules: [`Purposes: ${d.purposes.join(", ")}`, d.unrelated_use, "Default deny; no export route"] }; },
   async sources() { const d = await json("/api/governance/data-sources", {}, ""); return d.metadata.split("\n").filter((l: string) => l.startsWith("|") && !l.startsWith("|---")).slice(1).map((l: string) => { const c = l.split("|").map((x) => x.trim()); return { source: c[1], licence: c[2], kind: c[3] }; }); },
 };
+
+if (typeof window !== "undefined" && !token && !["/", "/signin"].includes(window.location.pathname)) {
+  let persona = "person_a";
+  try { persona = sessionStorage.getItem("ks_persona") ?? localStorage.getItem("ks_persona") ?? persona; } catch { /* private mode */ }
+  pendingLogin = real.login(persona).catch(() => { /* the screens show their own error */ }).finally(() => { pendingLogin = null; });
+}

@@ -1,6 +1,7 @@
 {
   "_status": "placeholder - needs native-speaker review before approval (docs/REVIEWS.md)",
   "banner": "جميع الأشخاص والنتائج هنا خيالية.",
+  "session.switch": "تبديل العرض",
   "api.waking": "نوقظ الخادم. قد يستغرق أول طلب بعد فترة خمول حتى دقيقة.",
   "app": "كِنسايت",
   "tagline": "دليل خاص ولطيف للأسئلة الصحية الوراثية في العائلات.",

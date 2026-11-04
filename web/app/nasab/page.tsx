@@ -1,4 +1,5 @@
 "use client";
+import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Notice, PageHeader } from "@/components/ui";
@@ -10,7 +11,7 @@ import { useSession } from "@/lib/session";
 export default function Nasab() {
   const { t } = useI18n();
   const { persona } = useSession();
-  if (persona !== "person_a" && persona !== "person_b" && persona !== "relative" && persona !== "demo_operator") return <Notice>{t("plan.familyRestricted")}</Notice>;
+  if (persona !== "person_a" && persona !== "person_b" && persona !== "relative" && persona !== "demo_operator") return <Restricted text={t("plan.familyRestricted")} />;
   return <Questions key={persona} />;
 }
 

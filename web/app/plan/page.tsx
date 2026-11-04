@@ -1,4 +1,5 @@
 "use client";
+import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Notice, PageHeader } from "@/components/ui";
@@ -10,7 +11,7 @@ import { useSession } from "@/lib/session";
 export default function Plan() {
   const { t } = useI18n();
   const { persona } = useSession();
-  if (persona !== "person_a" && persona !== "person_b" && persona !== "demo_operator") return <Notice>{t("plan.restricted")}</Notice>;
+  if (persona !== "person_a" && persona !== "person_b" && persona !== "demo_operator") return <Restricted text={t("plan.restricted")} />;
   return <PlanCards key={persona} persona={persona} />;
 }
 
