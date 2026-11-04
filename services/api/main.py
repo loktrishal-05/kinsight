@@ -514,7 +514,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     ):
         case_check(db, identity, id, {"quiz"}, True)
         result = Status.model_validate(
-            await adapter.invoke("quiz_answers", id, body.model_dump(), db)
+            await adapter.invoke("quiz_answers", id, {**body.model_dump(), "actor_id": identity.actor.id}, db)
         )
         db.commit()
         return result

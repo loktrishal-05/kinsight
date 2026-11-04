@@ -45,7 +45,7 @@ def certificate_status(issued_at: float, now: float) -> dict:
 
 def reengagement_due(married_at: float, now: float, done: set[int]) -> int | None:
     for m in cfg()["reengage_months"]:
-        if m not in done and now - married_at >= m * 30.4375 * DAY:
+        if m not in done and now - married_at >= m * cfg()["reengage_days_per_month"] * DAY:
             return m
     return None
 
