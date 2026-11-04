@@ -708,6 +708,7 @@
   "safety.variantRows": "ಪ್ರತಿ ಸಾಲು: ರೂಪಾಂತರ ID, ಹಳೆಯ ವರ್ಗ, ಈಗಿನ ವರ್ಗ (1-5)",
   "safety.sample": "ಡೆಮೊ ಸಾಲು ಬಳಸಿ",
   "safety.compare": "ವರ್ಗ ಹೋಲಿಸಿ",
+  "safety.live": "ಈಗ ClinVar ನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ",
   "safety.upgraded": "ವರ್ಗ ಏರಿದೆ",
   "safety.downgraded": "ವರ್ಗ ಇಳಿದಿದೆ",
   "safety.review": "ವೈದ್ಯರ ಪರಿಶೀಲನೆ ಅಗತ್ಯ",

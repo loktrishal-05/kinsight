@@ -144,3 +144,37 @@ def test_instruments_reclassification_decoy_tamm_and_break_glass():
     for who, why in ((["d1"], "x"), (["d1", "d1"], "x"), (["d1", "d2"], " ")):
         with pytest.raises(PermissionError):
             safety.break_glass(who, why)
+
+
+def test_clinvar_parse_cache_and_errors():
+    import io
+    import json
+    import urllib.error
+
+    from services.lifecycle import clinvar
+
+    clinvar._cache.clear()
+    body = {"result": {"uids": ["1", "2", "3"],
+                       "1": {"germline_classification": {"description": "Pathogenic", "last_evaluated": "2020/01/01 00:00"}},
+                       "2": {"germline_classification": {"description": "Uncertain significance"}},
+                       "3": {"germline_classification": {"description": "Conflicting classifications of pathogenicity"}}}}
+    calls = []
+
+    def opener(url, timeout):
+        calls.append(url)
+        return io.StringIO(json.dumps(body))
+
+    out = clinvar.fetch(["1", "2", "3"], opener=opener)
+    assert [out[i]["acmg_class"] for i in "123"] == [5, 3, None]
+    clinvar.fetch(["1", "2"], opener=opener)
+    assert len(calls) == 1 and "id=1%2C2%2C3" in calls[0] and "tool=kinsight" in calls[0]   # cached on the second call
+    for bad in ([], ["x"], ["1; drop"], [str(i) for i in range(51)]):
+        with pytest.raises(ValueError):
+            clinvar.fetch(bad, opener=opener)
+
+    def down(url, timeout):
+        raise urllib.error.URLError("offline")
+
+    clinvar._cache.clear()
+    with pytest.raises(clinvar.SourceUnavailable):
+        clinvar.fetch(["9"], opener=down)

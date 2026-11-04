@@ -724,6 +724,7 @@
   "safety.variantRows": "One row per variant: variant id, archived class, current class (1-5)",
   "safety.sample": "Use demo rows",
   "safety.compare": "Compare classes",
+  "safety.live": "Check ClinVar now",
   "safety.upgraded": "Upgraded",
   "safety.downgraded": "Downgraded",
   "safety.review": "Needs clinician review",

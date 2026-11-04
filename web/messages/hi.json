@@ -708,6 +708,7 @@
   "safety.variantRows": "हर पंक्ति: वेरिएंट ID, पुराना वर्ग, नया वर्ग (1-5)",
   "safety.sample": "डेमो पंक्तियाँ भरें",
   "safety.compare": "वर्ग तुलना करें",
+  "safety.live": "अभी ClinVar से जाँचें",
   "safety.upgraded": "वर्ग बढ़ा",
   "safety.downgraded": "वर्ग घटा",
   "safety.review": "चिकित्सक समीक्षा चाहिए",

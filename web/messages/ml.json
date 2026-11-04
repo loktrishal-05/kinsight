@@ -708,6 +708,7 @@
   "safety.variantRows": "ഓരോ വരി: വകഭേദ ID, പഴയ ക്ലാസ്, പുതിയ ക്ലാസ് (1-5)",
   "safety.sample": "ഡെമോ വരികൾ ഉപയോഗിക്കുക",
   "safety.compare": "ക്ലാസുകൾ താരതമ്യം ചെയ്യുക",
+  "safety.live": "ഇപ്പോൾ ClinVar-ൽ പരിശോധിക്കുക",
   "safety.upgraded": "ക്ലാസ് ഉയർന്നു",
   "safety.downgraded": "ക്ലാസ് താഴ്ന്നു",
   "safety.review": "ഡോക്ടറുടെ അവലോകനം വേണം",
