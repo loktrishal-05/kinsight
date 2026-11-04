@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy.orm import Session
 
 from services.consent import sharing
-from services.lifecycle import cfg, clinvar, ledger, safety, tracking, triage
+from services.lifecycle import cfg, clinvar, gnomad, ledger, safety, tracking, triage
 from services.lifecycle.cascade import CascadeTokens, WhisperQueue
 from services.lifecycle.pairing import PairingStore
 
@@ -320,3 +320,19 @@ def register(app, roles, db_session, limit) -> None:
         audit(db, identity, "clinvar", "reclassify_live")
         return {"alerts": safety.reclassification(body.archived, feed), "checked": len(live),
                 "source": "NCBI ClinVar", "classes": live, "is_synthetic": False}
+
+    class Frequencies(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        variants: list[Annotated[str, Field(pattern=gnomad.ID.pattern)]] = Field(min_length=1, max_length=gnomad.MAX_IDS)
+
+    @app.post("/api/lifecycle/frequency")
+    async def frequency(body: Frequencies, identity=Depends(roles("counsellor", "analyst")),
+                        db: Session = Depends(db_session)):
+        """Live gnomAD allele frequencies. Only variant ids are sent; not an Emirati cohort (see module note)."""
+        limit(db, identity)
+        try:
+            found = gnomad.fetch(body.variants)
+        except gnomad.SourceUnavailable:
+            raise HTTPException(503, "Live source unavailable") from None
+        audit(db, identity, "gnomad", "frequency_live")
+        return {"variants": found, "source": "gnomAD v4", "is_synthetic": False}

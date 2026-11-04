@@ -341,3 +341,23 @@ def test_reclassify_live_uses_clinvar_and_sends_only_ids(api, monkeypatch):
 
     monkeypatch.setattr(clinvar, "fetch", down)
     assert c.post("/api/lifecycle/reclassify/live", json=body, headers=h["counsellor"]).status_code == 503
+
+
+def test_frequency_route_roles_validation_and_outage(api, monkeypatch):
+    from services.lifecycle import gnomad
+
+    monkeypatch.setattr(gnomad, "fetch", lambda ids: {i: {"allele_frequency": 0.01} for i in ids})
+    c, h, _ = api
+    body = {"variants": ["7-117559590-ATCT-A"]}
+    assert c.post("/api/lifecycle/frequency", json=body, headers=h["person_a"]).status_code == 403
+    for who in ("counsellor", "analyst"):
+        r = c.post("/api/lifecycle/frequency", json=body, headers=h[who])
+        assert r.status_code == 200 and r.json()["source"] == "gnomAD v4"
+    assert c.post("/api/lifecycle/frequency", json={"variants": ["nope"]}, headers=h["analyst"]).status_code == 422
+    assert c.post("/api/lifecycle/frequency", json={"variants": []}, headers=h["analyst"]).status_code == 422
+
+    def down(ids):
+        raise gnomad.SourceUnavailable("x")
+
+    monkeypatch.setattr(gnomad, "fetch", down)
+    assert c.post("/api/lifecycle/frequency", json=body, headers=h["analyst"]).status_code == 503
