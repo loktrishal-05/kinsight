@@ -404,3 +404,11 @@ def test_state_survives_a_restart(monkeypatch, tmp_path):
     with TestClient(create_app(url)) as c:
         a = session(None, c, "person_a")
         assert c.get(f"/api/lifecycle/pairing/{pairing['id']}", headers=a).json()["status"] == "revoked"
+
+
+def test_host_style_database_urls_get_the_psycopg_driver(monkeypatch):
+    monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
+    monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
+    for given in ("postgres://u:p@localhost/db", "postgresql://u:p@localhost/db"):
+        app = create_app(given)  # engine is created lazily; no connection is made here
+        assert app.state.engine.url.drivername == "postgresql+psycopg"
