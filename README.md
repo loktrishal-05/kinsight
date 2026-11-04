@@ -20,8 +20,7 @@ Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 
 ### 🔗 Try it live: **[kinsight-five.vercel.app](https://kinsight-five.vercel.app)**
 
-<sub>No install and no account. Click **Sign in**, then **Use the demo account**, or press **Watch the guided demo** for a
-self-driving 3-minute tour of every feature. Switch language from the menu in the top bar (seven languages).</sub>
+<sub>No install and no account. Click **Sign in**, then **Use the demo account**. Switch language from the menu in the top bar (seven languages).</sub>
 
 <img src="docs/screenshots/01-landing.jpg" alt="KinSight landing page: a sunlit 3D lattice screen behind the headline" width="100%" />
 
@@ -92,8 +91,7 @@ again and again (sources in [docs/RESEARCH.md](docs/RESEARCH.md)):
 </tr>
 </table>
 
-Plus a cinematic public landing page, a demo sign-in with a background film, and a **42-step guided demo** that drives every
-feature on its own (`/?demo=1`).
+Plus a cinematic public landing page, and a demo sign-in with a background film.
 
 ## Screens
 
@@ -325,7 +323,6 @@ copilot guard and are tested against the same 109-prompt red-team set.
 ```mermaid
 flowchart LR
   LAND["Landing page<br/>3D lattice → family tree → 100 lights"] --> SIGN["Sign-in<br/>Use the demo account"]
-  LAND -. "Watch the guided demo" .-> DEMO["Guided demo<br/>42 steps, any language"]
   SIGN --> HOME["App home<br/>pick a fictional case and a role"]
   HOME --> PA["Person A / B<br/>result · couple · check · next · family · consents · privacy"]
   HOME --> CO["Counsellor<br/>queue · brief · approve · referral"]
@@ -379,7 +376,7 @@ Reproducible from the committed seed ([docs/SCORECARD.md](docs/SCORECARD.md), `p
 |---|---|
 | Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis) | 491 |
 | Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring) | 32 |
-| End-to-end (Playwright, desktop + phone: demo path, guided demo, landing, sign-in, volunteer study, Kin with stubbed speech) | 62 |
+| End-to-end (Playwright, desktop + phone: demo path, landing, sign-in, volunteer study, Kin with stubbed speech) | 62 |
 
 CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a production build and Playwright on every push.
 
@@ -410,7 +407,7 @@ kinsight/
 ├── templates/<lang>/ approved explanation blocks (basic, standard), labels, wording, quiz
 ├── web/
 │   ├── app/          landing (/), sign-in, home and every app route
-│   ├── components/   3D hero, Kin, guided demo overlay, pedigree, visuals, shell
+│   ├── components/   3D hero, Kin, pedigree, visuals, shell
 │   ├── lib/          API adapters (mock and live), i18n, demo script, assistant rules
 │   ├── messages/     interface text per language
 │   ├── content/      Learn and Kin packs per language
@@ -480,7 +477,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Item | Status |
 |---|---|
 | Engine, consent, audit, case graph, API, web app, dashboards | Done and tested |
-| Cinematic landing, demo sign-in, guided demo | Done and tested |
+| Cinematic landing, demo sign-in | Done and tested |
 | Seven languages end to end | Done; translations pending native-speaker and genetics review |
 | **Volunteer comprehension study** | **Tooling built and tested; study not yet run.** `/study` (consent, case, five-question check, rating), `/study/results` (summary and CSV export) and `scripts/analyse_study.py` are ready ([docs/study/protocol.md](docs/study/protocol.md)). It still needs real participants and an ethics check, so the scorecard reports comprehension as not measured and no comprehension claims are made. |
 | Clinical validation, in-region hosting, accredited reviewers, real sign-in and data feed | Out of scope for a fictional demo. What a real pilot would need, with gates and decisions: [docs/PILOT_READINESS.md](docs/PILOT_READINESS.md) · [docs/pilot_plan.md](docs/pilot_plan.md) |
