@@ -48,14 +48,14 @@ export default function Shell({ children }: { children: ReactNode }) {
         <div key={g.id}>
           <p className="eyebrow-free mb-1.5 px-3">{t(g.label)}</p>
           <ul className="space-y-0.5">
-            {g.items.map(({ key, href, icon: Icon }) => {
+            {g.items.map(({ key, href, icon: Icon, label }) => {
               const active = path.startsWith(href);
               return (
                 <li key={key}>
                   <Link href={href} aria-current={active ? "page" : undefined}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-brand-50 text-brand-800" : "text-ink/80 hover:bg-sunk"}`}>
                     <Icon aria-hidden className={`h-[18px] w-[18px] shrink-0 ${active ? "text-brand-600" : "text-muted"}`} />
-                    {t(`nav.${key}`)}
+                    {t(label ?? `nav.${key}`)}
                   </Link>
                 </li>
               );
