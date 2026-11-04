@@ -178,3 +178,40 @@ def test_clinvar_parse_cache_and_errors():
     clinvar._cache.clear()
     with pytest.raises(clinvar.SourceUnavailable):
         clinvar.fetch(["9"], opener=down)
+
+
+def test_gnomad_summary_validation_cache_and_errors():
+    import io
+    import json
+    import urllib.error
+
+    from services.lifecycle import gnomad
+
+    gnomad._cache.clear()
+    variant = {"exome": {"ac": 90, "an": 1000, "populations": [{"id": "mid", "ac": 2, "an": 100}, {"id": "nfe", "ac": 80, "an": 800}]},
+               "genome": {"ac": 10, "an": 1000, "populations": [{"id": "mid", "ac": 0, "an": 100}]}}
+    calls = []
+
+    def opener(req, timeout):
+        calls.append(req)
+        return io.StringIO(json.dumps({"data": {"variant": variant}}))
+
+    out = gnomad.fetch(["7-117559590-ATCT-A"], opener=opener)["7-117559590-ATCT-A"]
+    assert out["allele_count"] == 100 and out["allele_number"] == 2000 and out["allele_frequency"] == 0.05
+    assert round(out["carrier_share"], 4) == 0.0950              # 2q(1-q)
+    assert out["middle_eastern_allele_number"] == 200 and round(out["middle_eastern_carrier_share"], 4) == 0.0198
+    gnomad.fetch(["7-117559590-ATCT-A"], opener=opener)
+    assert len(calls) == 1                                        # cached
+    assert gnomad.carrier_share(0, 0) is None
+    for bad in ([], ["x"], ["7-1-A-C; drop"], ["Z-1-A-C"], ["1-1-A-C"] * 21):
+        with pytest.raises(ValueError):
+            gnomad.fetch(bad, opener=opener)
+
+    def down(req, timeout):
+        raise urllib.error.URLError("offline")
+
+    gnomad._cache.clear()
+    with pytest.raises(gnomad.SourceUnavailable):
+        gnomad.fetch(["1-1-A-C"], opener=down)
+    gnomad._cache.clear()
+    assert gnomad.fetch(["1-1-A-C"], opener=lambda r, timeout: io.StringIO('{"data":{"variant":null}}')) == {"1-1-A-C": None}

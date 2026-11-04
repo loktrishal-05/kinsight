@@ -4,6 +4,7 @@ import { z } from "zod";
 import * as safety from "./safety";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
+import { liveFrequency } from "./gnomad";
 import { DATA, conditionLabel, scenarioById, type Scenario } from "./fixtures";
 
 const day = 86400;
@@ -66,6 +67,7 @@ export const mock = {
     return { score: flagged ? 50 : 0, flagged, support_offered: flagged };
   },
   async whisper(body: z.infer<typeof safety.WhisperRequestS>) { safety.WhisperRequestS.parse(body); return { status: "queued" as const }; },
+  frequency: (variants: string[]) => liveFrequency(variants),
   reclassifyLive: (archived: Record<string, number>) => liveReclassify(archived),
   async reclassify(body: z.infer<typeof safety.ReclassifyRequestS>) {
     const v = safety.ReclassifyRequestS.parse(body);

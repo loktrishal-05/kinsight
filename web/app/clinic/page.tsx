@@ -35,12 +35,15 @@ function ClinicCards() {
     if (entries.some((row) => row.length < 2 || !/^\d+$/.test(row[0]) || !/^[1-5]$/.test(row[1]))) throw new Error("422");
     return api.reclassifyLive(Object.fromEntries(entries.map(([id, a]) => [id, Number(a)])));
   } });
+  const [variant, setVariant] = useState("7-117559590-ATCT-A");
+  const frequency = useMutation({ mutationFn: () => api.frequency(variant.trim().split(/\s*,\s*/).filter(Boolean)) });
+  const pct = (x: number | null) => (x == null ? "–" : `${(x * 100).toFixed(2)}%`);
   const tamm = useMutation({ mutationFn: () => api.tamm({ pairing_ref: pairing, role }) });
   const emergency = useMutation({ mutationFn: () => api.breakGlass({ attestors: [first, second], reason }), onSuccess: () => setReason("") });
   return <section className="space-y-6">
     <PageHeader title={t("safety.clinicTitle")} />
     {MOCK && <Notice>{t("safety.demo")}</Notice>}
-    {[triage, reclassify, live, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
+    {[triage, reclassify, live, frequency, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
     <section className="card space-y-4" aria-labelledby="triage-title">
       <h2 id="triage-title" className="text-lg font-semibold">{t("safety.triage")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); triage.mutate(); }}>
@@ -75,6 +78,14 @@ function ClinicCards() {
       </form>
       {live.data && <div role="status" aria-label="ClinVar"><p className="text-sm text-muted">NCBI ClinVar</p><ul>{live.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)} — {t("safety.review")}</li>)}</ul>{!live.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
       {reclassify.data && <div role="status"><ul>{reclassify.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)}{a.needs_clinician_review && ` — ${t("safety.review")}`}</li>)}</ul>{!reclassify.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
+    </section>
+    <section className="card space-y-4" aria-labelledby="freq-title">
+      <h2 id="freq-title" className="text-lg font-semibold">{t("safety.freq")}</h2>
+      <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); frequency.mutate(); }}>
+        <label className="block" htmlFor="gnomad-variant">{t("safety.freqIds")}<input id="gnomad-variant" className="field mt-1" dir="ltr" required value={variant} onChange={(e) => { setVariant(e.target.value); frequency.reset(); }} /></label>
+        <button className="btn-quiet" disabled={frequency.isPending}>{t("safety.freqGo")}</button>
+      </form>
+      {frequency.data && <div role="status" aria-label="gnomAD"><p className="text-sm text-muted">gnomAD v4 · {t("safety.freqNote")}</p><ul>{Object.entries(frequency.data.variants).map(([id, v]) => <li key={id}><bdi>{id}</bdi>: {v ? `${t("safety.freqCarrier")} ${pct(v.carrier_share)}; ${t("safety.freqMid")} ${pct(v.middle_eastern_carrier_share)} (n=${v.middle_eastern_allele_number})` : t("safety.freqNone")}</li>)}</ul></div>}
     </section>
     <section className="card space-y-4" aria-labelledby="tamm-title">
       <h2 id="tamm-title" className="text-lg font-semibold">{t("safety.tamm")}</h2>
