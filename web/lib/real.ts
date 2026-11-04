@@ -1,5 +1,6 @@
 // Real-API adapters (NEXT_PUBLIC_MOCK=0). They reshape the backend's strict responses for the screens; no figures are computed here.
 import type { z } from "zod";
+import { trackSlow } from "./slow";
 import type * as safety from "./safety";
 import type * as plan from "./plan";
 import type { Consent, Couple, Pedigree, Quiz, Result, Step } from "./api";
@@ -14,7 +15,7 @@ const COUPLE = "demo-couple", CASE = "demo-case";
 const other = () => (me === "synthetic-a" ? "synthetic-b" : "synthetic-a");
 
 async function raw(path: string, init: RequestInit = {}, tok = token): Promise<Response> {
-  return fetch(path, { ...init, headers: { "content-type": "application/json", ...(tok ? { authorization: `Bearer ${tok}` } : {}), ...init.headers } });
+  return trackSlow(fetch(path, { ...init, headers: { "content-type": "application/json", ...(tok ? { authorization: `Bearer ${tok}` } : {}), ...init.headers } }));
 }
 async function json<T = any>(path: string, init: RequestInit = {}, tok = token): Promise<T> {
   const r = await raw(path, init, tok);

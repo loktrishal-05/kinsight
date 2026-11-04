@@ -1,5 +1,6 @@
 {
   "banner": "All people and results here are fictional.",
+  "api.waking": "Waking up the server. The first request after a quiet period can take up to a minute.",
   "app": "KinSight",
   "tagline": "A private, kind guide to inherited health questions in families.",
   "nav.home": "Welcome",
