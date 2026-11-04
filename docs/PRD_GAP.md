@@ -79,7 +79,10 @@ Instrument item text and clinical advice are not included. These routes have int
 Variant reclassification (SF-2 / FR-022) now reads **live NCBI ClinVar** classes: `POST /api/lifecycle/reclassify/live` (server,
 `services/lifecycle/clinvar.py`, hourly cache, optional `NCBI_API_KEY`) and a browser lookup in mock mode (`web/lib/clinvar.ts`).
 Only ClinVar variation ids are sent; no person, family or result data leaves the system. Everything else (people, results,
-panel frequencies) stays synthetic by design. Next live source: gnomAD carrier frequencies for `configs/panel.yaml`.
+panel frequencies) stays synthetic by design. Population frequencies read **live gnomAD v4**: `POST /api/lifecycle/frequency` (`services/lifecycle/gnomad.py`, 24 h cache)
+and a browser lookup in mock mode (`web/lib/gnomad.ts`); the clinic screen shows worldwide and Middle Eastern carrier share (2q(1-q)).
+gnomAD is not an Emirati cohort, so it is a reference, not a replacement: `configs/panel.yaml` stays fictional on purpose (golden files
+and the synthetic cohort depend on it).
 
 ## Next build steps (in order)
 
