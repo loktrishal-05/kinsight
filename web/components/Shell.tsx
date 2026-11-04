@@ -6,9 +6,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession, type Persona } from "@/lib/session";
 import { AssistantLauncher } from "./Assistant";
-import DemoOverlay from "./DemoOverlay";
-import { useDemo } from "@/lib/demo";
-import { PlayCircle } from "lucide-react";
 import CommandPalette from "./CommandPalette";
 import LanguageSelect from "./LanguageSelect";
 import SettingsMenu from "./SettingsMenu";
@@ -21,7 +18,6 @@ export default function Shell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [palette, setPalette] = useState(false);
-  const demo = useDemo();
   useEffect(() => {
     const close = () => { setPalette(false); setOpen(false); };
     window.addEventListener("demo:close-overlays", close);
@@ -70,7 +66,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     </nav>
   );
 
-  if (bare) return <>{children}<DemoOverlay /></>;
+  if (bare) return <>{children}</>;
 
   return (
     <div className="min-h-screen">
@@ -92,11 +88,6 @@ export default function Shell({ children }: { children: ReactNode }) {
             <kbd className="whitespace-nowrap rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
           </button>
           <div className="ms-auto flex items-center gap-2 sm:gap-3" data-demo="topbar">
-            {demo.available && !demo.active && (
-              <button className="btn-quiet h-9 px-3" onClick={() => demo.start()} data-testid="demo-start-top" title={t("demo.start")}>
-                <PlayCircle aria-hidden className="h-4 w-4 text-brand-600" /><span className="hidden lg:inline">{t("demo.short")}</span>
-              </button>
-            )}
             <label className="hidden items-center gap-2 text-xs font-medium text-muted xl:flex">{t("top.viewing")}{personaSelect("h-9 w-44 py-0")}</label>
             <LanguageSelect />
             <div role="group" aria-label={t("welcome.level")} className="seg hidden sm:flex">
@@ -127,7 +118,6 @@ export default function Shell({ children }: { children: ReactNode }) {
       </div>
       <AssistantLauncher />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
-      <DemoOverlay />
     </div>
   );
 }

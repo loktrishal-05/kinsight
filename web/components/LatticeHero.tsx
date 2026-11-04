@@ -2,10 +2,9 @@
 // Landing hero: a sunlit 3D lattice screen (mashrabiya: see without being seen) opens as you scroll and reveals a family
 // tree where cousins marry; its members become 100 lights that settle into one 10x10 chance (two carriers: 1 in 4).
 // three.js loads on demand; reduced motion shows the resolved still; without WebGL the text and actions stand alone.
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useDemo } from "@/lib/demo";
 import { useI18n } from "@/lib/i18n";
 
 import type * as T from "three";
@@ -199,7 +198,6 @@ const WINDOWS: [number, number][] = [[0.13, 0.38], [0.34, 0.6], [0.62, 1.01]];
 
 export default function LatticeHero() {
   const { t } = useI18n();
-  const demo = useDemo();
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const intro = useRef<HTMLDivElement>(null);
@@ -269,11 +267,6 @@ export default function LatticeHero() {
               <Link href="/signin" data-testid="hero-signin" className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 ps-6 pe-5 text-sm font-bold text-onbrand shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-700">
                 {t("signin.cta")}<ArrowRight aria-hidden className="h-4 w-4 transition group-hover:translate-x-0.5 rtl:rotate-180" />
               </Link>
-              {demo.available && (
-                <button onClick={() => demo.start()} data-testid="demo-start" className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-surface/80 px-6 text-sm font-bold text-ink shadow-card transition hover:-translate-y-0.5 hover:border-brand-500">
-                  <PlayCircle aria-hidden className="h-5 w-5" />{t("demo.start")}
-                </button>
-              )}
             </div>
           </div>
 
