@@ -412,3 +412,15 @@ def test_host_style_database_urls_get_the_psycopg_driver(monkeypatch):
     for given in ("postgres://u:p@localhost/db", "postgresql://u:p@localhost/db"):
         app = create_app(given)  # engine is created lazily; no connection is made here
         assert app.state.engine.url.drivername == "postgresql+psycopg"
+
+
+def test_health_names_the_database_kind_without_secrets(api):
+    from sqlalchemy.engine import make_url
+
+    from services.api.main import database_kind
+
+    c, _, _ = api
+    assert c.get("/api/health").json()["database"] == {"dialect": "sqlite", "provider": "local"}
+    assert database_kind(make_url("postgresql+psycopg://u:secret@ep-x.us-east-2.aws.neon.tech/db")) == {"dialect": "postgresql", "provider": "neon"}
+    assert database_kind(make_url("postgresql+psycopg://u:p@dpg-1.oregon-postgres.render.com/db"))["provider"] == "render"
+    assert "secret" not in str(database_kind(make_url("postgresql://u:secret@h/db")))
