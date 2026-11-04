@@ -31,6 +31,7 @@ export const real = {
   triage: (body: z.infer<typeof safety.TriageRequestS>) => json("/api/lifecycle/triage", post(body)),
   whisper: (body: z.infer<typeof safety.WhisperRequestS>) => json("/api/lifecycle/whisper", post(body)),
   checkin: (body: z.infer<typeof safety.CheckinRequestS>) => json("/api/lifecycle/checkin", post(body)),
+  frequency: (variants: string[]) => json("/api/lifecycle/frequency", post({ variants })),
   reclassifyLive: (archived: Record<string, number>) => json("/api/lifecycle/reclassify/live", post({ archived })),
   reclassify: (body: z.infer<typeof safety.ReclassifyRequestS>) => json("/api/lifecycle/reclassify", post(body)),
   safeVault: (body: z.infer<typeof safety.VaultRequestS>) => json("/api/lifecycle/safe-vault", { ...post(body), method: "PUT" }),

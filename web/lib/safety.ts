@@ -15,6 +15,7 @@ export const WhisperRequestS = z.object({ contact: z.string().trim().regex(/^\+?
 export const WhisperS = z.object({ status: z.literal("queued") });
 export const ReclassifyRequestS = z.object({ archived: z.record(z.number().int().min(1).max(5)), feed: z.record(z.number().int().min(1).max(5)) });
 export const ReclassifyS = z.object({ alerts: z.array(z.object({ variant: z.string(), from: z.number().int().min(1).max(5), to: z.number().int().min(1).max(5), direction: z.enum(["upgraded", "downgraded"]), needs_clinician_review: z.boolean() })) });
+export const FrequencyS = z.object({ variants: z.record(z.object({ allele_count: z.number(), allele_number: z.number(), allele_frequency: z.number().nullable(), carrier_share: z.number().nullable(), middle_eastern_allele_number: z.number(), middle_eastern_carrier_share: z.number().nullable() }).nullable()) });
 export const VaultRequestS = z.object({ pin: z.string().regex(/^\d{4,12}$/), decoy_pin: z.string().regex(/^\d{4,12}$/) }).refine((v) => v.pin !== v.decoy_pin, "Use two different PINs");
 export const VaultS = z.object({ status: z.string() });
 export const UnlockRequestS = z.object({ pin: z.string().regex(/^\d{4,12}$/) });
