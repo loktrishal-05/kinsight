@@ -1,5 +1,7 @@
 // Mock mode: serves responses built from the generated fixtures (engine + verified templates + demo cohort).
 // Nothing here computes a risk figure; every number comes from lib/fixtures/data.json. State survives reloads (sessionStorage).
+import { z } from "zod";
+import * as safety from "./safety";
 import type { PairingStatus } from "./api";
 import { DATA, conditionLabel, scenarioById, type Scenario } from "./fixtures";
 
@@ -21,10 +23,10 @@ type Link = { condition_id: string; expires_at: number; used: boolean };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
+  vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -46,6 +48,42 @@ const getPair = (id: string) => {
 };
 
 export const mock = {
+  // Fixed fictional demo outputs only; these branches demonstrate rules, never clinical risk calculations.
+  async triage(body: z.infer<typeof safety.TriageRequestS>) {
+    const v = safety.TriageRequestS.parse(body);
+    const shared = [...new Set(v.a.filter((a) => v.b.some((b) => b.gene === a.gene)).map((a) => a.gene))];
+    const hold = [...v.a, ...v.b].some((g) => g.requires_orthogonal && !g.orthogonal_verified);
+    const compound = v.a.some((a) => v.b.some((b) => a.gene === b.gene && a.allele !== b.allele));
+    const counts = { a: v.a.filter((g) => !shared.includes(g.gene)).length, b: v.b.filter((g) => !shared.includes(g.gene)).length };
+    const rules = [shared.length === 1 && "RULE-01_SINGLE_GENE", shared.length > 1 && "RULE-02_MULTI_GENE", hold && "RULE-03_ORTHOGONAL_HOLD", (counts.a + counts.b > 0) && "RULE-04_PRIVATE_FINDING", compound && "RULE-05_COMPOUND_HET", v.phi > 0 && "RULE-06_CONSANGUINITY_REFLEX", v.pregnant_days !== null && v.pregnant_days < 120 && "RULE-07_PREGNANCY_WINDOW", ((v.dcs ?? 0) > 37.5 || v.teach_back_failures > 0) && "RULE-08_DECISIONAL_SUPPORT"].filter((r): r is string => !!r);
+    return { tier: shared.length ? 3 : rules.length ? 2 : 1, rules, shared_genes: shared, combined_risk_pct: shared.length > 1 ? 43.75 : shared.length ? 25 : 0, hold_release: hold, private_counts: counts, sla_hours: v.pregnant_days !== null && v.pregnant_days < 120 ? 24 : shared.length ? 72 : null };
+  },
+  async checkin(body: z.infer<typeof safety.CheckinRequestS>) {
+    const v = safety.CheckinRequestS.parse(body);
+    // shortcut: fixed demonstration scores, use the clinic API for validated instrument scoring.
+    const flagged = v.instrument === "pagis" ? v.total! >= 40 : v.answers!.some((a) => a === "no" || a === "unsure" || typeof a === "number" && a >= 2);
+    return { score: flagged ? 50 : 0, flagged, support_offered: flagged };
+  },
+  async whisper(body: z.infer<typeof safety.WhisperRequestS>) { safety.WhisperRequestS.parse(body); return { status: "queued" as const }; },
+  async reclassify(body: z.infer<typeof safety.ReclassifyRequestS>) {
+    const v = safety.ReclassifyRequestS.parse(body);
+    return { alerts: Object.entries(v.archived).filter(([id, from]) => Object.prototype.hasOwnProperty.call(v.feed, id) && v.feed[id] !== from).map(([variant, from]) => ({ variant, from, to: v.feed[variant], direction: v.feed[variant] > from ? "upgraded" as const : "downgraded" as const, needs_clinician_review: true })) };
+  },
+  async safeVault(body: z.infer<typeof safety.VaultRequestS>) {
+    const v = safety.VaultRequestS.parse(body); S.vaults[S.persona] = v; save(); return { status: "saved" };
+  },
+  async unlockVault(body: z.infer<typeof safety.UnlockRequestS>) {
+    const { pin } = safety.UnlockRequestS.parse(body), vault = S.vaults[S.persona];
+    if (!vault || pin !== vault.pin && pin !== vault.decoy_pin) throw new Error("403");
+    return { view: pin === vault.pin ? "real" as const : "decoy" as const };
+  },
+  async tamm(body: z.infer<typeof safety.TammRequestS>) {
+    const v = safety.TammRequestS.parse(body);
+    return { pairing_ref: v.pairing_ref, screening_completed: true, counselling_completed: v.role === "counsellor", signed_off_by_role: v.role, issued_at: "2026-11-04T00:00:00Z" };
+  },
+  async breakGlass(body: z.infer<typeof safety.BreakGlassRequestS>) {
+    const v = safety.BreakGlassRequestS.parse(body); return { granted: true, attestors: v.attestors, alert_siem: true, notify_citizen: true };
+  },
   async tracker() { return { stages: [...LAB_STAGES], stage: S.labStage, qc_failure: null, times: Object.fromEntries(LAB_STAGES.slice(0, S.labStage).map((s) => [s, LAB_TIMES[s]])) }; },
   async advanceTracker() { S.labStage = Math.min(8, S.labStage + 1); save(); return mock.tracker(); },
   async certificate(elapsed: number) {
@@ -143,7 +181,7 @@ export const mock = {
   },
   async referral() { return S.steps.map((s) => ({ ...s, overdue: s.due_at < now() })); },
   async copilot(text: string) {
-    const refuse = /partner|husband|wife|raw|other|his|her|should we|decide|marry|شريك|زوج/i.test(text);
+    const refuse = /partner|husband|wife|raw|other|his|her|should we|decide|marry|Ø´Ø±ÙŠÙƒ|Ø²ÙˆØ¬/i.test(text);
     return refuse ? { text: "", refused: true } : { text: "Your result says what was found for you. Being a carrier is not the same as having the condition. (Source: your explanation.)", refused: false };
   },
   async queue() {
