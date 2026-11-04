@@ -1,17 +1,15 @@
 "use client";
 // Public landing page, outside the app shell: cinematic 3D hero, statement, the five-step path, and a closing call to sign in.
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Journey from "@/components/Journey";
 import LatticeHero from "@/components/LatticeHero";
 import Statement from "@/components/Statement";
-import { useDemo } from "@/lib/demo";
 import { useI18n } from "@/lib/i18n";
 import { Brand, LangSwitch } from "@/components/PublicChrome";
 
 export default function Landing() {
   const { t } = useI18n();
-  const demo = useDemo();
   return (
     <div className="theme-light min-h-screen bg-canvas text-ink">
       <header className="fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-5">
@@ -52,11 +50,6 @@ export default function Landing() {
               <Link href="/signin" className="group inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 ps-6 pe-5 text-sm font-bold text-onbrand shadow-lift transition hover:-translate-y-0.5 hover:bg-brand-700">
                 {t("signin.cta")}<ArrowRight aria-hidden className="h-4 w-4 transition group-hover:translate-x-0.5 rtl:rotate-180" />
               </Link>
-              {demo.available && (
-                <button onClick={() => demo.start()} className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-surface/80 px-6 text-sm font-bold text-ink shadow-card transition hover:-translate-y-0.5 hover:border-brand-500">
-                  <PlayCircle aria-hidden className="h-5 w-5" />{t("demo.start")}
-                </button>
-              )}
             </div>
           </div>
         </section>

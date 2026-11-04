@@ -8,7 +8,6 @@ test("hero renders, beats follow the scroll, no errors or horizontal scroll", as
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByTestId("demo-start")).toBeVisible();
   const go = (f: number) => page.evaluate((f) => {
     const s = document.querySelector('[aria-labelledby="hero-title"]') as HTMLElement;
     scrollTo(0, s.offsetTop + (s.offsetHeight - innerHeight) * f);

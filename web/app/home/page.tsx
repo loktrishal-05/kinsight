@@ -1,6 +1,5 @@
 "use client";
-import { ArrowRight, Check, PlayCircle } from "lucide-react";
-import { useDemo } from "@/lib/demo";
+import { ArrowRight, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Journey from "@/components/Journey";
@@ -19,16 +18,12 @@ export default function Home() {
   const { persona, choose } = useSession();
   const router = useRouter();
   const [scenario, setScenario] = useState("s3");
-  const demo = useDemo();
   useEffect(() => setScenario(api.scenario()), []);
   return (
     <div>
       <section data-demo="hero" aria-labelledby="home-title" className="flex flex-col items-start gap-4">
         <h1 id="home-title" className="max-w-3xl font-display text-[clamp(2rem,4.4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.035em]">{t("welcome.title")}</h1>
         <p className="max-w-2xl text-ink/75">{t("hero.sub")}</p>
-        {demo.available && (
-          <button onClick={() => demo.start()} className="btn rounded-full ps-4 pe-5"><PlayCircle aria-hidden className="h-4 w-4" />{t("demo.start")}</button>
-        )}
       </section>
 
       <div className="mt-12 space-y-14">
