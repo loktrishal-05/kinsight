@@ -81,6 +81,13 @@ from .schemas import (
 bearer = HTTPBearer(auto_error=False)
 
 
+def database_kind(url) -> dict:
+    """Which database the API uses, without host names, users or passwords."""
+    host = url.host or ""
+    provider = "neon" if host.endswith("neon.tech") else "render" if host.endswith("render.com") else "other" if host else "local"
+    return {"dialect": url.get_backend_name(), "provider": provider}
+
+
 def create_app(database_url: str | None = None, backend: Backend | None = None) -> FastAPI:
     url = database_url or os.environ.get("DATABASE_URL", "sqlite:///kinsight-consent.db")
     # Hosts such as Render hand out postgres:// or postgresql://; SQLAlchemy needs the psycopg driver named.
@@ -264,6 +271,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             "is_synthetic": True,
             "versions": {key: version(key) for key in ("fastapi", "pydantic", "sqlalchemy")},
             "config_hash": hashlib.sha256(config.encode()).hexdigest(),
+            "database": database_kind(engine.url),
         }
 
     @app.post("/api/auth/persona", response_model=TokenResponse)
