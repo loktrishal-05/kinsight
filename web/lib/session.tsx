@@ -17,12 +17,19 @@ const Session = createContext<Ctx | null>(null);
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [persona, setPersona] = useState<Persona | null>(null);
   useEffect(() => {
-    try { const p = sessionStorage.getItem("ks_persona") as Persona | null; if (p && PERSONAS.includes(p)) setPersona(p); } catch { /* private mode */ }
+    // The chosen role is remembered across tabs and reloads; with none chosen yet, the demo starts as Person A so no screen is empty.
+    let stored: Persona | null = null;
+    try {
+      const p = (sessionStorage.getItem("ks_persona") ?? localStorage.getItem("ks_persona")) as Persona | null;
+      if (p && PERSONAS.includes(p)) stored = p;
+    } catch { /* private mode */ }
+    const p = stored ?? "person_a";
+    setPersona(p);
   }, []);
   const choose = async (p: Persona) => {
     await api.login(p);
     setPersona(p);
-    try { sessionStorage.setItem("ks_persona", p); } catch { /* private mode */ }
+    try { sessionStorage.setItem("ks_persona", p); localStorage.setItem("ks_persona", p); } catch { /* private mode */ }
   };
   return <Session.Provider value={{ persona, choose }}>{children}</Session.Provider>;
 }
