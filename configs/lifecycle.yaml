@@ -1,0 +1,11 @@
+# PRD-derived lifecycle settings (Silah-Genomics master PRD). Synthetic demo values; change here, not in code.
+pairing: { pin_digits: 9, ttl_seconds: 900, max_per_window: 3, window_days: 30 }
+cascade: { ttl_seconds: 86400, max_uses: 1 }
+whisper: { jitter_min_hours: 24, jitter_max_hours: 72 }
+certificate: { validity_days: 90, alert_days: [60, 30, 14, 7] }
+lab_stages: [booked, collected, received, dna_extracted, ngs_run, orthogonal_verification, bioinfo_qc, report_signed]
+refund_window_hours: 2
+instruments: { dcs_flag_above: 37.5, pagis_flag_below: 96 }
+triage: { pregnancy_window_days: 120, consang_phi_min: 0.0625, emergency_hours: 12, urgent_hours: 48 }
+reengage_months: [6, 12]
+referral_stall_hours: 72

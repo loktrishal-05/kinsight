@@ -20,6 +20,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from services.agents.flags import enabled
 from services.consent import sharing
 from services.consent.aggregates import release
 from services.consent.audit import verify_chain
@@ -46,6 +47,7 @@ from services.consent.policy import (
 from services.consent.roles import PERSONAS
 from services.consent.settings import settings
 
+from . import lifecycle_routes
 from .auth import Identity, issue_token, secret, verify_token
 from .backend import DemoBackend
 from .interfaces import Backend, Unavailable, UnwiredBackend
@@ -695,6 +697,9 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             return data
 
         return endpoint
+
+    if enabled("lifecycle"):
+        lifecycle_routes.register(app, roles, db_session, limit)
 
     for operation in ("reset", "load-cohort"):
         app.add_api_route(

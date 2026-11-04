@@ -8,3 +8,4 @@ voice: true                  # browser speech; falls back to text
 private_partner_check: false # unaudited PSI demo
 fhir_export: false           # function only; there is deliberately no export route
 extra_languages: true        # languages listed in web/messages/languages.json
+lifecycle: true             # PRD lifecycle routes: pairing, lab tracker, certificate, receipt, family link (demo state in memory)

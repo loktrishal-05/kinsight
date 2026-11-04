@@ -1,15 +1,30 @@
 // Mock mode: serves responses built from the generated fixtures (engine + verified templates + demo cohort).
 // Nothing here computes a risk figure; every number comes from lib/fixtures/data.json. State survives reloads (sessionStorage).
+import type { PairingStatus } from "./api";
 import { DATA, conditionLabel, scenarioById, type Scenario } from "./fixtures";
 
 const day = 86400;
+const LAB_STAGES = ["booked", "collected", "received", "dna_extracted", "ngs_run", "orthogonal_verification", "bioinfo_qc", "report_signed"];
+// Fixed fictional tracker timestamps and receipt amounts, never clinical or billing calculations.
+const LAB_TIMES = Object.fromEntries(LAB_STAGES.map((stage, i) => [stage, 1793491200 + i * 3600]));
+const DEMO_RECEIPT = { lines: [
+  { label: "lifecycle.line.lab", gross: "2650.00", insurer: "1000.00", grant: "1000.00", copay: "650.00" },
+  { label: "lifecycle.line.certificate", gross: "350.00", insurer: "0.00", grant: "150.00", copay: "200.00" },
+], total: "3000.00", your_share: "850.00" };
+// Labelled demo values for each slider day; no certificate rules live in the screen.
+const DEMO_CERTIFICATES = Array.from({ length: 121 }, (_, elapsed) => {
+  const days_left = Math.max(0, 90 - elapsed);
+  return { days_left, expired: elapsed >= 90, alert_at: [7, 14, 30, 60].find((n) => days_left <= n) ?? null, genetic_compatibility: "permanent" as const };
+});
+type Pair = { id: string; pin: string; expires_at: number; status: PairingStatus["status"] };
+type Link = { condition_id: string; expires_at: number; used: boolean };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
+  labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -23,7 +38,44 @@ const label = (id: string) => ({ label: conditionLabel(id, "en"), label_ar: cond
 const needsCounsellor = () => sc().tier === 3;
 const ensureReleased = () => { if (!needsCounsellor() && S.pooled.a && S.pooled.b) S.released = true; };
 
+const getPair = (id: string) => {
+  const pair = S.pairs.find((p) => p.id === id);
+  if (!pair) throw new Error("404");
+  if (pair.status === "pending" && pair.expires_at <= now()) { pair.status = "expired"; save(); }
+  return pair;
+};
+
 export const mock = {
+  async tracker() { return { stages: [...LAB_STAGES], stage: S.labStage, qc_failure: null, times: Object.fromEntries(LAB_STAGES.slice(0, S.labStage).map((s) => [s, LAB_TIMES[s]])) }; },
+  async advanceTracker() { S.labStage = Math.min(8, S.labStage + 1); save(); return mock.tracker(); },
+  async certificate(elapsed: number) {
+    if (!Number.isInteger(elapsed) || elapsed < 0 || elapsed > 120) throw new Error("422");
+    return { ...DEMO_CERTIFICATES[elapsed] };
+  },
+  async startPairing() {
+    const id = `demo-pair-${S.pairs.length + 1}`;
+    const pin = String(123456789 + S.pairs.length);
+    S.pairs.push({ id, pin, expires_at: now() + 900, status: "pending" }); save();
+    return { id, pin, expires_in: 900 };
+  },
+  async pairing(id: string) { return { status: getPair(id).status }; },
+  async confirmPairing(id: string, pin: string) {
+    const p = getPair(id);
+    if (p.status !== "pending" || p.pin !== pin) throw new Error("403");
+    p.status = "active"; save(); return { status: p.status };
+  },
+  async revokePairing(id: string) { const p = getPair(id); p.status = "revoked"; save(); return { status: p.status }; },
+  async receipt() { return { ...DEMO_RECEIPT, lines: DEMO_RECEIPT.lines.map((line) => ({ ...line })) }; },
+  async cascade(condition_id: string) {
+    if (!DATA.cohort.carriers.some((c) => c.condition_id === condition_id)) throw new Error("422");
+    const token = `demo-link-${Object.keys(S.links).length + 1}`;
+    S.links[token] = { condition_id, expires_at: now() + day, used: false }; save(); return { token };
+  },
+  async redeemCascade(token: string) {
+    const link = Object.prototype.hasOwnProperty.call(S.links, token) ? S.links[token] : undefined;
+    if (!link || link.used || link.expires_at <= now()) throw new Error("403");
+    link.used = true; save(); return { condition_id: link.condition_id };
+  },
   scenarios: () => DATA.scenarios.map((s) => ({ id: s.id, title: s.title, blurb: s.blurb, tier: s.tier, related: s.related })),
   scenario: () => S.scenario,
   setScenario(id: string) { S = { ...FRESH(), persona: S.persona, scenario: id }; save(); },

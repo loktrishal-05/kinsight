@@ -1,0 +1,30 @@
+import { expect, test } from "@playwright/test";
+
+test("demo journey: advance lab, pair and stop sharing, view own receipt", async ({ page }) => {
+  await page.goto("/signin");
+  await page.getByTestId("demo-account").click();
+  await page.getByTestId("signin-submit").click();
+  await expect(page).toHaveURL(/\/home$/);
+  await page.getByRole("button", { name: /Person A/ }).click();
+  await page.goto("/journey");
+  await expect(page.getByRole("heading", { name: "My journey" })).toBeVisible();
+  const lab = page.getByRole("region", { name: "Lab tracker" });
+  await expect(lab.locator('[aria-current="step"]')).toContainText("Booked");
+  await lab.getByRole("button", { name: "Advance a stage" }).click();
+  await expect(lab.locator('[aria-current="step"]')).toContainText("Collected");
+  const pairing = page.getByRole("region", { name: "Partner pairing" });
+  await pairing.getByRole("button", { name: "Start pairing" }).click();
+  await expect(pairing.getByRole("status")).toHaveText("Pending");
+  await expect(pairing.locator("bdi").first()).toHaveText(/^[0-9]{9}$/);
+  const pin = await pairing.locator("bdi").first().innerText();
+  await pairing.getByLabel("Enter a PIN").fill(pin);
+  await pairing.getByRole("button", { name: "Confirm PIN" }).click();
+  await expect(pairing.getByRole("status")).toHaveText("Active");
+  await pairing.getByRole("button", { name: "Stop sharing" }).click();
+  await expect(pairing.getByRole("status")).toHaveText("Revoked");
+  const receipt = page.getByRole("region", { name: "Receipt", exact: true });
+  await expect(receipt.getByRole("row")).toHaveCount(3);
+  await expect(receipt.getByText("Your share: 850.00")).toBeVisible();
+  await expect(receipt.getByText("Total: 3000.00", { exact: true })).toBeVisible();
+  await expect(receipt.locator("caption")).toContainText("The other partner’s lines are never shown.");
+});

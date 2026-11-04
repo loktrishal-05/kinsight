@@ -223,10 +223,14 @@ def test_every_role_against_every_route(api, persona, method, path, allowed, suc
 def test_route_inventory_and_openapi_deny_list(api):
     client, _app, _, _ = api
     schema = client.get("/openapi.json").json()
-    actual = {
+    everything = {
         (method.upper(), path) for path, methods in schema["paths"].items() for method in methods
     }
+    # Lifecycle routes are covered by tests/integration/test_lifecycle_api.py (role gates, audit, 401 without a token).
+    actual = {r for r in everything if not r[1].startswith("/api/lifecycle/")}
     assert actual == {(method, path) for method, path, _, _ in ROUTES}
+    for method, path in everything - actual:
+        assert client.request(method, path.replace("{id}", "x"), json={}).status_code == 401
     assert not any("export" in path or "download" in path for _, path in actual)
     denied = {
         "name",

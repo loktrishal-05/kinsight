@@ -27,6 +27,16 @@ export const PedigreeS = z.object({
   relationships: z.array(RelS), warnings: z.array(z.string()),
 });
 
+export const TrackerS = z.object({ stages: z.array(z.string()).length(8), stage: z.number().int().min(1).max(8), qc_failure: z.string().nullable(), times: z.record(z.number()) });
+export const CertificateS = z.object({ days_left: z.number().min(0).max(90), expired: z.boolean(), alert_at: z.union([z.literal(60), z.literal(30), z.literal(14), z.literal(7)]).nullable(), genetic_compatibility: z.literal("permanent") });
+export const PairingS = z.object({ id: z.string(), pin: z.string().regex(/^\d{9}$/), expires_in: z.number().nonnegative() });
+export const PairingStatusS = z.object({ status: z.enum(["pending", "active", "revoked", "expired"]) });
+const MoneyS = z.string().regex(/^\d+\.\d{2}$/);
+export const ReceiptS = z.object({ lines: z.array(z.object({ label: z.string(), gross: MoneyS, insurer: MoneyS, grant: MoneyS, copay: MoneyS })), total: MoneyS, your_share: MoneyS });
+export const CascadeS = z.object({ token: z.string().min(1) });
+export const RedeemedS = z.object({ condition_id: z.string().min(1) });
+export type PairingStatus = z.infer<typeof PairingStatusS>;
+
 export type Result = z.infer<typeof ResultS>;
 export type Couple = z.infer<typeof CoupleS>;
 export type Consent = z.infer<typeof ConsentS>;
@@ -41,6 +51,16 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  tracker: async () => TrackerS.parse(await impl.tracker()),
+  advanceTracker: async () => TrackerS.parse(await impl.advanceTracker()),
+  certificate: async (elapsed: number) => CertificateS.parse(await impl.certificate(elapsed)),
+  startPairing: async () => PairingS.parse(await impl.startPairing()),
+  confirmPairing: async (id: string, pin: string) => PairingStatusS.parse(await impl.confirmPairing(id, pin)),
+  revokePairing: async (id: string) => PairingStatusS.parse(await impl.revokePairing(id)),
+  pairing: async (id: string) => PairingStatusS.parse(await impl.pairing(id)),
+  receipt: async () => ReceiptS.parse(await impl.receipt()),
+  cascade: async (condition: string) => CascadeS.parse(await impl.cascade(condition)),
+  redeemCascade: async (token: string) => RedeemedS.parse(await impl.redeemCascade(token)),
   login: (p: string): Promise<string> => impl.login(p),
   results: (): Promise<Result[]> => impl.results(),
   explanation: (lang: string, level: string): Promise<{ blocks: string[]; released: boolean }> => impl.explanation(lang, level),

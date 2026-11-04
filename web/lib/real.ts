@@ -26,6 +26,16 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  tracker: () => json("/api/lifecycle/tracker"),
+  advanceTracker: () => json("/api/lifecycle/tracker/advance", post({})),
+  certificate: (elapsed: number) => json(`/api/lifecycle/certificate?elapsed_days=${elapsed}`),
+  startPairing: () => json("/api/lifecycle/pairing", post({})),
+  confirmPairing: (id: string, pin: string) => json(`/api/lifecycle/pairing/${encodeURIComponent(id)}/confirm`, post({ pin })),
+  revokePairing: (id: string) => json(`/api/lifecycle/pairing/${encodeURIComponent(id)}/revoke`, post({})),
+  pairing: (id: string) => json(`/api/lifecycle/pairing/${encodeURIComponent(id)}`),
+  receipt: () => json("/api/lifecycle/receipt"),
+  cascade: (condition_id: string) => json("/api/lifecycle/cascade", post({ condition_id })),
+  redeemCascade: (token: string) => json("/api/lifecycle/cascade/redeem", post({ token })),
   async login(persona: string) {
     token = (await json("/api/auth/persona", post({ persona }), "")).access_token;
     partnerToken = "";
