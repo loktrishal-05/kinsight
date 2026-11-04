@@ -563,6 +563,7 @@
   "safety.variantRows": "ہر سطر: تبدیلی ID، سابقہ درجہ، موجودہ درجہ (1-5)",
   "safety.sample": "ڈیمو سطریں لیں",
   "safety.compare": "درجے موازنہ کریں",
+  "safety.live": "ابھی ClinVar سے جانچیں",
   "safety.upgraded": "درجہ بڑھا",
   "safety.downgraded": "درجہ گھٹا",
   "safety.review": "معالج کا جائزہ درکار",

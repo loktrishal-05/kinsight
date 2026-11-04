@@ -708,6 +708,7 @@
   "safety.variantRows": "ஒவ்வொரு வரி: மாறுபாடு ID, பழைய வகுப்பு, தற்போதைய வகுப்பு (1-5)",
   "safety.sample": "மாதிரி வரிகளைப் பயன்படுத்து",
   "safety.compare": "வகுப்புகளை ஒப்பிடு",
+  "safety.live": "இப்போது ClinVar இல் சரிபார்க்கவும்",
   "safety.upgraded": "வகுப்பு உயர்ந்தது",
   "safety.downgraded": "வகுப்பு குறைந்தது",
   "safety.review": "மருத்துவர் ஆய்வு தேவை",

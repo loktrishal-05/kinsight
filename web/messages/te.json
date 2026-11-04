@@ -708,6 +708,7 @@
   "safety.variantRows": "ప్రతి వరుస: రూపాంతరం ID, పాత తరగతి, ప్రస్తుత తరగతి (1-5)",
   "safety.sample": "డెమో వరుసలు వాడండి",
   "safety.compare": "తరగతులు పోల్చండి",
+  "safety.live": "ఇప్పుడే ClinVar లో తనిఖీ చేయండి",
   "safety.upgraded": "తరగతి పెరిగింది",
   "safety.downgraded": "తరగతి తగ్గింది",
   "safety.review": "వైద్యుని సమీక్ష అవసరం",

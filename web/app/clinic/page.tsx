@@ -30,12 +30,17 @@ function ClinicCards() {
     if (entries.some((row) => row.length !== 3 || !row[0] || !/^[1-5]$/.test(row[1]) || !/^[1-5]$/.test(row[2])) || new Set(entries.map((r) => r[0])).size !== entries.length) throw new Error("422");
     return api.reclassify({ archived: Object.fromEntries(entries.map(([id, a]) => [id, Number(a)])), feed: Object.fromEntries(entries.map(([id, , b]) => [id, Number(b)])) });
   } });
+  const live = useMutation({ mutationFn: () => {
+    const entries = rows.trim().split(/\r?\n/).map((row) => row.trim().split(/\s+/));
+    if (entries.some((row) => row.length < 2 || !/^\d+$/.test(row[0]) || !/^[1-5]$/.test(row[1]))) throw new Error("422");
+    return api.reclassifyLive(Object.fromEntries(entries.map(([id, a]) => [id, Number(a)])));
+  } });
   const tamm = useMutation({ mutationFn: () => api.tamm({ pairing_ref: pairing, role }) });
   const emergency = useMutation({ mutationFn: () => api.breakGlass({ attestors: [first, second], reason }), onSuccess: () => setReason("") });
   return <section className="space-y-6">
     <PageHeader title={t("safety.clinicTitle")} />
     {MOCK && <Notice>{t("safety.demo")}</Notice>}
-    {[triage, reclassify, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
+    {[triage, reclassify, live, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
     <section className="card space-y-4" aria-labelledby="triage-title">
       <h2 id="triage-title" className="text-lg font-semibold">{t("safety.triage")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); triage.mutate(); }}>
@@ -65,8 +70,10 @@ function ClinicCards() {
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); reclassify.mutate(); }}>
         <label className="block" htmlFor="variant-rows">{t("safety.variantRows")}<textarea id="variant-rows" className="field mt-1" dir="ltr" rows={4} required value={rows} onChange={(e) => { setRows(e.target.value); reclassify.reset(); }} /></label>
         <button type="button" className="btn-quiet" onClick={() => { setRows("demo-v1 3 5\ndemo-v2 5 2"); reclassify.reset(); }}>{t("safety.sample")}</button>{" "}
-        <button className="btn-quiet" disabled={reclassify.isPending}>{t("safety.compare")}</button>
+        <button className="btn-quiet" disabled={reclassify.isPending}>{t("safety.compare")}</button>{" "}
+        <button type="button" className="btn-quiet" disabled={live.isPending} onClick={() => { reclassify.reset(); live.mutate(); }}>{t("safety.live")}</button>
       </form>
+      {live.data && <div role="status" aria-label="ClinVar"><p className="text-sm text-muted">NCBI ClinVar</p><ul>{live.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)} — {t("safety.review")}</li>)}</ul>{!live.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
       {reclassify.data && <div role="status"><ul>{reclassify.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)}{a.needs_clinician_review && ` — ${t("safety.review")}`}</li>)}</ul>{!reclassify.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
     </section>
     <section className="card space-y-4" aria-labelledby="tamm-title">

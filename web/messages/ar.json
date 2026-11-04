@@ -709,6 +709,7 @@
   "safety.variantRows": "سطر لكل تغير: المعرف، الفئة السابقة والحالية (1-5)",
   "safety.sample": "استخدام أمثلة",
   "safety.compare": "مقارنة الفئات",
+  "safety.live": "تحقق من ClinVar الآن",
   "safety.upgraded": "رُفعت الفئة",
   "safety.downgraded": "خُفضت الفئة",
   "safety.review": "يحتاج مراجعة سريرية",
