@@ -74,6 +74,13 @@ Request bodies reject unknown fields and bound lists, identifiers and scores: tr
 up to 200 entries, DCS allows 1–16 answers, low-literacy DCS requires 10 answers, and PAGIS totals accept 0–200.
 Instrument item text and clinical advice are not included. These routes have integration coverage; screens are separate work.
 
+## Live data
+
+Variant reclassification (SF-2 / FR-022) now reads **live NCBI ClinVar** classes: `POST /api/lifecycle/reclassify/live` (server,
+`services/lifecycle/clinvar.py`, hourly cache, optional `NCBI_API_KEY`) and a browser lookup in mock mode (`web/lib/clinvar.ts`).
+Only ClinVar variation ids are sent; no person, family or result data leaves the system. Everything else (people, results,
+panel frequencies) stays synthetic by design. Next live source: gnomAD carrier frequencies for `configs/panel.yaml`.
+
 ## Next build steps (in order)
 
 1. Screens for triage (counsellor), Whisper vouchers, reclassification alerts, PAGIS check-in, decoy PIN; persist lifecycle state in Postgres.
