@@ -1,4 +1,5 @@
 "use client";
+import { exploreGene } from "@/lib/clinvar";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -39,12 +40,14 @@ function ClinicCards() {
   const [variant, setVariant] = useState("7-117559590-ATCT-A");
   const frequency = useMutation({ mutationFn: () => api.frequency(variant.trim().split(/\s*,\s*/).filter(Boolean)) });
   const pct = (x: number | null) => (x == null ? "–" : `${(x * 100).toFixed(2)}%`);
+  const [gene, setGene] = useState("CFTR");
+  const explore = useMutation({ mutationFn: () => exploreGene(gene) });
   const tamm = useMutation({ mutationFn: () => api.tamm({ pairing_ref: pairing, role }) });
   const emergency = useMutation({ mutationFn: () => api.breakGlass({ attestors: [first, second], reason }), onSuccess: () => setReason("") });
   return <section className="space-y-6">
     <PageHeader title={t("safety.clinicTitle")} />
     {MOCK && <Notice>{t("safety.demo")}</Notice>}
-    {[triage, reclassify, live, frequency, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
+    {[triage, reclassify, live, explore, frequency, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
     <section className="card space-y-4" aria-labelledby="triage-title">
       <h2 id="triage-title" className="text-lg font-semibold">{t("safety.triage")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); triage.mutate(); }}>
@@ -79,6 +82,14 @@ function ClinicCards() {
       </form>
       {live.data && <div role="status" aria-label="ClinVar"><p className="text-sm text-muted">NCBI ClinVar</p><ul>{live.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)} — {t("safety.review")}</li>)}</ul>{!live.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
       {reclassify.data && <div role="status"><ul>{reclassify.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)}{a.needs_clinician_review && ` — ${t("safety.review")}`}</li>)}</ul>{!reclassify.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
+    </section>
+    <section className="card space-y-4" aria-labelledby="explore-title">
+      <h2 id="explore-title" className="text-lg font-semibold">{t("safety.explore")}</h2>
+      <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); explore.mutate(); }}>
+        <label className="block" htmlFor="explore-gene">{t("safety.exploreGene")}<input id="explore-gene" className="field mt-1" dir="ltr" required value={gene} onChange={(e) => { setGene(e.target.value); explore.reset(); }} /></label>
+        <button className="btn-quiet" disabled={explore.isPending}>{t("safety.exploreGo")}</button>
+      </form>
+      {explore.data && <div role="status" aria-label="ClinVar explorer"><p className="text-sm text-muted">NCBI ClinVar · {explore.data.total.toLocaleString()} {t("safety.exploreCount").replace("{n}", String(explore.data.rows.length))}</p>{!explore.data.rows.length && <p>{t("safety.exploreNone")}</p>}<ul>{explore.data.rows.map((r) => <li key={r.id} className="row flex-wrap items-start"><span><bdi>{r.title}</bdi><br /><span className="text-xs text-muted">{r.label} · {r.review} · ID {r.id}</span></span></li>)}</ul></div>}
     </section>
     <section className="card space-y-4" aria-labelledby="freq-title">
       <h2 id="freq-title" className="text-lg font-semibold">{t("safety.freq")}</h2>
