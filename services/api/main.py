@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from importlib.metadata import version
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -550,27 +550,36 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     @app.get(
         "/api/counsellor/queue", response_model=list[CaseView], response_model_exclude_unset=True
     )
-    async def queue(identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
+    async def queue(
+        limit_rows: int = Query(12, alias="limit", ge=1, le=50),
+        identity=Depends(roles("counsellor")),
+        db: Session = Depends(db_session),
+    ):
         check(db, identity, ResourceRef("queue", "assigned"), {"status"}, "counselling")
-        # Only assigned metadata is enumerated; each item passes policy before backend access.
-        ids = db.scalars(
-            select(CaseAccess.id)
-            .where(CaseAccess.assigned_to == identity.actor.id)
-            .order_by(CaseAccess.id)
-            .limit(50)
+        # Most urgent first (case ids start with the tier). Only assigned metadata is enumerated; each item still passes the
+        # same consent policy. Allowed rows are not audited one by one (the list read above is); refusals always are.
+        cases = db.scalars(
+            select(CaseAccess).where(CaseAccess.assigned_to == identity.actor.id)
+            .order_by(CaseAccess.id.desc()).limit(limit_rows)
         ).all()
-        output = []
+        owners = {c.owner_id for c in cases}
+        people = {p.id: p for p in db.scalars(select(Person).where(Person.id.in_(owners)))} if owners else {}
+        salt = secret("KINSIGHT_AUDIT_SALT")
         fields = {"id", "status", "tier", "due_at"}
-        for case_id in ids:
-            try:
-                decision = case_check(db, identity, case_id, fields)
-            except HTTPException:
-                continue
-            data = CaseView.model_validate(await adapter.invoke("case_status", case_id, None, db))
-            decision = case_check(db, identity, case_id, set(decision.allowed_fields))
-            output.append(
-                {**data.model_dump(include=set(decision.allowed_fields)), "is_synthetic": True}
+        output = []
+        for row in cases:
+            person = people.get(row.owner_id)
+            ref = ResourceRef(
+                "case", row.id, row.owner_id, owner_viewed=bool(person and person.result_viewed_at),
+                assigned_to=row.assigned_to, assignment_expires_at=row.assignment_expires_at,
+                assignment_reason=row.assignment_reason,
             )
+            decision = decide(identity.actor, ref, "counselling", fields, session=db, audit_salt=salt, audit_allowed=False)
+            if not decision.allowed:
+                continue
+            data = CaseView.model_validate(await adapter.invoke("case_status", row.id, None, db))
+            output.append({**data.model_dump(include=set(decision.allowed_fields)), "is_synthetic": True})
+        db.commit()
         return sorted(
             output, key=lambda row: (-(row.get("tier") or 0), row.get("due_at") or float("inf"))
         )

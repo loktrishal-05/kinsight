@@ -129,7 +129,7 @@ export const real = {
     const d = line ? JSON.parse(line.slice(6)) : {};
     return { text: d.text ?? d.message ?? "", refused: !!d.refused };
   },
-  async queue() { return (await json("/api/counsellor/queue")).map((c: any) => ({ id: c.id ?? CASE, tier: c.tier ?? 3, status: c.status ?? "case", due_at: c.due_at })); },
+  async queue() { return (await json("/api/counsellor/queue?limit=24")).map((c: any) => ({ id: c.id ?? CASE, tier: c.tier ?? 3, status: c.status ?? "case", due_at: c.due_at })); },
   brief: async (id: string) => (await json(`/api/counsellor/cases/${id}/brief`)).brief as string[],
   decide: (id: string, decision: string) => json(`/api/counsellor/cases/${id}/decision`, post({ decision, reason_code: "reviewed" })),
   referralEvent: (id: string, event: string, evidence: string) => json(`/api/counsellor/cases/${id}/referral/events`, post({ event, evidence_code: evidence || "none" })),

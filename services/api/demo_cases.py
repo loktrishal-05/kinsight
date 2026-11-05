@@ -30,15 +30,23 @@ def synthetic_cases(n: int = 40) -> list[dict]:
     persons = {p["id"]: p for p in _rows("persons")}
     couples = _rows("couples")
     picks = random.Random(SEED).sample(couples, n)
-    out = []
-    for c in sorted(picks, key=lambda c: (-c["tier"], c["couple_id"])):
+    buckets: dict[int, list[dict]] = {1: [], 2: [], 3: []}
+    for c in sorted(picks, key=lambda c: c["couple_id"]):
         h = int(hashlib.sha256(c["couple_id"].encode()).hexdigest(), 16)
         tier = c["tier"]
-        status = (["awaiting_counsellor"] * 5 + ["released", "awaiting_user", "tracking", "closed"])[h % 9] if tier == 3 else \
-                 (["awaiting_user", "tracking", "released", "closed"])[h % 4]
-        out.append({"id": c["couple_id"].replace("CPL_", "C-"), "owner": c["person_a"], "tier": tier, "status": status,
-                    "due_days": (h % 21) - 6, "language": persons[c["person_a"]]["language"],
-                    "related": c["inbreeding_f"] > 0, "conditions": len(c["shared_conditions"])})
+        status = (["awaiting_counsellor"] * 5 + ["released", "awaiting_user", "tracking", "closed"])[h % 9] if tier == 3 else                  (["awaiting_user", "tracking", "released", "closed"])[h % 4]
+        buckets[tier].append({"num": c["couple_id"].replace("CPL_", ""), "owner": c["person_a"], "tier": tier, "status": status,
+                              "due_days": (h % 21) - 6, "language": persons[c["person_a"]]["language"],
+                              "related": c["inbreeding_f"] > 0, "conditions": len(c["shared_conditions"])})
+    # Interleave the tiers so any page of the queue shows a realistic mix; the id's number part makes the API's
+    # newest-id-first ordering follow this sequence.
+    order, out = [3, 3, 2, 3, 1, 2], []
+    while any(buckets.values()):
+        for tier in order:
+            if buckets[tier]:
+                out.append(buckets[tier].pop(0))
+    for pos, case in enumerate(out):
+        case["id"] = f"C{99 - pos:02d}-{case.pop('num')}"
     return out
 
 
