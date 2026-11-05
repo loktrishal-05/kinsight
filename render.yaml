@@ -19,3 +19,24 @@ services:
         value: "1"
       - key: KINSIGHT_DEMO_AUTH
         value: "1"
+
+  # Same API in Virginia (us-east), next to the Neon database in Washington D.C., so each database round trip is a few
+  # milliseconds instead of ~70. It reuses the Oregon service's DATABASE_URL, so no secret is stored in this file.
+  - type: web
+    name: kinsight-api-va
+    region: virginia
+    runtime: docker
+    dockerfilePath: ./Dockerfile.api
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromService: { type: web, name: kinsight-api, envVarKey: DATABASE_URL }
+      - key: KINSIGHT_TOKEN_SECRET
+        generateValue: true
+      - key: KINSIGHT_AUDIT_SALT
+        generateValue: true
+      - key: KINSIGHT_DEMO
+        value: "1"
+      - key: KINSIGHT_DEMO_AUTH
+        value: "1"
