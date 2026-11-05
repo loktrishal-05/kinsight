@@ -77,7 +77,15 @@ KinSight is a fictional demo. Nothing in this table is a claim of clinical valid
 
 Pairings, the lab sample, token nonces, vouchers, vault hashes and bookings are stored through `services/lifecycle/store.py`
 (SQLAlchemy; Postgres through `DATABASE_URL`, SQLite locally). Alembic revisions `0002` and `0003` create the tables. The web app is on
-Vercel, the API on Render (`render.yaml`), Postgres on Neon (free tier).
+Vercel, the API on Render in Virginia (`kinsight-api-va`, next to the database; `render.yaml`), Postgres on Neon (free tier, Washington D.C.). Free-plan limits: the API sleeps when idle, so the first request after a quiet spell shows a "waking up" notice.
+
+## Data and screens added after the first pass
+
+- **Counsellor console:** a 40-case synthetic caseload from the demo cohort (paged, tier-mixed), read through the same consent policy; allowed rows are audited once per list, refusals per case.
+- **Privacy centre:** shows the person's real access trail (`GET /api/me/access-log`), not a sample.
+- **Family circle and family tree questions:** the API returns the full demo family; the page lays out three generations with labels and the consanguinity double line.
+- **Clinic tools:** live ClinVar reclassification and a gene-by-gene ClinVar variant explorer; live gnomAD frequencies.
+- **Fixed in the same pass:** garbled characters in two adapters, raw condition ids in real mode, an `/ask` hydration error, role pages that were empty in new tabs.
 
 ## Not adopted on purpose
 
