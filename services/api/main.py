@@ -25,6 +25,7 @@ from services.consent import sharing
 from services.consent.aggregates import release
 from services.consent.audit import verify_chain
 from services.consent.models import (
+    AuditEvent,
     Base,
     CaseAccess,
     Consent,
@@ -104,6 +105,9 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     options = {"connect_args": {"check_same_thread": False}} if url.startswith("sqlite") else {}
     if url in {"sqlite://", "sqlite:///:memory:"}:
         options["poolclass"] = StaticPool
+    if not url.startswith("sqlite"):
+        # Hosted Postgres closes idle connections (and Neon suspends when quiet): check a pooled connection before use.
+        options.update(pool_pre_ping=True, pool_recycle=240)
     engine = create_engine(url, **options)
     sessions = sessionmaker(engine, expire_on_commit=False)
     demo = os.environ.get("KINSIGHT_DEMO") == "1"
@@ -431,6 +435,19 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         return PedigreeView.model_validate(
             await adapter.invoke("pedigree", identity.actor.id, None, db)
         )
+
+    @app.get("/api/me/access-log")
+    async def access_log(identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        """The person's own trail: every access and refusal touching them (who, what, outcome; never the content)."""
+        own(db, identity, "audit", RESOURCE_FIELDS["audit"])
+        ref = reference(identity.actor.id, secret("KINSIGHT_AUDIT_SALT"))
+        rows = db.scalars(
+            select(AuditEvent).where(or_(AuditEvent.actor_ref == ref, AuditEvent.resource_ref == ref))
+            .order_by(AuditEvent.id.desc()).limit(25)
+        ).all()
+        events = [{"when": r.ts, "who": "you" if r.actor_ref == ref else "someone", "action": r.action,
+                   "resource": r.resource_type, "outcome": r.decision, "reason": r.reason_code} for r in rows]
+        return {"events": events, "is_synthetic": True}
 
     @app.put("/api/me/pedigree", response_model=PedigreeView)
     async def edit_pedigree(
