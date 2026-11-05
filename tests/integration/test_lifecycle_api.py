@@ -607,3 +607,37 @@ def test_certificate_unlocks_through_quiz_api(api):
             assert result.json()["status"] == "passed"
             assert not c.get("/api/lifecycle/certificate", headers=headers[persona]).json()["locked"]
             assert actor in backend.values()["teach_back_passed_actors"]
+
+
+def test_demo_caseload_and_family_tree_are_populated(monkeypatch):
+    monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
+    monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
+    monkeypatch.setenv("KINSIGHT_DEMO_AUTH", "1")
+    monkeypatch.setenv("KINSIGHT_DEMO", "1")
+    with TestClient(create_app("sqlite://")) as c:
+        head = lambda p: {"Authorization": "Bearer " + c.post("/api/auth/persona", json={"persona": p}).json()["access_token"]}  # noqa: E731
+        queue = c.get("/api/counsellor/queue", headers=head("counsellor")).json()
+        assert len(queue) >= 30 and {row["tier"] for row in queue} == {1, 2, 3}
+        assert all(row["id"] and row["status"] and row["due_at"] for row in queue)
+        tiers = [row["tier"] for row in queue]
+        assert tiers == sorted(tiers, reverse=True)                    # tier 3 first
+        first = queue[0]["id"]
+        brief = c.get(f"/api/counsellor/cases/{first}/brief", headers=head("counsellor"))
+        assert brief.status_code == 200 and brief.json()["brief"][0].startswith("tier_")
+        # the family circle: three generations, with who is related to whom
+        ped = c.get("/api/me/pedigree", headers=head("person_a")).json()
+        assert {p["id"] for p in ped["people"]} >= {"synthetic-a", "synthetic-b", "gf", "gm"}
+        assert sum(1 for r in ped["relationships"] if r["type"] == "parent_of") == 8
+        assert ped["related"] == [["synthetic-a", "synthetic-b"]]
+
+
+def test_access_log_shows_only_the_persons_own_trail(api):
+    c, h, _ = api
+    c.get("/api/me/results", headers=h["person_a"])
+    log = c.get("/api/me/access-log", headers=h["person_a"]).json()
+    assert log["events"] and all(set(e) == {"when", "who", "action", "resource", "outcome", "reason"} for e in log["events"])
+    assert {e["who"] for e in log["events"]} <= {"you", "someone"}
+    assert "synthetic-a" not in str(log)                         # hashed references and no ids are ever returned
+    assert c.get("/api/me/access-log", headers=h["person_b"]).json()["events"] != log["events"]
+    assert c.get("/api/me/access-log", headers=h["analyst"]).status_code == 403
+    assert c.get("/api/me/access-log").status_code == 401

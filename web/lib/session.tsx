@@ -1,4 +1,5 @@
 "use client";
+import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api";
 
@@ -15,6 +16,7 @@ type Ctx = { persona: Persona | null; choose: (p: Persona) => Promise<void> };
 const Session = createContext<Ctx | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const qc = useQueryClient();
   const [persona, setPersona] = useState<Persona | null>(null);
   useEffect(() => {
     // The chosen role is remembered across tabs and reloads; with none chosen yet, the demo starts as Person A so no screen is empty.
@@ -28,6 +30,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
   const choose = async (p: Persona) => {
     await api.login(p);
+    qc.clear(); // cached answers belong to the previous role
     setPersona(p);
     try { sessionStorage.setItem("ks_persona", p); localStorage.setItem("ks_persona", p); } catch { /* private mode */ }
   };

@@ -20,8 +20,8 @@ const out = (x: number) => 1 - Math.pow(1 - x, 4);
 const SAND = 0xf4ecdc, TEAL = 0x1d7f7a, TEAL_DEEP = 0x0c5755, DOT = 0xf1e9d8;
 
 function build(THREE: Three, canvas: HTMLCanvasElement): Scene {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 640 ? 1.5 : 2));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: window.devicePixelRatio < 2, alpha: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   // A software renderer (no GPU) gets a light mode: no shadows, 1x pixels, no idle motion.
   const gl = renderer.getContext(), info = gl.getExtension("WEBGL_debug_renderer_info");
@@ -38,7 +38,7 @@ function build(THREE: Three, canvas: HTMLCanvasElement): Scene {
   const sun = new THREE.DirectionalLight(0xfff1dc, 3.4);
   sun.position.set(6, 7, 9);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(window.innerWidth < 640 ? 1024 : 2048, window.innerWidth < 640 ? 1024 : 2048);
+  sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 12, bottom: -12, near: 1, far: 40 });
   sun.shadow.radius = 3;
   const fill = new THREE.DirectionalLight(0xe8f4f2, 0.9);

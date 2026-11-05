@@ -7,7 +7,7 @@ import WakingNotice from "@/components/WakingNotice";
 import { SessionProvider } from "@/lib/session";
 
 export default function Providers({ children }: { children: ReactNode }) {
-  const [qc] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 0, retry: false } } }));
+  const [qc] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 20_000, gcTime: 300_000, refetchOnWindowFocus: false, retry: false } } }));
   return (
     <QueryClientProvider client={qc}>
       <PrefsProvider>

@@ -223,7 +223,7 @@ export const mock = {
   },
   async referral() { return S.steps.map((s) => ({ ...s, overdue: s.due_at < now() })); },
   async copilot(text: string) {
-    const refuse = /partner|husband|wife|raw|other|his|her|should we|decide|marry|Ø´Ø±ÙŠÙƒ|Ø²ÙˆØ¬/i.test(text);
+    const refuse = /partner|husband|wife|raw|other|his|her|should we|decide|marry|شريك|زوج/i.test(text);
     return refuse ? { text: "", refused: true } : { text: "Your result says what was found for you. Being a carrier is not the same as having the condition. (Source: your explanation.)", refused: false };
   },
   async queue() {

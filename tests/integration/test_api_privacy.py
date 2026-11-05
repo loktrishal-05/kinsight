@@ -130,6 +130,7 @@ ROUTES = [
         {"person_a", "person_b", "partner_a", "partner_b", "relative"},
         403,
     ),
+    ("GET", "/api/me/access-log", {"person_a", "person_b"}, 200),
     ("GET", "/api/me/pedigree", {"person_a", "person_b"}, 200),
     ("PUT", "/api/me/pedigree", {"person_a", "person_b"}, 200),
     ("GET", "/api/couples/{id}/assessment", {"partner_a", "partner_b"}, 200),
