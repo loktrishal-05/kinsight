@@ -616,11 +616,12 @@ def test_demo_caseload_and_family_tree_are_populated(monkeypatch):
     monkeypatch.setenv("KINSIGHT_DEMO", "1")
     with TestClient(create_app("sqlite://")) as c:
         head = lambda p: {"Authorization": "Bearer " + c.post("/api/auth/persona", json={"persona": p}).json()["access_token"]}  # noqa: E731
-        queue = c.get("/api/counsellor/queue", headers=head("counsellor")).json()
-        assert len(queue) >= 30 and {row["tier"] for row in queue} == {1, 2, 3}
-        assert all(row["id"] and row["status"] and row["due_at"] for row in queue)
+        page = c.get("/api/counsellor/queue", headers=head("counsellor")).json()
+        assert 10 <= len(page) <= 12 and {row["tier"] for row in page} == {1, 2, 3}   # a page, with a realistic tier mix
+        queue = c.get("/api/counsellor/queue?limit=50", headers=head("counsellor")).json()
+        assert len(queue) >= 35 and all(row["id"] and row["status"] and row["due_at"] for row in queue)
         tiers = [row["tier"] for row in queue]
-        assert tiers == sorted(tiers, reverse=True)                    # tier 3 first
+        assert tiers == sorted(tiers, reverse=True)                    # most urgent first
         first = queue[0]["id"]
         brief = c.get(f"/api/counsellor/cases/{first}/brief", headers=head("counsellor"))
         assert brief.status_code == 200 and brief.json()["brief"][0].startswith("tier_")

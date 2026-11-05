@@ -138,6 +138,7 @@ def decide(
     *,
     session: Session,
     audit_salt: bytes,
+    audit_allowed: bool = True,
 ) -> Decision:
     """Audit in the caller's transaction; commit even when denying a request."""
     now = time.time()
@@ -201,6 +202,8 @@ def decide(
             decision = Decision(
                 True, frozenset(allowed_fields), "consent", tuple(sorted(consent_ids))
             )
+    if decision.allowed and not audit_allowed:
+        return decision  # list reads log the list once; every refusal is still logged
     append_event(
         session,
         actor_ref=reference(actor.id, audit_salt),
