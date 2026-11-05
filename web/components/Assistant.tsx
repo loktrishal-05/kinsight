@@ -93,7 +93,10 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
     }, (interim) => setText(interim));
   };
 
-  const hasSpeech = canListen();
+  // Browser speech support is read after mount: reading it while rendering made the server HTML differ from the browser's (hydration error).
+  const [caps, setCaps] = useState({ listen: false, speak: true });
+  useEffect(() => setCaps({ listen: canListen(), speak: canSpeak() }), []);
+  const hasSpeech = caps.listen;
   const chips = suggestions(fallback);
   return (
     <section aria-label={t("assistant.title")} className={`flex min-h-0 flex-col bg-surface ${layout === "page" ? "card-flush h-[min(70vh,40rem)]" : "h-full"}`}>
@@ -155,7 +158,7 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
           ? <button type="button" className="btn-quiet h-10 w-10 px-0" aria-label={t("assistant.stopSpeaking")} onClick={() => { stopSpeaking(); setSpeaking(false); }}><Square aria-hidden className="h-4 w-4" /></button>
           : <button className="btn h-10 w-10 px-0" disabled={!text.trim() || busy} aria-label={t("ask.send")}><SendHorizontal aria-hidden className="h-4 w-4 rtl:rotate-180" /></button>}
       </form>
-      <p className="px-4 pb-3 text-[11px] text-muted">{t("assistant.privacy")}{canSpeak() ? "" : ` ${t("assistant.noSpeech")}`}</p>
+      <p className="px-4 pb-3 text-[11px] text-muted">{t("assistant.privacy")}{caps.speak ? "" : ` ${t("assistant.noSpeech")}`}</p>
     </section>
   );
 }
