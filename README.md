@@ -109,8 +109,8 @@ deterministic, consent-first core ([docs/PRD_GAP.md](docs/PRD_GAP.md) lists ever
 | **Check-in and privacy tools** (`/checkin`) | Waiting-period check-in scoring, safe vault with a decoy PIN, anonymous family notice (no sender link, random 24-72 h delay) |
 | **Clinic tools** (`/clinic`) | Deterministic escalation rules (orthogonal hold, multi-gene, compound heterozygote, pregnancy window), live ClinVar reclassification alerts, live gnomAD population frequencies, completion notice with no genetic fields, dual-clinician emergency access |
 
-**Live public data.** Reclassification alerts read **NCBI ClinVar** and the frequency card reads **gnomAD v4**, both live and key-free;
-only variant ids are sent. People, results and the panel stay fictional by design.
+**Live public data.** Reclassification alerts and a gene-by-gene variant explorer read **NCBI ClinVar** (over a thousand pathogenic records for a gene like CFTR), and the frequency card reads **gnomAD v4**, all live and key-free;
+only variant ids are sent. People, results and the panel stay fictional by design; the counsellor console holds a 40-case synthetic caseload drawn from the 1,500-couple cohort.
 
 **Offline basics.** The app installs as a PWA and keeps its shell and static assets for offline use; API responses are never cached.
 
@@ -395,9 +395,9 @@ Reproducible from the committed seed ([docs/SCORECARD.md](docs/SCORECARD.md), `p
 
 | Test suite | Count |
 |---|---|
-| Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis, lifecycle API) | 705 |
-| Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring, lifecycle, live data clients) | 57 |
-| End-to-end (Playwright, desktop + phone: demo path, landing, sign-in, volunteer study, Kin with stubbed speech) | 64 |
+| Python (unit, property, golden, integration, privacy, red-team, eval gate, study analysis, lifecycle API) | 716 |
+| Web unit (Vitest: Kin rules, multilingual guards, mock API, study scoring, lifecycle, live data clients) | 65 |
+| End-to-end (Playwright, desktop + phone: demo path, landing, sign-in, volunteer study, Kin with stubbed speech) | 68 |
 
 CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a production build and Playwright on every push.
 
