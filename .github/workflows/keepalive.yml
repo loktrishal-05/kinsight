@@ -10,4 +10,4 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - run: curl --fail --silent --show-error --max-time 90 --retry 2 https://kinsight-api-fcp7.onrender.com/api/health
+      - run: curl --fail --silent --show-error --max-time 90 --retry 2 https://kinsight-api-va.onrender.com/api/health
