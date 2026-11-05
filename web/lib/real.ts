@@ -1,5 +1,7 @@
 // Real-API adapters (NEXT_PUBLIC_MOCK=0). They reshape the backend's strict responses for the screens; no figures are computed here.
 import type { z } from "zod";
+import { conditionLabel } from "./fixtures";
+import { layoutPedigree } from "./pedigreeLayout";
 import { trackSlow } from "./slow";
 import type * as safety from "./safety";
 import type * as plan from "./plan";
@@ -11,6 +13,8 @@ const keep = (k: string, v: string) => { try { sessionStorage.setItem(k, v); } c
 let token = "", partnerToken = "", me = "synthetic-a";
 if (typeof window !== "undefined") { token = store("ks_tok"); partnerToken = store("ks_ptok"); me = store("ks_me", "synthetic-a"); }
 const save = () => { keep("ks_tok", token); keep("ks_ptok", partnerToken); keep("ks_me", me); };
+// Condition names come from the fictional panel shipped with the app; the API returns only ids.
+const conditionLabels = (id: string) => ({ label: conditionLabel(id, "en"), label_ar: conditionLabel(id, "ar") });
 const COUPLE = "demo-couple", CASE = "demo-case";
 const other = () => (me === "synthetic-a" ? "synthetic-b" : "synthetic-a");
 
@@ -74,7 +78,17 @@ export const real = {
     save();
     return persona;
   },
-  results: async (): Promise<Result[]> => (await json("/api/me/results")).map((r: any) => ({ ...r, label: r.condition_id })),
+  results: async (): Promise<Result[]> => (await json("/api/me/results")).map((r: any) => ({ ...r, ...conditionLabels(r.condition_id) })),
+  async accessLog() {
+    const d = await json("/api/me/access-log");
+    const verb: Record<string, string> = { read: "looked at", grant: "agreed to share", revoke: "stopped sharing", route: "tried to open a page for", copilot: "asked Kin about" };
+    const noun: Record<string, string> = { result: "your result", explanation: "your explanation", pedigree: "your family tree", consent: "your consents", couple: "the couple view", case: "your case", audit: "your access trail", invitation: "an invitation" };
+    return d.events.map((e: any) => ({
+      when: e.when, who: e.who === "you" ? "you" : "someone with access",
+      what: `${verb[e.action] ?? e.action.replace(/_/g, " ")} ${noun[e.resource] ?? e.resource}`,
+      outcome: e.outcome === "allow" ? "allowed" : e.outcome === "deny" ? "refused" : e.outcome,
+    }));
+  },
   explanation: async () => json("/api/me/results/current/explanation"),
   async couple(): Promise<Couple> {
     const r = await raw(`/api/couples/${COUPLE}/assessment`, {}, partnerToken);
@@ -97,8 +111,7 @@ export const real = {
   },
   async pedigree(): Promise<Pedigree> {
     const d = await json("/api/me/pedigree");
-    const ids: string[] = [...new Set<string>(d.relationships.flatMap((r: any) => [r.a_id, r.b_id]))];
-    return { people: ids.map((id, i) => ({ id, sex: i % 2 ? "female" : "male", gen: 0, col: i, confirmed: true })), relationships: d.relationships, warnings: d.warnings };
+    return { people: layoutPedigree(d.relationships, d.people ?? []), related: d.related ?? [], relationships: d.relationships, warnings: d.warnings };
   },
   invite: (kind: string) => json("/api/invitations", post({ recipient_id: "synthetic-relative", scope: kind === "decline" ? "relationship_only" : kind })),
   async referral(): Promise<Step[]> {
@@ -123,7 +136,7 @@ export const real = {
   dashboard: () => json("/api/analytics/dashboard"),
   async comprehension() {
     const d = await json("/api/analytics/comprehension");
-    return { groups: Object.entries(d.cells).map(([k, n]) => ({ language: k.split("_")[0], reading_level: k.split("_")[1], n: n ?? 0, pass_rate: "â€”" })), gap_points: "â€”", target_gap_points: 10, label: "Counts only (suppressed and noised); pass rates need quiz results." };
+    return { groups: Object.entries(d.cells).map(([k, n]) => ({ language: k.split("_")[0], reading_level: k.split("_")[1], n: n ?? 0, pass_rate: "—" })), gap_points: "—", target_gap_points: 10, label: "Counts only (suppressed and noised); pass rates need quiz results." };
   },
   capacity: () => json("/api/analytics/capacity/simulation"),
   auditVerify: async () => json("/api/governance/audit-verify"),

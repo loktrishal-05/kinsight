@@ -25,7 +25,7 @@ export const QuizS = z.object({ questions: z.array(z.object({ id: z.string(), te
 export const QuizResultS = z.object({ passed: z.boolean(), reexplain: z.boolean().optional(), counsellor_offered: z.boolean().optional() });
 export const RelS = z.object({ a_id: z.string(), b_id: z.string(), type: z.enum(["parent_of", "partner_of"]), confidence: z.enum(["known", "reported", "uncertain"]), confirmed: z.boolean().optional() });
 export const PedigreeS = z.object({
-  people: z.array(z.object({ id: z.string(), sex: z.enum(["male", "female"]), gen: z.number(), col: z.number(), confirmed: z.boolean(), parents: z.tuple([z.string(), z.string()]).optional() })),
+  people: z.array(z.object({ id: z.string(), label: z.string().optional(), sex: z.enum(["male", "female"]), gen: z.number(), col: z.number(), confirmed: z.boolean(), parents: z.tuple([z.string(), z.string()]).optional() })),
   related: z.array(z.tuple([z.string(), z.string()])).optional(),
   relationships: z.array(RelS), warnings: z.array(z.string()),
 });
@@ -113,7 +113,7 @@ export const api = {
   scenario: () => mock.scenario(),
   setScenario: (id: string) => mock.setScenario(id),
   insights: () => mock.insights(),
-  accessLog: (): Promise<{ when: number; who: string; what: string; outcome: string }[]> => mock.accessLog(),
+  accessLog: (): Promise<{ when: number; who: string; what: string; outcome: string }[]> => impl.accessLog(),
   advance: (days: number) => mock.advance(days),
   resetDemo: () => mock.reset(),
 };

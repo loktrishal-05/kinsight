@@ -112,9 +112,16 @@ class PedigreeInput(StrictModel):
     relationships: Annotated[list[RelationshipInput], Field(max_length=200)]
 
 
+class PedigreePerson(StrictModel):
+    id: Alias
+    sex: Literal["male", "female"]
+
+
 class PedigreeView(Fictional):
     relationships: list[Relationship]
     warnings: list[str]
+    people: list[PedigreePerson] = []  # sex of each person, for drawing the standard symbols
+    related: list[tuple[Alias, Alias]] = []  # partners who are blood relatives (drawn with a double line)
 
 
 class Answers(StrictModel):

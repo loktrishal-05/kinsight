@@ -9,7 +9,9 @@ const W = 96, H = 110, R = 18, PAD = 44;
 export default function Pedigree({ data }: { data: P }) {
   const { t } = useI18n();
   const pos = Object.fromEntries(data.people.map((p) => [p.id, { x: PAD + p.col * W, y: PAD + p.gen * H }]));
-  const width = PAD * 2 + Math.max(...data.people.map((p) => p.col)) * W;
+  const drawn = PAD * 2 + Math.max(...data.people.map((p) => p.col)) * W;
+  const width = Math.max(drawn, 420); // few people must not be blown up to fill the card
+  const inset = (width - drawn) / 2;
   const height = PAD * 2 + 14 + Math.max(...data.people.map((p) => p.gen)) * H;
   const partners = data.relationships.filter((r) => r.type === "partner_of");
   const related = new Set((data.related ?? []).map((r) => r.join("|")));
@@ -19,6 +21,7 @@ export default function Pedigree({ data }: { data: P }) {
   data.people.filter((p) => p.parents).forEach((p) => byParents.set(p.parents!.join("|"), [...(byParents.get(p.parents!.join("|")) ?? []), p]));
   return (
     <svg role="img" aria-label="Pedigree" viewBox={`0 0 ${width} ${height}`} className="mx-auto h-auto w-full max-w-2xl" style={{ direction: "ltr" }}>
+      <g transform={`translate(${inset} 0)`}>
       {[...byParents.entries()].map(([k, kids]) => {
         const [a, b] = k.split("|"), pa = pos[a], pb = pos[b];
         if (!pa || !pb) return null;
@@ -51,11 +54,12 @@ export default function Pedigree({ data }: { data: P }) {
         return (
           <g key={p.id}>
             {p.sex === "male" ? <rect x={x - R} y={y - R} width={2 * R} height={2 * R} rx={3} {...common} /> : <circle cx={x} cy={y} r={R} {...common} />}
-            <text x={x} y={y + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="#18272c">{p.id}</text>
+            <text x={x} y={y + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="#18272c">{p.label ?? p.id}</text>
             {!p.confirmed && <text x={x} y={y - R - 6} textAnchor="middle" fontSize="10" fill="#55656b">{t("family.notConfirmed")}</text>}
           </g>
         );
       })}
+      </g>
     </svg>
   );
 }

@@ -29,6 +29,7 @@ from services.cohort.panel import CONFIGS, load_panel, load_rules
 from services.consent.models import CaseAccess, Couple, Person
 from services.genetics import CoupleAssessment, assess_couple
 
+from . import demo_cases
 from .interfaces import Unavailable
 
 A, B = "synthetic-a", "synthetic-b"
@@ -45,6 +46,8 @@ class DemoBackend:
         self.capacity_cfg = yaml.safe_load((CONFIGS / "capacity.yaml").read_text())
         self.templates, self.glossary = load_templates(), load_glossary()
         self.edges: list[dict] = []
+        self.people: list[dict] = []
+        self.related: list[tuple[str, str]] = []
         self.offset_days = 0
         self.reset_state()
 
@@ -60,7 +63,21 @@ class DemoBackend:
         res["a"][tier1.id] = "carrier"
         self.results = {A: res["a"], B: res["b"]}
         self.assessment = assess_couple(ped, "a", "b", res, self.panel, self.rules)
-        self.edges = [{"a_id": A, "b_id": B, "type": "partner_of", "confidence": "known", "confirmed": True}]
+        # the demo family: first cousins through shared grandparents (ids follow services.agents.eval._couple)
+        ident = {"a": A, "b": B}
+        name = lambda pid: ident.get(pid, pid)  # noqa: E731
+        self.people = [{"id": name(pid), "sex": sex} for pid, sex in ped.sex.items()]
+        self.edges = []
+        for child in ped.sex:
+            for parent in ped.parents(child):
+                if parent:
+                    self.edges.append({"a_id": name(parent), "b_id": name(child), "type": "parent_of",
+                                       "confidence": "known", "confirmed": True})
+        for a, b in (("gf", "gm"), ("x", "xs"), ("y", "ys"), ("a", "b")):
+            if a in ped.sex and b in ped.sex:
+                self.edges.append({"a_id": name(a), "b_id": name(b), "type": "partner_of", "confidence": "known",
+                                   "confirmed": True})
+        self.related = [(A, B)] if self.assessment.kinship_phi > 0 else []
         path = Path(tempfile.mkdtemp()) / "cp.sqlite"
         conn = sqlite3.connect(path, check_same_thread=False)
         self.graph = build_case_graph(Deps(self.panel, self.case_cfg), SqliteSaver(conn))
@@ -112,12 +129,12 @@ class DemoBackend:
                               "note_codes": f.note_codes} for f in a.findings]}
 
     def op_pedigree(self, subject, payload, session):
-        return {"relationships": self.edges, "warnings": []}
+        return {"relationships": self.edges, "warnings": [], "people": self.people, "related": self.related}
 
     def op_edit_pedigree(self, subject, payload, session):
         self.edges = payload["relationships"]
         warn = ["uncertain_edges_present"] if any(e["confidence"] == "uncertain" for e in self.edges) else []
-        return {"relationships": self.edges, "warnings": warn}
+        return {"relationships": self.edges, "warnings": warn, "people": self.people, "related": self.related}
 
     def op_quiz(self, subject, payload, session):
         lang = self.values()["template_set"].split("/")[0]
@@ -152,17 +169,32 @@ class DemoBackend:
             return {"locked": False}  # Demo backend cannot determine quiz state for other personas.
         return {"locked": subject not in self.values().get("teach_back_passed_actors", [])}
 
+    def synthetic_case(self, case_id: str) -> dict | None:
+        if not hasattr(self, "_cases"):
+            self._cases = {c["id"]: c for c in demo_cases.synthetic_cases()}
+        return self._cases.get(case_id)
+
     def op_case_status(self, subject, payload, session):
+        case = self.synthetic_case(subject)
+        if case is not None:  # a fictional caseload entry, not the live demo case
+            return {"id": case["id"], "status": case["status"], "tier": case["tier"],
+                    "due_at": (self.now() + timedelta(days=case["due_days"])).timestamp()}
         v = self.values()
         return {"id": CASE, "status": v.get("status", "drafting"), "tier": self.assessment.tier,
                 "due_at": (self.now() + timedelta(days=3)).timestamp()}
 
     def op_brief(self, subject, payload, session):
+        case = self.synthetic_case(subject)
+        if case is not None:
+            return {"brief": [f"tier_{case['tier']}", f"shared_conditions_{case['conditions']}",
+                              *(["related_partners"] if case["related"] else [])]}
         a = self.assessment
         return {"brief": [f"tier_{a.tier}", *[f"finding_{f.condition_id}" for f in a.findings],
                           *(["related_partners"] if a.kinship_phi > 0 else [])]}
 
     def op_decision(self, subject, payload, session):
+        if self.synthetic_case(subject) is not None:
+            return {"status": "recorded"}  # fictional caseload entries keep no workflow state
         if "counsellor_gate" not in pending(self.graph, CASE):
             return {"status": "no_pending_decision"}
         resume_case(self.graph, CASE, {"action": payload["decision"], "reason_code": payload["reason_code"]})
@@ -183,6 +215,8 @@ class DemoBackend:
         return {"referral": steps}
 
     def op_referral_event(self, subject, payload, session):
+        if self.synthetic_case(subject) is not None:
+            return {"status": payload["event"]}
         if "referral" not in self.values():
             raise ValueError("Referral tracking has not started")
         evidence = None if payload["evidence_code"] == "none" else payload["evidence_code"]
@@ -258,3 +292,4 @@ class DemoBackend:
             session.add(CaseAccess(id=CASE, owner_id=A, couple_id=COUPLE, assigned_to="synthetic-counsellor",
                                    assignment_expires_at=4_000_000_000.0, assignment_reason="demo_review"))
         session.commit()
+        demo_cases.seed_cases(session)
