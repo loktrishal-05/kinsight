@@ -14,6 +14,7 @@ keeps a genetic counsellor in the loop, and never tells anyone what to decide.
 [![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-14-18272c)
 ![Languages](https://img.shields.io/badge/languages-7-33417f)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1d7f7a)](LICENSE)
 ![Tests](https://img.shields.io/badge/tests-585%20passing-1d7f7a)
 
 Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
@@ -51,6 +52,7 @@ Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 - [Testing](#testing)
 - [Project status and roadmap](#project-status-and-roadmap)
 - [Documentation](#documentation)
+- [Licence](#licence)
 
 ---
 
@@ -553,6 +555,10 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Design system · product brief | [web/DESIGN.md](web/DESIGN.md) · [web/PRODUCT.md](web/PRODUCT.md) |
 | Data sources and licences | [DATA_SOURCES.md](DATA_SOURCES.md) |
 | Licence · dependency licence inventory | [MIT](LICENSE) for the code and wording in this repository; data sources keep their own terms · [docs/LICENSES.md](docs/LICENSES.md) lists all 95 runtime packages (Python and web), the weak-copyleft ones with a written review; CI fails on any new unreviewed copyleft or unknown licence (`python scripts/license_inventory.py --check`). |
+
+## Licence
+
+Released under the [MIT Licence](LICENSE), © 2026 Loktrishal Kanuparthy. Data sources keep their own terms; see [DATA_SOURCES.md](DATA_SOURCES.md).
 
 <div align="center">
 <sub>KinSight is a fictional demonstration for an innovation challenge. It is not a medical device and gives no medical advice.</sub>
