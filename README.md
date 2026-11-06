@@ -44,6 +44,8 @@ Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 - [Seven languages](#seven-languages)
 - [Quality and evaluation](#quality-and-evaluation)
 - [Tech stack](#tech-stack)
+- [Hosting](#hosting)
+- [Counsellor caseload and access trail](#counsellor-caseload-and-access-trail)
 - [Repository layout](#repository-layout)
 - [Getting started](#getting-started)
 - [Testing](#testing)
@@ -411,7 +413,40 @@ CI runs ruff, pytest, the demo path, a secret scan, TypeScript checks, Vitest, a
 | Workflow | LangGraph case graph with durable checkpoints (SQLite locally, Postgres in Compose) |
 | Data | PostgreSQL 16, Redis 7, SQLAlchemy + Alembic migrations, YAML configuration |
 | Testing | pytest + Hypothesis, Vitest, Playwright |
-| Delivery | Docker Compose, GitHub Actions; web on Vercel, API on Render (`render.yaml`), Postgres on Neon (free) |
+| Delivery | Docker Compose, GitHub Actions; web on Vercel, API on Render in Virginia (`render.yaml`), Postgres on Neon (free, Washington D.C.) |
+
+## Hosting
+
+| Part | Where | Notes |
+|---|---|---|
+| Website | Vercel (`kinsight-five.vercel.app`) | Real mode: `NEXT_PUBLIC_MOCK=0`, and `/api/*` is proxied to the API through `KINSIGHT_API_URL` |
+| API | Render, **Virginia** (`kinsight-api-va`) | Docker image from `Dockerfile.api`, free plan; defined in `render.yaml` |
+| Database | Neon Postgres, Washington D.C. | Free plan, no expiry; `DATABASE_URL` is set in the Render dashboard (never in the repo) |
+
+**Why Virginia.** The API first ran in Oregon with the database in Washington, so every database round trip crossed the country.
+Moving the API next to the database cut a typical call from about 0.8-1.3 s to about 0.3 s, and the counsellor queue from 3.8 s to
+0.9 s. The Virginia service reuses the Oregon service's `DATABASE_URL` through Render's `fromService`, so no secret is stored in
+`render.yaml`. The older Oregon service (`kinsight-api`) is unused and can be deleted in the Render dashboard.
+
+**Free-plan limits.** The API sleeps after about 15 minutes idle, so the first request after a quiet spell can take up to a minute; the
+site then shows a short "waking up the server" notice. A scheduled GitHub Action (`keepalive.yml`) pings `/api/health` every 10
+minutes to reduce this. `/api/health` also reports the database kind (`postgresql` and its provider, never a connection detail).
+
+To run your own copy: create a free Neon database, deploy `render.yaml` as a Render Blueprint, paste the Neon string into
+`DATABASE_URL`, then set `NEXT_PUBLIC_MOCK=0` and `KINSIGHT_API_URL` on a Vercel project.
+
+## Counsellor caseload and access trail
+
+- **Caseload.** The counsellor console opens with a fictional caseload of 40 cases drawn (fixed seed) from the 1,500-couple demo
+  cohort (`services/api/demo_cases.py`). The tiers are interleaved, so every page of the queue shows a realistic mix; the queue is
+  paged (12 by default, up to 50; the web app asks for 24). Each case is assigned to the demo counsellor with the owner's consent
+  recorded, so every read goes through the same default-deny consent policy as the live demo case.
+- **Auditing a list.** A queue read is one audit entry; allowed rows are not logged one by one, while every refusal is still logged
+  per case. This kept the queue to about 17 database statements instead of about 500.
+- **Your access trail.** The Privacy centre shows the person's own trail from the audit log (`GET /api/me/access-log`): who (you or
+  someone with access), what, and the outcome, newest first; never the content, and never another person's events.
+- **Family circle.** The API returns the whole demo family (grandparents, parents, the first-cousin couple, who is related to whom)
+  and the page draws it as a three-generation pedigree with the double line for the related couple.
 
 ## Repository layout
 
