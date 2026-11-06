@@ -5,7 +5,7 @@ import Link from "next/link";
 export function Brand() {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight text-brand-800">
-      <img src="/kin-logo.png" alt="" className="h-8 w-8 rounded-lg" /><span className="max-[440px]:sr-only">KinSight</span>
+      <img src="/kin-logo-sm.png" alt="" width={32} height={32} className="h-8 w-8 rounded-lg" /><span className="max-[440px]:sr-only">KinSight</span>
     </Link>
   );
 }

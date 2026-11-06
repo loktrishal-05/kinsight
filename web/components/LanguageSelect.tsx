@@ -8,7 +8,8 @@ export default function LanguageSelect({ className = "" }: { className?: string 
   return (
     <label className={`relative inline-flex items-center ${className}`}>
       <Languages aria-hidden className="pointer-events-none absolute start-2.5 h-4 w-4 text-brand-700" />
-      <select className="field h-9 w-auto max-w-[9.5rem] truncate ps-8 pe-7 text-sm font-semibold" value={lang} onChange={(e) => setLang(e.target.value)}
+      {/* System font on purpose: the native-script names would otherwise make the browser download every script's web font (about 540 KB) just to size this menu. */}
+      <select style={{ fontFamily: "system-ui, 'Segoe UI', sans-serif" }} className="field h-9 w-auto max-w-[9.5rem] truncate ps-8 pe-7 text-sm font-semibold" value={lang} onChange={(e) => setLang(e.target.value)}
         aria-label={t("welcome.language")} data-testid="language-select">
         {LANGUAGES.filter((l) => !l.hidden || l.code === lang).map((l) => <option key={l.code} value={l.code} lang={l.code}>{l.name}</option>)}
       </select>
