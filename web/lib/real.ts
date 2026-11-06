@@ -144,7 +144,7 @@ export const real = {
   async sources() { const d = await json("/api/governance/data-sources", {}, ""); return d.metadata.split("\n").filter((l: string) => l.startsWith("|") && !l.startsWith("|---")).slice(1).map((l: string) => { const c = l.split("|").map((x) => x.trim()); return { source: c[1], licence: c[2], kind: c[3] }; }); },
 };
 
-if (typeof window !== "undefined" && !token && !["/", "/signin"].includes(window.location.pathname)) {
+if (process.env.NEXT_PUBLIC_MOCK === "0" && typeof window !== "undefined" && !token && !["/", "/signin"].includes(window.location.pathname)) {
   let persona = "person_a";
   try { persona = sessionStorage.getItem("ks_persona") ?? localStorage.getItem("ks_persona") ?? persona; } catch { /* private mode */ }
   pendingLogin = real.login(persona).catch(() => { /* the screens show their own error */ }).finally(() => { pendingLogin = null; });
