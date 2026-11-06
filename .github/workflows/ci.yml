@@ -9,6 +9,7 @@ jobs:
         with: { python-version: "3.11" }
       - run: pip install -e ".[dev,api]" pip-audit
       - run: ruff check services tests scripts
+      - run: python scripts/license_inventory.py --check
       - run: pytest -q
       - run: python scripts/demo.py
       - name: secret scan (simple)
