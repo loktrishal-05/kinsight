@@ -244,13 +244,22 @@ export default function LatticeHero() {
     };
     const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; }, { rootMargin: "100px" });
     io.observe(el);
-    import("three").then((THREE) => {
-      if (!alive) return;
-      try { scene = build(THREE, cv); resize(); } catch { setNoGl(true); }
-    }).catch(() => setNoGl(true));
+    // three.js is the heaviest script on the page: load it once the headline has painted and the browser is idle,
+    // so the text and sign-in button are usable first and the 3D scene fades in right after.
+    const start = () => {
+      import("three").then((THREE) => {
+        if (!alive) return;
+        try { scene = build(THREE, cv); resize(); } catch { setNoGl(true); }
+      }).catch(() => setNoGl(true));
+    };
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const kick = ric ? ric(start, { timeout: 1500 }) : window.setTimeout(start, 600);
     window.addEventListener("resize", resize);
     raf = requestAnimationFrame(loop);
-    return () => { alive = false; cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", resize); scene?.dispose(); };
+    return () => {
+      alive = false; cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", resize); scene?.dispose();
+      if (ric) (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback?.(kick); else clearTimeout(kick);
+    };
   }, []);
 
   return (
