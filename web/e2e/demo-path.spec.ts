@@ -5,6 +5,8 @@ for (const lang of ["en", "ar"] as const) {
   test.describe(`demo path (${lang})`, () => {
     const setLang = async (page: Page) => {
       await page.goto("/home");
+      // Wait for the first render to finish: it writes the saved language, which would overwrite what we set next.
+      await page.waitForFunction(() => localStorage.getItem("ks_lang") !== null); // set by the first client render
       await page.evaluate((l) => localStorage.setItem("ks_lang", l), lang);
       await page.reload();
     };
@@ -46,6 +48,8 @@ for (const lang of ["en", "ar"] as const) {
 
 test("a third language loads from its message file alone", async ({ page }) => {
   await page.goto("/home");
+  // Wait for the first render to finish: it writes the saved language, which would overwrite what we set next.
+  await page.waitForFunction(() => localStorage.getItem("ks_lang") !== null); // set by the first client render
   await page.evaluate(() => localStorage.setItem("ks_lang", "ur"));
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
