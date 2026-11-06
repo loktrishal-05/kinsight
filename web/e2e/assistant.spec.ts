@@ -134,6 +134,8 @@ test("the full-page assistant on /ask works and the floating button is hidden th
 
 test("the panel fits inside the viewport on a phone and in an Arabic interface", async ({ page }) => {
   await page.goto("/home");
+  // Wait for the first render to finish: it writes the saved language, which would overwrite what we set next.
+  await page.waitForFunction(() => localStorage.getItem("ks_lang") !== null); // set by the first client render
   await page.evaluate(() => localStorage.setItem("ks_lang", "ar"));
   await page.reload();
   await page.getByRole("button", { name: "اسأل كِن" }).click();
