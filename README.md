@@ -552,7 +552,7 @@ npx playwright test                     # end-to-end on desktop and phone (build
 | Deviations · open questions · reviews | [docs/DEVIATIONS.md](docs/DEVIATIONS.md) · [docs/OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) · [docs/REVIEWS.md](docs/REVIEWS.md) |
 | Design system · product brief | [web/DESIGN.md](web/DESIGN.md) · [web/PRODUCT.md](web/PRODUCT.md) |
 | Data sources and licences | [DATA_SOURCES.md](DATA_SOURCES.md) |
-| Licence | [MIT](LICENSE). The licence covers the code and wording in this repository only; the data sources above keep their own terms. |
+| Licence · dependency licence inventory | [MIT](LICENSE) for the code and wording in this repository; data sources keep their own terms · [docs/LICENSES.md](docs/LICENSES.md) lists all 95 runtime packages (Python and web), the weak-copyleft ones with a written review; CI fails on any new unreviewed copyleft or unknown licence (`python scripts/license_inventory.py --check`). |
 
 <div align="center">
 <sub>KinSight is a fictional demonstration for an innovation challenge. It is not a medical device and gives no medical advice.</sub>
