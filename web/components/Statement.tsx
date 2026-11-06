@@ -1,5 +1,6 @@
 "use client";
 // One sentence read word by word: each word brightens as the line crosses the viewport (scrubbed; static under reduced motion).
+// Unread words stay at 56% so they still meet WCAG large-text contrast (3:1) against the page ground.
 import { useEffect, useRef } from "react";
 
 export default function Statement({ text }: { text: string }) {
@@ -13,7 +14,7 @@ export default function Statement({ text }: { text: string }) {
       raf = 0;
       const r = el.getBoundingClientRect(), vh = innerHeight;
       const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
-      words.forEach((w, i) => { w.style.opacity = String(0.14 + 0.86 * Math.min(1, Math.max(0, p * words.length * 1.15 - i))); });
+      words.forEach((w, i) => { w.style.opacity = String(0.56 + 0.44 *Math.min(1, Math.max(0, p * words.length * 1.15 - i))); });
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(paint); };
     paint();
