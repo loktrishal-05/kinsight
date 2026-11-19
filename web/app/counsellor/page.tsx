@@ -46,6 +46,7 @@ export default function Counsellor() {
     <section className="space-y-6">
       <PageHeader title={t("counsellor.title")} lead={t("counsellor.lead")} />
       {FHIR_SANDBOX && persona === "counsellor" && <FhirReview />}
+      {persona === "counsellor" && <ReviewQueue />}
       {persona === "counsellor" && <PrepReview />}
       <dl data-demo="workload" className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t("counsellor.workload")}>
         {[[t("counsellor.open"), count((r) => r.status !== "closed")], [t("tier.3"), count((r) => r.tier === 3 && r.status !== "closed")],
@@ -195,5 +196,34 @@ function PrepReview() {
       {s.values && <div><h3 className="font-semibold">{t("prep.step.values")}</h3><ul className="list-disc ps-5">{s.values.map((v) => <li key={v}>{t(`values.${v}`)}</li>)}</ul></div>}
       {s.bring && <div><h3 className="font-semibold">{t("prep.step.bring")}</h3><ul className="list-disc ps-5">{s.bring.map((b) => <li key={b}>{b.replaceAll("_", " ")}</li>)}</ul></div>}
     </div>}
+  </section>;
+}
+
+// One queue for everything a counsellor must see first (issue 40). Items that release a result are approved in their own
+// review, which is bound to the exact revision; the queue links there instead of approving blind.
+function ReviewQueue() {
+  const { t } = useI18n();
+  const qc = useQueryClient();
+  const queue = useQuery({ queryKey: ["review-queue"], queryFn: api.reviewQueue, refetchInterval: 5_000 });
+  const decide = useMutation({ mutationFn: ({ id, d }: { id: string; d: "approve" | "hold" | "more_info" }) => api.decideReview(id, d, d === "approve" ? "reviewed" : d === "hold" ? "needs_more_time" : "needs_information"),
+    onSettled: () => { qc.invalidateQueries({ queryKey: ["review-queue"] }); qc.invalidateQueries({ queryKey: ["my-reviews"] }); } });
+  const rows = queue.data ?? [];
+  const days = (at: number) => Math.round((at - Date.now() / 1000) / 86400);
+  return <section className="card space-y-3" aria-labelledby="review-queue-heading" data-demo="review-queue">
+    <h2 id="review-queue-heading" className="text-lg font-semibold">{t("review.title")}</h2>
+    {queue.isError && <p role="alert">{t("fhirPreview.error")}</p>}
+    {queue.isSuccess && !rows.length && <p role="status" className="text-sm text-muted">{t("review.empty")}</p>}
+    <ul className="divide-y divide-line">{rows.map((r) => (
+      <li key={r.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
+        <span className="font-semibold">{t(`review.kind.${r.kind}`)}</span>
+        <span className="chip bg-sunk">{t(`review.state.${r.state}`)}</span>
+        <span className="text-muted">{days(r.due_at) < 0 ? t("counsellor.overdueBy").replace("{n}", String(-days(r.due_at))) : t("counsellor.inDays").replace("{n}", String(days(r.due_at)))}</span>
+        <span className="ms-auto flex flex-wrap gap-2">
+          {r.dedicated ? <a className="btn-quiet btn-sm" href={r.link}>{t("review.open")}</a>
+            : <button className="btn-quiet btn-sm" disabled={decide.isPending || r.state === "approved"} onClick={() => decide.mutate({ id: r.id, d: "approve" })}>{t("counsellor.approve")}</button>}
+          <button className="btn-quiet btn-sm" disabled={decide.isPending || !["pending", "more_info"].includes(r.state)} onClick={() => decide.mutate({ id: r.id, d: "hold" })}>{t("counsellor.hold")}</button>
+          <button className="btn-quiet btn-sm" disabled={decide.isPending || !["pending", "held"].includes(r.state)} onClick={() => decide.mutate({ id: r.id, d: "more_info" })}>{t("review.askMore")}</button>
+        </span>
+      </li>))}</ul>
   </section>;
 }

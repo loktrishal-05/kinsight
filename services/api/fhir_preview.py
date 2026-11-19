@@ -19,6 +19,7 @@ from services.cohort.panel import load_panel
 from services.consent import sharing
 from services.consent.models import Consent, Person
 from services.consent.policy import ResourceRef
+from services.lifecycle import review as review_queue
 from services.lifecycle.store import FhirImport
 
 from .auth import secret
@@ -219,6 +220,7 @@ def register(app, *, base_url, db_session, roles, own, check, limit):
         row.payload = json.dumps(report)
         row.approved = False
         row.consent_id = consent.id
+        review_queue.enqueue(db, "fhir_import", subject, body.snapshot_id)
         sharing.log_change(db, identity.actor, subject, "fhir_import_confirmed", secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
 
@@ -267,5 +269,6 @@ def register(app, *, base_url, db_session, roles, own, check, limit):
         ).values(approved=True))
         if not changed.rowcount:
             raise HTTPException(409, "The report or review consent changed.")
+        review_queue.resolve(db, "fhir_import", body.snapshot_id)
         sharing.log_change(db, identity.actor, subject, "fhir_import_approved", secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
