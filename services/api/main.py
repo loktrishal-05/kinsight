@@ -150,7 +150,7 @@ class RetryConcurrentChange:
                 delivered = True
                 return {"type": "http.request", "body": body, "more_body": False}
 
-            async def capture(message):
+            async def capture(message, sent=sent):  # bind this attempt's list
                 sent.append(message)
 
             await self.app(scope, replay, capture)
