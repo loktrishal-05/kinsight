@@ -21,9 +21,11 @@ def build() -> dict:
         for a, b in PAIRS[cond.inheritance]:
             for rel in RELATIONS:
                 runs = [scenario(cond, a, b, phi[rel], n) for n in range(1, 7)]
+                # 12 decimals: the last binary digit differs between platforms, the figure shown never does
                 table[f"{cond.id}|{a}|{b}|{rel}"] = {
-                    "formula": runs[0]["formula_id"], "per": runs[0]["per_pregnancy"], "partner": runs[0]["partner_carrier"],
-                    "atLeast": [r["at_least_one"] for r in runs]}
+                    "formula": runs[0]["formula_id"], "per": round(runs[0]["per_pregnancy"], 12),
+                    "partner": None if runs[0]["partner_carrier"] is None else round(runs[0]["partner_carrier"], 12),
+                    "atLeast": [round(r["at_least_one"], 12) for r in runs]}
     options = {lang: yaml.safe_load((ROOT / f"templates/{lang}/scenario_options.yaml").read_text(encoding="utf-8"))["options"] for lang in ("en", "ar")}
     return {"table": table, "options": options}
 
