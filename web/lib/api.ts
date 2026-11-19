@@ -8,6 +8,7 @@ import * as safety from "./safety";
 import * as plan from "./plan";
 import * as prep from "./prep";
 import * as scen from "./scenario";
+import * as rv from "./review";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -59,6 +60,9 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  reviewQueue: async () => rv.QueueS.parse(await impl.reviewQueue()).items,
+  decideReview: async (id: string, decision: "approve" | "edit" | "hold" | "more_info", reason = "reviewed") => rv.DecisionS.parse(await impl.decideReview(id, decision, reason)),
+  myReviews: async () => rv.MineS.parse(await impl.myReviews()).items,
   whatIf: async (body: scen.ScenarioRequest) => scen.ScenarioS.parse(await impl.whatIf(scen.ScenarioRequestS.parse(body))),
   prep: async () => prep.MineS.parse(await impl.prep()).sheet,
   savePrep: async (body: prep.Sheet) => prep.SavedS.parse(await impl.savePrep(prep.SheetS.parse(body))),

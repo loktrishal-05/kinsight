@@ -60,6 +60,9 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  reviewQueue: () => json("/api/lifecycle/review-queue"),
+  decideReview: (id: string, decision: string, reason_code: string) => json(`/api/lifecycle/review-queue/${encodeURIComponent(id)}/decision`, post({ decision, reason_code })),
+  myReviews: () => json("/api/lifecycle/review-items"),
   whatIf(body: Record<string, string | number>) {
     return json(`/api/lifecycle/scenario?${new URLSearchParams(Object.entries(body).map(([k, v]) => [k, String(v)]))}`);
   },

@@ -48,9 +48,10 @@ from services.consent.policy import (
 )
 from services.consent.roles import PERSONAS
 from services.consent.settings import settings
+from services.lifecycle import review
 from services.lifecycle.store import FhirImport, LcSample, LifecycleBase, SandboxReport
 
-from . import fhir_preview, lab_feed, lifecycle_routes, pilot_routes, prep_routes, scenario_routes
+from . import fhir_preview, lab_feed, lifecycle_routes, pilot_routes, prep_routes, review_routes, scenario_routes
 from .auth import Identity, issue_token, secret, verify_token
 from .backend import DemoBackend
 from .interfaces import Backend, Unavailable, UnwiredBackend
@@ -95,6 +96,17 @@ def database_kind(url) -> dict:
     else:
         provider = "external"
     return {"dialect": url.get_backend_name(), "provider": provider}
+
+
+def enqueue_reviews(db: Session, person: str, body: GrantRequest) -> None:
+    """Review-queue producers that start from a consent: a couple result waiting for review, or a request to talk."""
+    if body.scope == "couple_pooling":
+        couple = db.get(Couple, body.resource_id)
+        if couple is not None and not couple.released and pooling_allowed(db, couple):
+            case = db.scalar(select(CaseAccess.id).where(CaseAccess.couple_id == couple.id).limit(1))
+            review.enqueue(db, "couple_result", couple.id, case or couple.id)
+    elif body.resource_type == "case" and body.purpose == "counselling" and body.grantee_id == "synthetic-counsellor":
+        review.enqueue(db, "counselling_request", person, f"{person}:{body.resource_id}")
 
 
 MAX_BODY_BYTES = 1_048_576  # the largest legitimate body is a 256 KiB FHIR snapshot; streamed feeds enforce their own caps
@@ -397,6 +409,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         row = sharing.grant(
             db, identity.actor, **body.model_dump(), salt=secret("KINSIGHT_AUDIT_SALT")
         )
+        enqueue_reviews(db, identity.actor.id, body)
         db.commit()
         return ConsentView.model_validate(
             {field: getattr(row, field) for field in RESOURCE_FIELDS["consent"]}
@@ -631,6 +644,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     ):
         case_check(db, identity, id, {"brief"}, True)
         data = Status.model_validate(await adapter.invoke("decision", id, body.model_dump(), db))
+        review.resolve(db, "couple_result", id, "held" if body.decision == "hold" else "approved", body.reason_code)
         sharing.log_change(
             db, identity.actor, id, "counsellor_decision", secret("KINSIGHT_AUDIT_SALT")
         )
@@ -786,6 +800,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     if enabled("lifecycle"):
         prep_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
         scenario_routes.register(app, db_session=db_session, roles=roles, limit=limit)
+        review_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
 
     if sandbox:
         pilot_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit, signed_feed=signed_feed)

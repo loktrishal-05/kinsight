@@ -895,5 +895,21 @@
   "scen.eachPregnancy": "كل حمل",
   "scen.options": "ما يغيّره كل مسار (بترتيب ثابت)",
   "scen.unsupported": "لا يمكن عرض هذه التركيبة. يحتاج السيناريو إلى شريك معروف بحمله التغيّر، أو إلى فحص الشريكين.",
-  "scen.link": "جرّب سيناريوهات «ماذا لو»"
+  "scen.link": "جرّب سيناريوهات «ماذا لو»",
+  "review.title": "للمراجعة",
+  "review.empty": "لا شيء بانتظار المراجعة.",
+  "review.open": "فتح المراجعة",
+  "review.askMore": "طلب معلومات إضافية",
+  "review.kind.couple_result": "نتيجة الزوجين",
+  "review.kind.fhir_import": "تقرير مستورد",
+  "review.kind.lab_report": "تقرير المختبر",
+  "review.kind.counselling_request": "طلب التحدث مع مستشار",
+  "review.kind.reclassification": "تغيّر في تصنيف أحد المتغيرات",
+  "review.state.pending": "بانتظار المراجعة",
+  "review.state.held": "معلّق",
+  "review.state.more_info": "طُلبت معلومات إضافية",
+  "review.state.approved": "تمت الموافقة",
+  "review.state.edited": "تمت الموافقة مع تعديلات",
+  "review.waiting": "يراجع مستشار هذا الأمر: {what}. يمكنك توقع الرد خلال {d} أيام تقريبا.",
+  "review.moreInfo": "طلب مستشار معلومات إضافية قليلة عن: {what}. سيتواصل معك."
 }

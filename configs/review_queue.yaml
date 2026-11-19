@@ -1,0 +1,8 @@
+# Unified counsellor review queue (issue 40). Kept apart from escalation.yaml, which feeds the engine's config hash: what must be seen by a counsellor first, why, and the expected wait shown
+# to the person. `dedicated: true` means approval happens in that item's own review, bound to the exact revision.
+review_queue:
+  couple_result:       { reason: couple_result_needs_review, sla_hours: 72, dedicated: true }
+  fhir_import:         { reason: imported_result_needs_review, sla_hours: 72, dedicated: true }
+  lab_report:          { reason: lab_result_needs_review, sla_hours: 72, dedicated: true }
+  counselling_request: { reason: person_asked_for_a_counsellor, sla_hours: 168, dedicated: false }
+  reclassification:    { reason: variant_class_changed, sla_hours: 48, dedicated: false }

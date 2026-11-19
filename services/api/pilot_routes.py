@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session, aliased
 from services.consent import sharing
 from services.consent.models import Consent
 from services.consent.policy import Actor, ResourceRef
+from services.lifecycle import review as review_queue
 from services.lifecycle.store import SandboxReport
 
 from .auth import secret
@@ -147,6 +148,7 @@ def register(app, *, db_session, roles, check, own, limit, signed_feed=False):
             text_shown="Share my synthetic lab reports with the demo counsellor for one hour.",
             salt=secret("KINSIGHT_AUDIT_SALT"),
         )
+        review_queue.enqueue(db, "lab_report", identity.actor.id, identity.actor.id)
         db.commit()
         return {"id": consent.id, "is_synthetic": True}
 
@@ -200,6 +202,7 @@ def register(app, *, db_session, roles, check, own, limit, signed_feed=False):
         )
         if not changed.rowcount:
             raise HTTPException(409, "Report has changed. Review the latest revision.")
+        review_queue.resolve(db, "lab_report", subject)
         sharing.log_change(
             db, identity.actor, report.report_id, "sandbox_report_approved", secret("KINSIGHT_AUDIT_SALT")
         )
