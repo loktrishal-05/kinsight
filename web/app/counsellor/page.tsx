@@ -229,7 +229,7 @@ function FhirReview() {
 function PrepReview() {
   const { t } = useI18n();
   const [subject, setSubject] = useState("synthetic-a");
-  const review = useQuery({ queryKey: ["prep-review", subject], queryFn: () => api.counsellorPrep(subject), refetchInterval: 5_000, retry: false });
+  const review = useQuery({ queryKey: ["prep-review", subject], queryFn: () => api.counsellorPrep(subject), refetchInterval: 15_000, retry: false });
   const s = review.data?.sections as { values?: string[]; concerns?: string[]; worries_text?: string; questions?: { id: string; text: string }[]; bring?: string[] } | undefined;
   return <section className="card space-y-3" aria-labelledby="prep-review-heading" data-demo="prep-review">
     <h2 id="prep-review-heading" className="text-lg font-semibold">{t("prep.counsellor.title")}</h2>
@@ -254,7 +254,7 @@ function PrepReview() {
 function ReviewQueue() {
   const { t } = useI18n();
   const qc = useQueryClient();
-  const queue = useQuery({ queryKey: ["review-queue"], queryFn: api.reviewQueue, refetchInterval: 5_000 });
+  const queue = useQuery({ queryKey: ["review-queue"], queryFn: api.reviewQueue, refetchInterval: 15_000 });
   const decide = useMutation({ mutationFn: ({ id, d }: { id: string; d: "approve" | "hold" | "more_info" }) => api.decideReview(id, d, d === "approve" ? "reviewed" : d === "hold" ? "needs_more_time" : "needs_information"),
     onSettled: () => { qc.invalidateQueries({ queryKey: ["review-queue"] }); qc.invalidateQueries({ queryKey: ["my-reviews"] }); } });
   const rows = queue.data ?? [];

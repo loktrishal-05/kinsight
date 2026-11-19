@@ -3,9 +3,11 @@
 # FastAPI evaluates dependency declarations when registering routes.
 # ruff: noqa: B008
 
+import asyncio
 import hashlib
 import json
 import os
+import random
 import time
 from contextlib import asynccontextmanager
 from importlib.metadata import version
@@ -122,6 +124,46 @@ def enqueue_reviews(db: Session, person: str, body: GrantRequest) -> None:
         review.enqueue(db, "counselling_request", person, f"{person}:{body.resource_id}")
 
 
+class RetryConcurrentChange:
+    """Every request appends one link to the hash-chained audit log; two at once can race for the same link. The
+    loser's transaction is rolled back and answered 409 "Concurrent change; retry", so it is safe to run it again:
+    this does that here, a few times with a short jittered wait, so no client sees a lost race."""
+
+    def __init__(self, app, attempts: int = 8) -> None:
+        self.app, self.attempts = app, attempts
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http" or scope["path"] == "/api/stream":
+            return await self.app(scope, receive, send)
+        body, more = b"", True
+        while more:  # buffer the request so it can be replayed; size is already capped by the body limit
+            message = await receive()
+            body += message.get("body", b"")
+            more = message.get("more_body", False)
+        for attempt in range(self.attempts):
+            sent: list[dict] = []
+            delivered = False
+
+            async def replay():
+                nonlocal delivered
+                if delivered:
+                    return {"type": "http.disconnect"}
+                delivered = True
+                return {"type": "http.request", "body": body, "more_body": False}
+
+            async def capture(message):
+                sent.append(message)
+
+            await self.app(scope, replay, capture)
+            start = sent[0] if sent else {}
+            lost = start.get("status") == 409 and b"Concurrent change" in b"".join(m.get("body", b"") for m in sent[1:])
+            if not lost or attempt == self.attempts - 1:
+                for message in sent:
+                    await send(message)
+                return
+            await asyncio.sleep(min(0.5, 0.01 * 2**attempt) * (0.5 + random.random()))  # noqa: S311  jitter, not a secret
+
+
 MAX_BODY_BYTES = 1_048_576  # the largest legitimate body is a 256 KiB FHIR snapshot; streamed feeds enforce their own caps
 
 
@@ -159,6 +201,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         engine.dispose()
 
     app = FastAPI(title="KinSight fictional demo", version="0.1.0", lifespan=lifespan)
+    app.add_middleware(RetryConcurrentChange)  # innermost: the body cap and CORS below run before any replay
     app.state.sessions = sessions
     app.state.engine = engine
     app.state.backend = adapter
