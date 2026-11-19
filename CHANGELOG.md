@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- CI: CodeQL (Python and TypeScript), gitleaks pinned by checksum, pip-audit that fails the build, coverage floors (92% genetics + consent, ratchet on web/lib) and Playwright reports on failure.
 - Added the extended-family cascade tracker at /cascade (relatives from the family tree with a kinship-based estimate, private invites, anonymous notices, told-in-person, and self-reported outcomes) and a relative-facing /invite page.
 
 - Added the unified counsellor review queue: one item per thing a counsellor must see first (couple result, imports, lab reports, requests to talk, reclassifications), audited decisions, and a calm waiting state for the person.
