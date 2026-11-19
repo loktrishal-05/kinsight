@@ -1046,5 +1046,14 @@
   "chart.funnelSummary": "عدد من وصلوا إلى كل خطوة، من فتح النتيجة إلى الوصول إلى الأقارب.",
   "chart.allHidden": "كل خطوة فيها عدد أقل من حد الخصوصية، لذا فكل الأعداد مخفية.",
   "settings.install": "تثبيت KinSight على هذا الجهاز",
-  "settings.installNote": "يفتح كتطبيق ويحتفظ بصفحات KinSight لاستخدامها دون اتصال. ولا يحتفظ بنتائجك أبدا: تُجلب دائما من جديد."
+  "settings.installNote": "يفتح كتطبيق ويحتفظ بصفحات KinSight لاستخدامها دون اتصال. ولا يحتفظ بنتائجك أبدا: تُجلب دائما من جديد.",
+  "notify.title": "الإشعارات",
+  "notify.lead": "متوقفة ما لم تفعّلها على هذا الجهاز. ولا تقول إلا «لديك تحديث في KinSight» ولا شيء عن صحتك أبدا.",
+  "notify.type.lab_status": "عندما ينقل المختبر عينتك إلى مرحلة تالية",
+  "notify.type.counsellor_update": "عندما يطّلع مستشار على أمر ما",
+  "notify.type.appointment_reminder": "قبل الموعد بيوم",
+  "notify.type.reclassification_reviewed": "عند مراجعة تغيّر في تصنيف أحد المتغيرات",
+  "notify.type.cascade_reminder": "تذكيرات بشأن فحص العائلة",
+  "notify.denied": "يحظر متصفحك الإشعارات لهذا الموقع. يمكنك السماح بها من إعداداته.",
+  "notify.unsupported": "لا يدعم هذا المتصفح الإشعارات."
 }

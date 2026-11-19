@@ -1176,5 +1176,14 @@
   "chart.funnelSummary": "How many people reached each step, from opening a result to reaching relatives.",
   "chart.allHidden": "Every step has fewer people than the privacy threshold, so all counts are hidden.",
   "settings.install": "Install KinSight on this device",
-  "settings.installNote": "It opens like an app and keeps KinSight's pages for when you are offline. Your results are never kept by it: they are always fetched fresh."
+  "settings.installNote": "It opens like an app and keeps KinSight's pages for when you are offline. Your results are never kept by it: they are always fetched fresh.",
+  "notify.title": "Notifications",
+  "notify.lead": "Off unless you switch them on, on this device. They only ever say \"You have an update in KinSight\", never anything about your health.",
+  "notify.type.lab_status": "When the lab moves your sample on",
+  "notify.type.counsellor_update": "When a counsellor has looked at something",
+  "notify.type.appointment_reminder": "The day before an appointment",
+  "notify.type.reclassification_reviewed": "When a change in how a variant is classified has been reviewed",
+  "notify.type.cascade_reminder": "Reminders about family testing",
+  "notify.denied": "Your browser is blocking notifications for this site. You can allow them in its settings.",
+  "notify.unsupported": "This browser does not support notifications."
 }

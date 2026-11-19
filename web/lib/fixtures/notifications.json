@@ -1,0 +1,20 @@
+{
+ "title": "KinSight",
+ "types": {
+  "lab_status": {
+   "body": "You have an update in KinSight."
+  },
+  "counsellor_update": {
+   "body": "You have an update in KinSight."
+  },
+  "appointment_reminder": {
+   "body": "You have an appointment tomorrow. Open KinSight for details."
+  },
+  "reclassification_reviewed": {
+   "body": "You have an update in KinSight."
+  },
+  "cascade_reminder": {
+   "body": "You have an update in KinSight."
+  }
+ }
+}
