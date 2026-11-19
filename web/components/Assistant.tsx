@@ -193,7 +193,7 @@ function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona
   );
 }
 
-export function AssistantLauncher() {
+export function AssistantLauncher({ lift = false }: { lift?: boolean }) {
   const { t } = useI18n();
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -207,7 +207,7 @@ export function AssistantLauncher() {
   }, []);
   if (path === "/ask") return null;
   return (
-    <div data-noprint className="fixed bottom-4 end-4 z-40 flex flex-col items-end gap-3">
+    <div data-noprint className={`fixed end-4 z-40 flex flex-col items-end gap-3 ${lift ? "bottom-20 lg:bottom-4" : "bottom-4"}`}>
       {open && (
         <div role="dialog" aria-label={t("assistant.title")} data-demo="kin-panel" className="h-[min(34rem,calc(100vh-7rem))] w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line shadow-lift">
           <AssistantPanel mode="float" onClose={() => setOpen(false)} />

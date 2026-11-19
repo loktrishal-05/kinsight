@@ -1024,5 +1024,15 @@
   "ws.done.approve": "تمت الموافقة على {id}",
   "ws.done.hold": "تم تعليق {id}",
   "ws.done.edit": "تمت الموافقة على {id} مع تعديلات",
-  "a11y.skip": "انتقل إلى المحتوى الرئيسي"
+  "a11y.skip": "انتقل إلى المحتوى الرئيسي",
+  "a11y.skip": "انتقل إلى المحتوى الرئيسي",
+  "group.result": "نتيجتي",
+  "group.plan": "التخطيط والتحضير",
+  "group.family": "العائلة",
+  "group.privacy": "الخصوصية",
+  "group.help": "المساعدة",
+  "shell.collapse": "طي القائمة",
+  "shell.expand": "توسيع القائمة",
+  "shell.toReview": "بانتظار المراجعة",
+  "shell.tabs": "الصفحات الرئيسية"
 }
