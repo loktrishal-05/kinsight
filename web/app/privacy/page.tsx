@@ -35,7 +35,8 @@ export default function Privacy() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("privacy.title")} lead={t("privacy.lead")} />
-      <div className="card-flush overflow-x-auto" data-demo="matrix">
+      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a horizontally scrolling region must be focusable so keyboard users can scroll it (WCAG 2.1.1) */}
+      <div className="card-flush overflow-x-auto" data-demo="matrix" tabIndex={0} role="region" aria-label={t("privacy.title")}>
         <table className="w-full min-w-[40rem] text-sm">
           <thead className="bg-sunk text-xs text-muted">
             <tr><th className="px-5 py-3 text-start font-semibold">{t("privacy.data")}</th>{ROLES.map((r) => <th key={r} className="px-2 py-3 text-center font-semibold">{t(`privacy.r.${r}`)}</th>)}</tr>
