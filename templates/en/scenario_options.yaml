@@ -1,0 +1,17 @@
+# Reviewed, neutral descriptions of what each route changes. Fixed order, equal weight, no advice and no figures.
+options:
+  - id: natural_conception
+    title: Conception without extra testing
+    changes: The chance for each pregnancy stays as calculated above. The pregnancy can be tested later if the family chooses.
+  - id: prenatal_diagnosis
+    title: Testing during a pregnancy
+    changes: The chance for the pregnancy is replaced by a test result for that pregnancy. Tests have time windows and their own small risks, which a counsellor can explain.
+  - id: pgt_m
+    title: Testing embryos before transfer (PGT-M)
+    changes: Embryos are tested for the specific change before one is transferred. It involves fertility treatment, cost and waiting time, and no test is perfect.
+  - id: donor_gametes
+    title: Donor egg or sperm
+    changes: The chance depends on the donor's screening instead of the couple's own results. It also changes who is genetically related to the child.
+  - id: adoption
+    title: Adoption or fostering
+    changes: The inherited chance discussed here does not apply, because no genes are passed on from this couple.
