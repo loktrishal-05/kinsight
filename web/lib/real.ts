@@ -60,6 +60,20 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  prep: () => json("/api/lifecycle/prep"),
+  savePrep: (body: unknown) => json("/api/lifecycle/prep", { method: "PUT", body: JSON.stringify(body) }),
+  prepSuggestions(stage: string, lang: string, concerns: string[], tier?: number) {
+    const q = new URLSearchParams({ stage, lang });
+    concerns.forEach((c) => q.append("concerns", c));
+    if (tier) q.set("tier", String(tier));
+    return json(`/api/lifecycle/prep-suggestions?${q}`);
+  },
+  async counsellorPrep(subject: string) {
+    const r = await raw(`/api/lifecycle/prep-review/${encodeURIComponent(subject)}`);
+    if (r.status === 403) return null;
+    if (!r.ok) throw new Error(String(r.status));
+    return r.json();
+  },
   previewFhirReport: () => json<FhirPreview>("/api/me/imports/fhir/preview", post({})),
   personalFhirImport: () => json<FhirImportState>("/api/me/imports/fhir"),
   async confirmFhirImport(snapshot_id: string) {

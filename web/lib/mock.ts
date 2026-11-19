@@ -3,6 +3,7 @@
 import { z } from "zod";
 import * as safety from "./safety";
 import * as plan from "./plan";
+import * as prepLib from "./prep";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
 import { liveFrequency } from "./gnomad";
@@ -26,11 +27,11 @@ type Link = { condition_id: string; expires_at: number; used: boolean };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  bookings: Record<string, plan.Booking>; bookingSequence: number;
+  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>;
   vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  bookings: {}, bookingSequence: 0, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  bookings: {}, bookingSequence: 0, prep: {}, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -55,6 +56,14 @@ const getPair = (id: string) => {
 const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
 const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  async prep() { return { sheet: S.prep[S.persona || "person_a"] ?? null }; },
+  async savePrep(body: prepLib.Sheet) { S.prep[S.persona || "person_a"] = prepLib.SheetS.parse(body); save(); return { status: "saved" }; },
+  async prepSuggestions(stage: prepLib.Stage, lang: string, concerns: prepLib.Concern[], tier?: number) { return prepLib.suggest(lang, stage, concerns, tier); },
+  async counsellorPrep(subject: string) {
+    const sheet = S.prep[subject === "synthetic-b" ? "person_b" : "person_a"];
+    if (!sheet || !sheet.share.length) return null;
+    return prepLib.shared(sheet);
+  },
   currentBooking() { const booking = S.bookings[S.persona]; return booking ? { ...booking } : null; },
   async bookingSlots(sla: number) { return { slots: [...DEMO_SLOTS[plan.SlaS.parse(sla)]] }; },
   async book(body: z.infer<typeof plan.BookingRequestS>) {

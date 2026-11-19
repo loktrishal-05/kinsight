@@ -38,6 +38,16 @@ class FhirImport(LifecycleBase):
     approved: Mapped[bool] = mapped_column(default=False)
 
 
+class PrepSheet(LifecycleBase):
+    """A person's own preparation sheet. Only the sections named in `shared` are readable by the counsellor, under consent."""
+    __tablename__ = "lc_prep_sheet"
+    subject_id: Mapped[str] = mapped_column(String, primary_key=True)
+    payload: Mapped[str] = mapped_column(Text)
+    shared: Mapped[str] = mapped_column(Text, default="[]")
+    consent_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    updated_at: Mapped[float] = mapped_column(Float)
+
+
 class LcPairing(LifecycleBase):
     __tablename__ = "lc_pairing"
     id: Mapped[str] = mapped_column(String, primary_key=True)

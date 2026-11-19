@@ -1,0 +1,51 @@
+# Reviewed question bank for the pre-counselling preparation sheet. Neutral wording: questions only, no advice,
+# no recommendation about marriage or children. Suggestions are picked deterministically (services/agents/prep.py).
+concerns:
+  family_reaction: How my family may react
+  future_children: Plans for children in the future
+  cost: Cost of tests and visits
+  religion: Faith and beliefs
+  privacy: Who can see my information
+general:
+  - What does my result mean in plain words?
+  - What can this screening find, and what can it not find?
+  - What are my choices, and what does each involve?
+stage:
+  premarital:
+    - How do results look for a couple who are related to each other?
+    - Which tests could we consider before we decide anything together?
+  preconception:
+    - What options are open to us before a pregnancy?
+    - How early could testing be done during a pregnancy, if we choose it?
+  pregnant:
+    - What are the time windows for the tests that are open to us?
+    - What does each test involve for me and for the baby?
+tier:
+  1:
+    - Does a result with no change found rule out every inherited condition?
+  2:
+    - Which parts of my result are uncertain, and how could they be confirmed?
+  3:
+    - Which tests could confirm what was found, and how long do they take?
+    - How is the chance for each pregnancy worked out for our family?
+concern:
+  family_reaction:
+    - How do other families talk about this with their relatives?
+    - Could a family member join a session if I choose?
+  future_children:
+    - How is the chance for a future child described, in numbers and in words?
+    - Which options exist if we would like children?
+  cost:
+    - What does each test or visit cost, and what support is available?
+    - Which visits can be done remotely?
+  religion:
+    - How have other people considered their faith alongside this information?
+    - Can the counsellor speak with someone I trust from my community?
+  privacy:
+    - Who can see my result, and how do I change that?
+    - What happens to the notes from our session?
+bring:
+  report: My screening report
+  id: A form of identification
+  partner: My partner, if they wish to come
+  family_history: Notes on relatives with inherited conditions

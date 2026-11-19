@@ -49,6 +49,7 @@ export default function MyResult() {
           {talk.isSuccess ? <CheckCircle2 aria-hidden className="h-4 w-4" /> : <MessageSquareText aria-hidden className="h-4 w-4" />}
           {talk.isSuccess ? t("result.talkDone") : t("result.talk")}
         </button>
+        <Link className="btn-quiet" href="/prepare">{t("prep.link")}</Link>
       </div>
     </section>
   );

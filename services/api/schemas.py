@@ -55,7 +55,7 @@ class GrantRequest(StrictModel):
 class ConsentView(Fictional):
     id: Alias
     grantee_id: Alias
-    scope: Scope | Literal["sandbox_review", "fhir_import_review"]
+    scope: Scope | Literal["sandbox_review", "fhir_import_review", "prep_review"]
     purpose: Purpose
     expires_at: float
     revoked_at: float | None
