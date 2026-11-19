@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Journey from "@/components/Journey";
+import Dashboard from "./Dashboard";
 import { TierChip } from "@/components/visuals";
 import { api, FHIR_SANDBOX, LAB_SANDBOX, MOCK } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -31,6 +32,7 @@ export default function Home() {
       </section>
 
       <div className="mt-12 space-y-14">
+        {(persona === "person_a" || persona === "person_b") && <Dashboard />}
         <Journey demo />
 
         <section id="start" aria-labelledby="pick" className="scroll-mt-24 space-y-8">

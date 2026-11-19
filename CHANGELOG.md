@@ -6,6 +6,7 @@
 - Fixed a race: two requests at once could claim the same link in the hash-chained audit log, and the loser got 409. The API now retries a rolled-back transaction itself, and counsellor panels poll less often.
 
 - Added outcome measures for the analyst (results opened, understanding check, preparation, bookings, counsellor requests, cascade reach and testing, imports, overdue reviews) with small-cell suppression, an equity-gap alert and docs/METRICS.md. No marriage or pregnancy outcome is measured.
+- Person home is now a dashboard: one calm next step and a card each for result, couple view (with its estimate label or the review waiting state), preparation, family testing, sharing and Kin.
 
 - CI: CodeQL (Python and TypeScript), gitleaks pinned by checksum, pip-audit that fails the build, coverage floors (92% genetics + consent, ratchet on web/lib) and Playwright reports on failure.
 - Added the extended-family cascade tracker at /cascade (relatives from the family tree with a kinship-based estimate, private invites, anonymous notices, told-in-person, and self-reported outcomes) and a relative-facing /invite page.
