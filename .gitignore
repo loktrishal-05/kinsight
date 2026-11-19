@@ -87,3 +87,5 @@ web/.impeccable/
 /docs/SPEC.txt
 /docs/PLAN.md
 /docs/GENERATION_PROMPTS.md
+coverage.xml
+web/coverage/

@@ -10,6 +10,8 @@ It turns a premarital or preconception screening result into plain words, shows 
 keeps a genetic counsellor in the loop, and never tells anyone what to decide.
 
 [![Live demo](https://img.shields.io/badge/live%20demo-kinsight--five.vercel.app-1d7f7a?style=for-the-badge)](https://kinsight-five.vercel.app)
+[![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/loktrishal-05/kinsight/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/loktrishal-05/kinsight/actions/workflows/codeql.yml)
 
 [![CI](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml/badge.svg)](https://github.com/loktrishal-05/kinsight/actions/workflows/ci.yml)
 ![Languages](https://img.shields.io/badge/languages-7-33417f)
