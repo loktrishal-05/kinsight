@@ -1245,5 +1245,7 @@
   "ref.consequence": "Predicted consequence (Ensembl VEP)",
   "ref.down": "This source is not reachable right now. Try again later; nothing else on the page depends on it.",
   "ref.none": "No entry for this gene.",
-  "states.retry": "Try again"
+  "states.retry": "Try again",
+  "states.retry": "Try again",
+  "cascade.noneHint": "Relatives appear here when your own result shows a change that relatives can share, and your family tree includes them."
 }
