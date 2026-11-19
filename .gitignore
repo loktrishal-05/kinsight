@@ -89,3 +89,4 @@ web/.impeccable/
 /docs/GENERATION_PROMPTS.md
 coverage.xml
 web/coverage/
+web/public/ocr/

@@ -26,9 +26,19 @@ test("private comparison preserves lab findings and separates missing rows", asy
   await page.getByLabel("Attach Partner B report").locator("xpath=..").dispatchEvent("drop", { dataTransfer: drop });
   await drop.dispose();
   await page.getByRole("button", { name: "Use suggested findings" }).click();
-  await expect(page.getByRole("button", { name: "Compare findings" })).toBeDisabled();
-  await page.getByRole("checkbox", { name: "I checked these findings against the original report." }).check();
-  await page.getByRole("button", { name: "Compare findings" }).click();
+  const compare = page.getByRole("button", { name: "Compare findings" });
+  const review = page.getByRole("group", { name: "Finding 1" }).filter({ hasText: "Limited panel" });
+  await expect(review).toContainText(/Extracted text.*CFTR/);
+  for (const field of ["Gene CFTR", "Condition Cystic fibrosis", "Reported result Not detected", "Details Limited panel"]) {
+    await expect(compare).toBeDisabled();
+    await review.getByRole("checkbox", { name: field }).check();
+  }
+  await expect(compare).toBeDisabled();
+  for (const check of await page.getByRole("group", { name: /Finding [12]/ }).filter({ hasNotText: "Limited panel" })
+    .getByRole("checkbox").all()) {
+    await check.check();
+  }
+  await compare.click();
   await expect(page.getByRole("status")).toContainText("Rows matched by gene and condition name · 1");
   const cftr = page.getByRole("row").filter({ hasText: "Cystic fibrosis" });
   await expect(cftr.getByRole("cell").first()).toContainText("Carrier");
@@ -46,11 +56,13 @@ test("private comparison preserves lab findings and separates missing rows", asy
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
   await second.fill("invalid line");
-  await expect(page.getByRole("button", { name: "Compare findings" })).toBeDisabled();
-  await page.getByRole("checkbox", { name: "I checked these findings against the original report." }).check();
-  await page.getByRole("button", { name: "Compare findings" }).click();
+  await expect(compare).toBeDisabled();
   await expect(page.getByRole("alert").filter({ hasText: "Check line 1" })).toBeVisible();
   await expect(page.getByRole("table")).toHaveCount(0);
+  await second.fill("CFTR | Cystic fibrosis | Not detected");
+  await expect(compare).toBeDisabled();
+  await expect(page.getByRole("group", { name: "Finding 1" }).filter({ hasText: "Not detected" })
+    .getByRole("checkbox", { name: "Gene CFTR" })).not.toBeChecked();
   await page.getByRole("button", { name: "Clear reports" }).click();
   await expect(first).toBeEmpty();
   await expect(second).toBeEmpty();
@@ -79,4 +91,45 @@ test("oversized PDFs and page counts are rejected before showing report text", a
     await expect(page.locator("pre")).toHaveCount(0);
     await expect(page.getByRole("textbox", { name: "Partner A report" })).toBeEmpty();
   }
+});
+
+test("a synthetic report photo is read locally and awaits manual review", async ({ page, browser }) => {
+  test.setTimeout(90_000);
+  const source = await browser.newPage({ viewport: { width: 700, height: 230 } });
+  await source.setContent('<p style="font: 42px Arial; margin: 30px">CFTR SYNTHETIC REPORT</p>');
+  const photo = await source.screenshot({ type: "jpeg", quality: 90 });
+  await source.setContent(`<img alt="" src="data:image/jpeg;base64,${photo.toString("base64")}">`);
+  const scan = await source.pdf();
+  await source.close();
+  await page.goto("/report-compare");
+  const origin = new URL(page.url()).origin;
+  const requests: string[] = [];
+  page.on("request", (request) => requests.push(`${request.url()} ${request.method()} ${request.postData() ?? ""}`));
+  const file = page.getByLabel("Attach Partner A report");
+  for (const attachment of [
+    { name: "synthetic.jpg", mimeType: "image/jpeg", buffer: photo },
+    { name: "scan.pdf", mimeType: "application/pdf", buffer: scan },
+  ]) {
+    await file.setInputFiles(attachment);
+    await expect(page.getByText(attachment.name, { exact: true })).toBeVisible();
+    await expect(page.locator("pre")).toContainText("CFTR SYNTHETIC REPORT", { timeout: 35_000 });
+    await expect(page.getByRole("textbox", { name: "Partner A report" })).toBeEmpty();
+    await expect(page.getByRole("button", { name: "Use suggested findings" })).toHaveCount(0);
+  }
+  await page.getByRole("textbox", { name: "Partner A report" }).fill("CFTR | Cystic fibrosis | Carrier");
+  await page.getByRole("textbox", { name: "Partner B report" }).fill("CFTR | Cystic fibrosis | Not detected");
+  const compare = page.getByRole("button", { name: "Compare findings" });
+  const review = page.getByRole("group", { name: "Finding 1" });
+  await expect(review).toContainText("CFTR SYNTHETIC REPORT");
+  await expect(review.getByRole("checkbox")).toHaveCount(3);
+  for (const check of await review.getByRole("checkbox").all()) {
+    await expect(compare).toBeDisabled();
+    await check.check();
+  }
+  await compare.click();
+  await expect(page.getByRole("table")).toContainText("Cystic fibrosis");
+  expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]).includes("CFTR SYNTHETIC REPORT"))).toBe(false);
+  expect(requests.some((request) => !request.startsWith(`${origin}/`) || /\/api\/|POST|CFTR SYNTHETIC REPORT/.test(request))).toBe(false);
+  await file.setInputFiles({ name: "invalid.jpg", mimeType: "image/jpeg", buffer: Buffer.from("not a photo") });
+  await expect(page.getByRole("alert").filter({ hasText: "The photo could not be read" })).toBeVisible();
 });

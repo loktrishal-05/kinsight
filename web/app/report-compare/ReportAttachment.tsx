@@ -4,13 +4,16 @@ import { LoaderCircle, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { MAX_REPORT_LENGTH, parseReport, suggestPdfRows } from "@/lib/report-compare";
+import { readReportImage } from "@/lib/report-image";
 import { readReportPdf } from "@/lib/report-pdf";
 
 type Attachment = { name?: string; text?: string; suggested?: string; error?: string; loading?: boolean };
-const ATTACHMENT_ERRORS = ["pdfEmpty", "pdfLimit", "attachmentFormat", "size", "attachmentType"];
+const ATTACHMENT_ERRORS = ["pdfEmpty", "pdfLimit", "pdfScanLimit", "attachmentFormat", "size", "attachmentType", "imageLimit", "imageUnreadable"];
 
-export default function ReportAttachment({ label, hasDraft, onUse }: { label: string; hasDraft: boolean; onUse: (rows: string) => void }) {
-  const { t } = useI18n();
+export default function ReportAttachment({ label, hasDraft, onUse }: {
+  label: string; hasDraft: boolean; onUse: (rows: string | undefined, source: string) => void;
+}) {
+  const { t, lang } = useI18n();
   const request = useRef<AbortController | null>(null);
   const [state, setState] = useState<Attachment>({});
   useEffect(() => () => request.current?.abort(), []);
@@ -22,17 +25,27 @@ export default function ReportAttachment({ label, hasDraft, onUse }: { label: st
     setState({ name: file.name, loading: true });
     try {
       const pdf = /\.pdf$/i.test(file.name);
+      if (/\.(png|jpe?g)$/i.test(file.name)) {
+        const text = await readReportImage(file, lang, current.signal);
+        if (!current.signal.aborted) {
+          onUse(undefined, text);
+          setState({ name: file.name, text, suggested: parseReport(text).rows ? text : suggestPdfRows(text) });
+        }
+        return;
+      }
       if (!pdf && !/\.(tsv|txt)$/i.test(file.name)) throw new Error("attachmentType");
       if (!pdf && file.size > MAX_REPORT_LENGTH * 4) throw new Error("size");
-      const document = pdf ? await readReportPdf(file, current.signal) : { text: await file.text(), firstPage: "" };
+      const document = pdf ? await readReportPdf(file, lang, current.signal) : { text: await file.text(), firstPage: "", scanned: false };
       if (current.signal.aborted) return;
       const parsed = parseReport(document.text);
       if (!pdf && !parsed.rows) throw new Error(parsed.error === "size" ? "size" : "attachmentFormat");
-      const rows = parsed.rows ? document.text : suggestPdfRows(document.firstPage);
-      setState({ name: file.name, text: pdf ? document.text : undefined, suggested: rows });
+      const rows = parsed.rows ? document.text : suggestPdfRows(document.scanned ? document.text : document.firstPage);
+      onUse(undefined, document.text);
+      setState({ name: file.name, text: document.text, suggested: rows });
     } catch (error) {
       if (current.signal.aborted) return;
-      const code = error instanceof Error && ATTACHMENT_ERRORS.includes(error.message) ? error.message : "pdfUnreadable";
+      const code = error instanceof Error && ATTACHMENT_ERRORS.includes(error.message) ? error.message
+        : /\.(png|jpe?g)$/i.test(file.name) ? "imageUnreadable" : "pdfUnreadable";
       setState({ name: file.name, error: code });
     }
   }
@@ -49,7 +62,7 @@ export default function ReportAttachment({ label, hasDraft, onUse }: { label: st
         <span className="block text-sm font-semibold">{t("reportCompare.attach")}</span>
         <span className="block text-sm text-muted">{t("reportCompare.attachTypes")}</span>
       </span>
-      <input type="file" accept=".pdf,.tsv,.txt,application/pdf,text/plain,text/tab-separated-values"
+      <input type="file" accept=".pdf,.png,.jpg,.jpeg,.tsv,.txt,application/pdf,image/png,image/jpeg,text/plain,text/tab-separated-values"
         aria-label={t("reportCompare.pdf").replace("{partner}", label)} className="sr-only" onChange={(event) => {
           const file = event.target.files?.[0];
           event.target.value = "";
@@ -62,8 +75,7 @@ export default function ReportAttachment({ label, hasDraft, onUse }: { label: st
     </p>}
     {state.error && <p role="alert" className="text-sm text-unsure-fg">{t(`reportCompare.error.${state.error}`)}</p>}
     {state.suggested && <button type="button" className="btn-quiet" onClick={() => {
-      if (state.suggested) onUse(state.suggested);
-      setState({ ...state, suggested: undefined });
+      if (state.text) onUse(state.suggested, state.text);
     }}>{t(hasDraft ? "reportCompare.replace" : "reportCompare.useSuggested")}</button>}
     {state.text && <details className="rounded-lg bg-sunk p-2">
       <summary className="cursor-pointer text-sm font-semibold">{t("reportCompare.pdfPreview")}</summary>

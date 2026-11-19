@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added an optional local model that selects Kin tools. Replies show their sources and use reviewed text or consent-checked data. The existing deterministic assistant remains the default.
+- Added on-device OCR for lab-report photos and scanned PDFs. Each imported field must be reviewed before report comparison.
 
 - Linting: ruff with the full rule set (bugbear, bandit, pyupgrade, naming, complexity), mypy --strict on genetics and consent, Biome lint with accessibility rules, knip, and `npm run check`; fixed the accessibility issues they found.
 - Fixed a race: two requests at once could claim the same link in the hash-chained audit log, and the loser got 409. The API now retries a rolled-back transaction itself, and counsellor panels poll less often.
