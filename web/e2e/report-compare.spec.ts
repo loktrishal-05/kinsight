@@ -27,11 +27,16 @@ test("private comparison preserves lab findings and separates missing rows", asy
   await drop.dispose();
   await page.getByRole("button", { name: "Use suggested findings" }).click();
   const compare = page.getByRole("button", { name: "Compare findings" });
-  const review = page.getByRole("group", { name: "Finding 1" });
+  const review = page.getByRole("group", { name: "Finding 1" }).filter({ hasText: "Limited panel" });
   await expect(review).toContainText(/Extracted text.*CFTR/);
   for (const field of ["Gene CFTR", "Condition Cystic fibrosis", "Reported result Not detected", "Details Limited panel"]) {
     await expect(compare).toBeDisabled();
     await review.getByRole("checkbox", { name: field }).check();
+  }
+  await expect(compare).toBeDisabled();
+  for (const check of await page.getByRole("group", { name: /Finding [12]/ }).filter({ hasNotText: "Limited panel" })
+    .getByRole("checkbox").all()) {
+    await check.check();
   }
   await compare.click();
   await expect(page.getByRole("status")).toContainText("Rows matched by gene and condition name · 1");
@@ -56,7 +61,8 @@ test("private comparison preserves lab findings and separates missing rows", asy
   await expect(page.getByRole("table")).toHaveCount(0);
   await second.fill("CFTR | Cystic fibrosis | Not detected");
   await expect(compare).toBeDisabled();
-  await expect(review.getByRole("checkbox", { name: "Gene CFTR" })).not.toBeChecked();
+  await expect(page.getByRole("group", { name: "Finding 1" }).filter({ hasText: "Not detected" })
+    .getByRole("checkbox", { name: "Gene CFTR" })).not.toBeChecked();
   await page.getByRole("button", { name: "Clear reports" }).click();
   await expect(first).toBeEmpty();
   await expect(second).toBeEmpty();
@@ -110,7 +116,6 @@ test("a synthetic report photo is read locally and awaits manual review", async 
     await expect(page.getByRole("textbox", { name: "Partner A report" })).toBeEmpty();
     await expect(page.getByRole("button", { name: "Use suggested findings" })).toHaveCount(0);
   }
-  await page.getByRole("button", { name: "Enter fields from this report" }).click();
   await page.getByRole("textbox", { name: "Partner A report" }).fill("CFTR | Cystic fibrosis | Carrier");
   await page.getByRole("textbox", { name: "Partner B report" }).fill("CFTR | Cystic fibrosis | Not detected");
   const compare = page.getByRole("button", { name: "Compare findings" });

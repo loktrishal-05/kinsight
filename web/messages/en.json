@@ -157,7 +157,6 @@
   "reportCompare.previewHelp": "Check the original report before entering findings. The preview can miss or misread text.",
   "reportCompare.useSuggested": "Use suggested findings",
   "reportCompare.replace": "Replace current text with suggested findings",
-  "reportCompare.transcribe": "Enter fields from this report",
   "reportCompare.reviewFields": "Check each field against the original report. Edit any incorrect text above before confirming it.",
   "reportCompare.reviewRow": "Finding {row}",
   "reportCompare.sourceSnippet": "Extracted text",

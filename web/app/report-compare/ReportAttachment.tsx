@@ -27,7 +27,10 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
       const pdf = /\.pdf$/i.test(file.name);
       if (/\.(png|jpe?g)$/i.test(file.name)) {
         const text = await readReportImage(file, lang, current.signal);
-        if (!current.signal.aborted) setState({ name: file.name, text, suggested: parseReport(text).rows ? text : suggestPdfRows(text) });
+        if (!current.signal.aborted) {
+          onUse(undefined, text);
+          setState({ name: file.name, text, suggested: parseReport(text).rows ? text : suggestPdfRows(text) });
+        }
         return;
       }
       if (!pdf && !/\.(tsv|txt)$/i.test(file.name)) throw new Error("attachmentType");
@@ -37,6 +40,7 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
       const parsed = parseReport(document.text);
       if (!pdf && !parsed.rows) throw new Error(parsed.error === "size" ? "size" : "attachmentFormat");
       const rows = parsed.rows ? document.text : suggestPdfRows(document.scanned ? document.text : document.firstPage);
+      onUse(undefined, document.text);
       setState({ name: file.name, text: document.text, suggested: rows });
     } catch (error) {
       if (current.signal.aborted) return;
@@ -70,9 +74,9 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
       <LoaderCircle aria-hidden className="h-4 w-4 motion-safe:animate-spin" />{t("reportCompare.reading")}
     </p>}
     {state.error && <p role="alert" className="text-sm text-unsure-fg">{t(`reportCompare.error.${state.error}`)}</p>}
-    {state.text && <button type="button" className="btn-quiet" onClick={() => {
+    {state.suggested && <button type="button" className="btn-quiet" onClick={() => {
       if (state.text) onUse(state.suggested, state.text);
-    }}>{t(state.suggested ? hasDraft ? "reportCompare.replace" : "reportCompare.useSuggested" : "reportCompare.transcribe")}</button>}
+    }}>{t(hasDraft ? "reportCompare.replace" : "reportCompare.useSuggested")}</button>}
     {state.text && <details className="rounded-lg bg-sunk p-2">
       <summary className="cursor-pointer text-sm font-semibold">{t("reportCompare.pdfPreview")}</summary>
       <p className="mt-2 text-sm text-muted">{t("reportCompare.previewHelp")}</p>

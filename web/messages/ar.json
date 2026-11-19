@@ -924,7 +924,6 @@
   "reportCompare.previewHelp": "راجع التقرير الأصلي قبل إدخال النتائج. قد تُغفل المعاينة بعض النصوص أو تقرؤها بشكل خاطئ.",
   "reportCompare.useSuggested": "استخدم النتائج المقترحة",
   "reportCompare.replace": "استبدل النص الحالي بالنتائج المقترحة",
-  "reportCompare.transcribe": "أدخل الحقول من هذا التقرير",
   "reportCompare.reviewFields": "راجع كل حقل مقابل التقرير الأصلي. صحح أي نص غير دقيق أعلاه قبل تأكيده.",
   "reportCompare.reviewRow": "النتيجة {row}",
   "reportCompare.sourceSnippet": "النص المستخرج",

@@ -66,7 +66,12 @@ export default function ReportComparison() {
           return <div className="card space-y-3" key={side}>
             <label htmlFor={`report-${side}`} className="block font-semibold">{t(`reportCompare.${side}`)}</label>
             <ReportAttachment key={`${side}:${reset}`} label={t(`reportCompare.${side}`)} hasDraft={!!draft.text.trim()}
-              onUse={(text, source) => edit(side, { text: text ?? draft.text, source, confirmed: new Set() })} />
+              onUse={(text, source) => {
+                setParsed(undefined);
+                setDrafts((previous) => ({
+                  ...previous, [side]: { text: text ?? previous[side].text, source, confirmed: new Set() },
+                }));
+              }} />
             <textarea id={`report-${side}`} className="field min-h-36 w-full" dir="auto" rows={7} spellCheck={false}
               autoComplete="off" autoCapitalize="off" autoCorrect="off"
               placeholder={t("reportCompare.columns")}
