@@ -9,3 +9,7 @@ Security fixes target the current default branch. Report a vulnerability private
 | Forged or replayed lab updates | Signed delivery envelope, time window, persistent delivery IDs, and request limits |
 | Disclosure through audit logs | Salted references and content-free hash-chained events |
 | Accidental use of real health records in the demo | Synthetic fixture tags, demo-only identity, and opt-in integration endpoints |
+
+| Browser attacks (framing, injected scripts, cross-site reads) | Content-Security-Policy, HSTS, `frame-ancestors 'none'`, Permissions-Policy, COOP/CORP; API CORS allow-list (none by default) and a 1 MiB body cap |
+
+The full STRIDE and LINDDUN analysis, with the test for each control, is in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
