@@ -872,7 +872,8 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         prep_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
         scenario_routes.register(app, db_session=db_session, roles=roles, limit=limit)
         pedigree_routes.register(app, db_session=db_session, roles=roles, limit=limit)
-        kin_tools.register(app, db_session=db_session, roles=roles, own=own, limit=limit)
+        kin_tools.register(app, db_session=db_session, roles=roles, own=own, limit=limit,
+                           backend=adapter if isinstance(adapter, DemoBackend) else None)
         review_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
         cascade_routes.register(app, adapter=adapter, db_session=db_session, roles=roles, own=own, limit=limit)
 

@@ -61,6 +61,21 @@ def test_counselling_request_creates_exactly_one_item(client):
     assert len(items(client, "counselling_request")) == 1
 
 
+def test_kin_reports_the_existing_review_without_releasing_the_finding(client, monkeypatch):
+    from services.agents import kin
+
+    ha, _ = pool(client)
+    monkeypatch.setenv("KIN_LLM_MODEL", "local-test")
+    monkeypatch.setenv("KIN_LLM_API_KEY", "local-fixture")
+    monkeypatch.setattr(kin, "choose", lambda *args: ("get_my_result", None))
+    response = client.post("/api/me/kin", headers=ha, json={"tool": "chat", "text": "Explain my result."})
+    assert response.status_code == 200
+    assert response.json()["tool"] == "review_waiting"
+    assert response.json()["sources"] == ["/api/lifecycle/review-items"]
+    assert "results" not in response.json()
+    assert len(items(client, "couple_result")) == 1
+
+
 def test_reclassification_creates_one_item_per_variant(client):
     hc = _h(client, "counsellor")
     body = {"archived": {"1001": 3, "1002": 5, "1003": 4}, "feed": {"1001": 4, "1002": 3, "1003": 4}}

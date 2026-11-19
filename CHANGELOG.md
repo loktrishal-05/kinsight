@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added an optional local model that selects Kin tools. Replies show their sources and use reviewed text or consent-checked data. The existing deterministic assistant remains the default.
+
 - Linting: ruff with the full rule set (bugbear, bandit, pyupgrade, naming, complexity), mypy --strict on genetics and consent, Biome lint with accessibility rules, knip, and `npm run check`; fixed the accessibility issues they found.
 - Fixed a race: two requests at once could claim the same link in the hash-chained audit log, and the loser got 409. The API now retries a rolled-back transaction itself, and counsellor panels poll less often.
 - Counsellor workspace: split pane with a sticky case header, keyboard triage (j/k, Enter, a, h, /, ?), filters kept in the URL, and a queue page that now reads in 7 SQL statements regardless of its length (was 29 for 24 cases).

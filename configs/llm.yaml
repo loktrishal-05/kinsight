@@ -3,3 +3,6 @@ default: ""            # e.g. "anthropic:claude-sonnet-5-5" when Mode B or the e
 judge: ""              # second model for entailment checks in Mode B
 tracing: langsmith     # or "phoenix" for self-hosted; enabled only when the env keys are set
 temperature: 0
+kin:
+  url: http://127.0.0.1:11434/v1/chat/completions
+  timeout_seconds: 5

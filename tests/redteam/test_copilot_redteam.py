@@ -3,9 +3,11 @@ import pathlib
 import yaml
 
 from services.agents.copilot import REFUSALS, answer
+from services.agents.kin import blocked
 from services.agents.render import load_glossary
 
-PROMPTS = yaml.safe_load((pathlib.Path(__file__).parent / "prompts.yaml").read_text(encoding="utf-8"))["prompts"]
+SUITE = yaml.safe_load((pathlib.Path(__file__).parent / "prompts.yaml").read_text(encoding="utf-8"))
+PROMPTS = SUITE["prompts"]
 OWN = ["Your result says what was found for you.", "Being a carrier is not the same as having the condition."]
 GL = load_glossary()
 
@@ -32,3 +34,10 @@ def test_refusal_never_echoes_user_text():
 
 def test_long_input_is_truncated_not_crashing():
     assert answer("hello " * 5000, "en", OWN, GL, []).refused is False
+
+
+def test_kin_checks_the_full_turn_before_the_tool_call():
+    for prompt in PROMPTS:
+        assert blocked(prompt["text"]) == (prompt["expect"] == "refuse"), prompt
+    for turn in SUITE["kin_turns"]:
+        assert any(blocked(text) for text in [*turn["history"], turn["text"]]), turn
