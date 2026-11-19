@@ -28,11 +28,11 @@ type Link = { condition_id: string; expires_at: number; used: boolean };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>;
+  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>; reviews: Record<string, string>;
   vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  bookings: {}, bookingSequence: 0, prep: {}, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  bookings: {}, bookingSequence: 0, prep: {}, reviews: {}, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -57,6 +57,24 @@ const getPair = (id: string) => {
 const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
 const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  // Review queue in mock mode mirrors the API producers: a pooled couple waiting for review, and a request to talk.
+  reviewItems() {
+    const due = (h: number) => now() + h * 3600;
+    const list = [
+      ...(S.pooled.a && S.pooled.b ? [{ id: "rv-couple", kind: "couple_result" as const, reason: "couple_result_needs_review", subject: "demo-couple", dedicated: true, link: "/counsellor", hours: 72, base: S.released ? "approved" : "pending" }] : []),
+      ...(S.counselling ? [{ id: "rv-talk", kind: "counselling_request" as const, reason: "person_asked_for_a_counsellor", subject: "synthetic-a", dedicated: false, link: "/counsellor", hours: 168, base: "pending" }] : []),
+    ];
+    return list.map(({ hours, base, ...i }) => ({ ...i, state: S.reviews[i.id] ?? base, created_at: now(), due_at: due(hours), expected_hours: hours }));
+  },
+  async reviewQueue() { return { items: mock.reviewItems().map(({ expected_hours: _h, ...i }) => i) }; },
+  async decideReview(id: string, decision: string) {
+    const item = mock.reviewItems().find((i) => i.id === id);
+    if (!item) throw new Error("404");
+    if (item.dedicated && (decision === "approve" || decision === "edit")) throw new Error("409");
+    S.reviews[id] = { approve: "approved", edit: "edited", hold: "held", more_info: "more_info" }[decision] ?? "pending"; save();
+    return { status: S.reviews[id] };
+  },
+  async myReviews() { return { items: mock.reviewItems().map(({ kind, state, due_at, expected_hours }) => ({ kind, state, due_at, expected_hours })) }; },
   async whatIf(body: scen.ScenarioRequest) {
     const req = scen.ScenarioRequestS.parse(body);
     const inheritance = DATA.cohort.carriers.find((c) => c.condition_id === req.condition_id)?.inheritance;

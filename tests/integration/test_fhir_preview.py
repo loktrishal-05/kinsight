@@ -9,7 +9,7 @@ from services.api import fhir_preview
 from services.api.main import create_app
 from services.consent.audit import verify_chain
 from services.consent.models import AuditEvent
-from services.lifecycle.store import FhirImport
+from services.lifecycle.store import FhirImport, ReviewItem
 from tests.integration.test_lab_sandbox import auth, init
 
 PATH = "/api/me/imports/fhir/preview"
@@ -123,12 +123,16 @@ def test_confirm_review_correction_revoke_and_restart(monkeypatch, tmp_path):
         by_id = f"/api/me/imports/{first['snapshot_id']}"
         assert client.get(by_id, headers=a).json()["state"] == "pending"
         assert client.get(by_id, headers=b).status_code == 404
+        with client.app.state.sessions() as db:  # one review-queue item however often the person confirms
+            assert [r.state for r in db.scalars(select(ReviewItem).where(ReviewItem.kind == "fhir_import"))] == ["pending"]
         grants = client.get("/api/me/consents", headers=a).json()
         assert sum(grant["scope"] == "fhir_import_review" for grant in grants) == 1
         assert client.get(IMPORT, headers=a).json()["report"] is None
         assert client.get(IMPORT, headers=b).json()["state"] == "missing"
         assert client.get(REVIEW, headers=reviewer).json()["report"]["findings"][0]["status"] == "uncertain"
         assert client.post(f"{REVIEW}/approve", headers=reviewer, json=first).status_code == 204
+        with client.app.state.sessions() as db:
+            assert [r.state for r in db.scalars(select(ReviewItem).where(ReviewItem.kind == "fhir_import"))] == ["approved"]
         assert client.get(IMPORT, headers=a).json()["state"] == "released"
 
     app = create_app(url)

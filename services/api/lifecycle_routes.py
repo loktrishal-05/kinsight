@@ -25,6 +25,7 @@ from services.lifecycle import (
     ledger,
     measures,
     nasab,
+    review,
     safety,
     store,
     tracking,
@@ -315,6 +316,8 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
     @app.post("/api/lifecycle/reclassify")
     async def reclassify(body: Reclassify, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
         out = safety.reclassification(body.archived, body.feed)
+        for alert in out:
+            review.enqueue(db, "reclassification", None, f"variant:{alert['variant']}")
         audit(db, identity, "reclassification", "reclassification_checked")
         return {"alerts": out}
 
@@ -470,8 +473,11 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
         except clinvar.SourceUnavailable:
             raise HTTPException(503, "Live source unavailable") from None
         feed = {k: v["acmg_class"] for k, v in live.items() if v["acmg_class"]}
+        alerts = safety.reclassification(body.archived, feed)
+        for alert in alerts:
+            review.enqueue(db, "reclassification", None, f"variant:{alert['variant']}")
         audit(db, identity, "clinvar", "reclassify_live")
-        return {"alerts": safety.reclassification(body.archived, feed), "checked": len(live),
+        return {"alerts": alerts, "checked": len(live),
                 "source": "NCBI ClinVar", "classes": live, "is_synthetic": False}
 
     class Frequencies(BaseModel):

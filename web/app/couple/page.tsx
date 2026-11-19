@@ -4,6 +4,7 @@ import { Users } from "lucide-react";
 import { Estimate, Notice, Paragraphs, PageHeader, Steps } from "@/components/ui";
 import { IconArray, Punnett, TierChip } from "@/components/visuals";
 import { ReadAloud } from "@/components/Voice";
+import { ReviewStatus } from "@/components/ReviewStatus";
 import { api, MOCK } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
@@ -31,6 +32,7 @@ export default function CoupleView() {
         </div>
       )}
       {c?.awaiting_counsellor && <Notice>{t("couple.tier3")}</Notice>}
+      <ReviewStatus />
       {released && c?.findings?.length === 0 && <Notice>{t("couple.noFindings")}</Notice>}
       {c?.findings?.map((f) => (
         <article key={f.condition_id} data-demo="finding" className="card grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">

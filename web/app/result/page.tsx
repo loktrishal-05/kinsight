@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, MessageSquareText } from "lucide-react";
 import Link from "next/link";
+import { ReviewStatus } from "@/components/ReviewStatus";
 import FhirFindings from "@/components/FhirFindings";
 import { Notice, PageHeader, Paragraphs, StatusChip } from "@/components/ui";
 import { ReadAloud } from "@/components/Voice";
@@ -36,6 +37,7 @@ export default function MyResult() {
         </ul>
       </div>
       <Notice>{t("result.carrierNote")}</Notice>
+      <ReviewStatus />
       <div className="card" data-demo="explanation">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">{t("result.explanation")}</h2>

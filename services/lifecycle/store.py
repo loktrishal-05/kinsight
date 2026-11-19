@@ -48,6 +48,21 @@ class PrepSheet(LifecycleBase):
     updated_at: Mapped[float] = mapped_column(Float)
 
 
+class ReviewItem(LifecycleBase):
+    """One thing a counsellor must see before a person does. Holds references only, never the content itself."""
+    __tablename__ = "lc_review_item"
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    kind: Mapped[str] = mapped_column(String, index=True)
+    subject_id: Mapped[str | None] = mapped_column(String, index=True, nullable=True)
+    ref: Mapped[str] = mapped_column(String)
+    reason: Mapped[str] = mapped_column(String)
+    state: Mapped[str] = mapped_column(String, default="pending", index=True)
+    created_at: Mapped[float] = mapped_column(Float)
+    due_at: Mapped[float] = mapped_column(Float)
+    decided_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    decided_at: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+
 class LcPairing(LifecycleBase):
     __tablename__ = "lc_pairing"
     id: Mapped[str] = mapped_column(String, primary_key=True)

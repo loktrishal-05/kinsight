@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added the unified counsellor review queue: one item per thing a counsellor must see first (couple result, imports, lab reports, requests to talk, reclassifications), audited decisions, and a calm waiting state for the person.
+
 - Added security headers (CSP, HSTS, Permissions-Policy, COOP/CORP), an API CORS allow-list and body cap, and docs/THREAT_MODEL.md.
 
 - Added the what-if scenario explorer at /plan/scenarios: chance per pregnancy, at least one of N, untested partner by relationship, and neutral descriptions of each route, all from the existing engine formulas.

@@ -1025,5 +1025,21 @@
   "scen.eachPregnancy": "Each pregnancy",
   "scen.options": "What each route changes (listed in a fixed order)",
   "scen.unsupported": "This combination cannot be shown. A scenario needs a partner who is known to carry the change, or both partners tested.",
-  "scen.link": "Try what-if scenarios"
+  "scen.link": "Try what-if scenarios",
+  "review.title": "To review",
+  "review.empty": "Nothing is waiting for review.",
+  "review.open": "Open review",
+  "review.askMore": "Ask for more information",
+  "review.kind.couple_result": "Couple result",
+  "review.kind.fhir_import": "Imported report",
+  "review.kind.lab_report": "Lab report",
+  "review.kind.counselling_request": "Request to talk with a counsellor",
+  "review.kind.reclassification": "Change in how a variant is classified",
+  "review.state.pending": "Waiting",
+  "review.state.held": "On hold",
+  "review.state.more_info": "More information asked",
+  "review.state.approved": "Approved",
+  "review.state.edited": "Approved with edits",
+  "review.waiting": "A counsellor is looking at this: {what}. You can expect to hear within about {d} days.",
+  "review.moreInfo": "A counsellor has asked for a little more information about: {what}. They will be in touch."
 }
