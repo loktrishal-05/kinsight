@@ -1154,5 +1154,11 @@
   "ws.done.approve": "Approved {id}",
   "ws.done.hold": "Put {id} on hold",
   "ws.done.edit": "Approved {id} with edits",
-  "a11y.skip": "Skip to main content"
+  "a11y.skip": "Skip to main content",
+  "a11y.skip": "Skip to main content",
+  "group.result": "My result",
+  "group.plan": "Plan and prepare",
+  "group.family": "Family",
+  "group.privacy": "Privacy",
+  "group.help": "Help"
 }

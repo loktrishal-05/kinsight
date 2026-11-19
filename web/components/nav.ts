@@ -22,10 +22,20 @@ export const NAV_ITEMS: Item[] = [
 ];
 const by = (...keys: string[]) => keys.map((k) => NAV_ITEMS.find((n) => n.key === k)!);
 
+const PERSON: Persona[] = ["person_a", "person_b", "demo_operator"];
+
+// Grouped by where a person is in their journey, so no list is longer than a glance. A page appears once per role.
 export const GROUPS: { id: string; label: string; items: Item[]; roles: Persona[] | "all" }[] = [
   { id: "start", label: "group.start", roles: "all", items: by("home", "learn") },
-  { id: "care", label: "group.care", roles: ["person_a", "person_b", "demo_operator"], items: by("plan", "prepare", "cascade", "nasab", "checkin", "journey", "result", "couple", "understand", "next", "access", "summary", "family", "consents", "privacy", "ask") },
+  { id: "result", label: "group.result", roles: PERSON, items: by("result", "couple", "understand", "summary") },
+  { id: "plan", label: "group.plan", roles: PERSON, items: by("plan", "prepare", "nasab", "checkin", "journey", "next", "access") },
+  { id: "family", label: "group.family", roles: PERSON, items: by("family", "cascade") },
+  { id: "privacy", label: "group.privacy", roles: PERSON, items: by("consents", "privacy") },
+  { id: "help", label: "group.help", roles: PERSON, items: by("ask") },
   { id: "relative", label: "group.care", roles: ["relative"], items: by("invite", "nasab", "family", "privacy") },
   { id: "team", label: "group.team", roles: ["counsellor", "demo_operator"], items: by("counsellor", "clinic") },
   { id: "insight", label: "group.insight", roles: ["analyst", "auditor", "demo_operator"], items: by("analyst", "governance", "methods") },
 ];
+
+export const groupsFor = (persona: Persona | null) =>
+  GROUPS.filter((g) => g.roles === "all" || (!persona ? g.id !== "relative" : g.roles.includes(persona)));
