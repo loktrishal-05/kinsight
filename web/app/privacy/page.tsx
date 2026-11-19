@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Ban, Check, KeyRound, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import NotificationSettings from "@/components/NotificationSettings";
 import { Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -35,6 +36,7 @@ export default function Privacy() {
   return (
     <section className="space-y-6">
       <PageHeader title={t("privacy.title")} lead={t("privacy.lead")} />
+      <NotificationSettings />
       {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a horizontally scrolling region must be focusable so keyboard users can scroll it (WCAG 2.1.1) */}
       <div className="card-flush overflow-x-auto" data-demo="matrix" tabIndex={0} role="region" aria-label={t("privacy.title")}>
         <table className="w-full min-w-[40rem] text-sm">

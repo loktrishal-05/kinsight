@@ -1,0 +1,14 @@
+# Notification texts (issue 55). Lock screens, watches and shared devices show these, so they carry NO health
+# information: no condition, gene, result, risk or name, ever. Every type uses the same neutral wording.
+title: KinSight
+types:
+  lab_status:
+    body: You have an update in KinSight.
+  counsellor_update:
+    body: You have an update in KinSight.
+  appointment_reminder:
+    body: You have an appointment tomorrow. Open KinSight for details.
+  reclassification_reviewed:
+    body: You have an update in KinSight.
+  cascade_reminder:
+    body: You have an update in KinSight.

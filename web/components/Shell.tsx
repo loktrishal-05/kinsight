@@ -9,6 +9,7 @@ import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession, type Persona } from "@/lib/session";
 import { AssistantLauncher } from "./Assistant";
 import CommandPalette from "./CommandPalette";
+import Notifier from "./Notifier";
 import LanguageSelect from "./LanguageSelect";
 import SettingsMenu from "./SettingsMenu";
 import { groupsFor, NAV_ITEMS } from "./nav";
@@ -157,6 +158,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         })}
       </nav>}
       <AssistantLauncher lift={personTabs} />
+      <Notifier />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
     </div>
   );
