@@ -151,8 +151,11 @@ def decide(
     session: Session,
     audit_salt: bytes,
     audit_allowed: bool = True,
+    candidates: list[Consent] | None = None,
 ) -> Decision:
-    """Audit in the caller's transaction; commit even when denying a request."""
+    """Audit in the caller's transaction; commit even when denying a request.
+
+    `candidates` lets a list read load the grantee's consents once; the same filter is applied below either way."""
     now = time.time()
     decision = Decision(False)
     if resource.type not in ROLE_RESOURCES.get(actor.role, set()):
@@ -185,18 +188,23 @@ def decide(
     ):
         decision = Decision(False, reason_code="assignment_required")
     else:
-        grants = session.scalars(
-            select(Consent).where(
-                Consent.grantor_id == resource.owner_id,
-                Consent.grantee_id == actor.id,
-                Consent.resource_type == resource.type,
-                Consent.resource_id == resource.id,
-                Consent.purpose == purpose,
-                Consent.revoked_at.is_(None),
-                Consent.granted_at <= now,
-                Consent.expires_at > now,
-            )
-        ).all()
+        if candidates is None:
+            grants = list(session.scalars(
+                select(Consent).where(
+                    Consent.grantor_id == resource.owner_id,
+                    Consent.grantee_id == actor.id,
+                    Consent.resource_type == resource.type,
+                    Consent.resource_id == resource.id,
+                    Consent.purpose == purpose,
+                    Consent.revoked_at.is_(None),
+                    Consent.granted_at <= now,
+                    Consent.expires_at > now,
+                )
+            ).all())
+        else:
+            grants = [g for g in candidates if g.grantor_id == resource.owner_id and g.grantee_id == actor.id
+                      and g.resource_type == resource.type and g.resource_id == resource.id and g.purpose == purpose
+                      and g.revoked_at is None and g.granted_at <= now and g.expires_at > now]
         allowed_fields: set[str] = set()
         consent_ids = []
         for grant in grants:

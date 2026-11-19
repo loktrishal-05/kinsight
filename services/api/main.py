@@ -661,6 +661,10 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         people = {p.id: p for p in db.scalars(select(Person).where(Person.id.in_(owners)))} if owners else {}
         salt = secret("KINSIGHT_AUDIT_SALT")
         fields = {"id", "status", "tier", "due_at"}
+        # One read for every grant this page could use; decide() applies its usual filter to them per case.
+        candidates = list(db.scalars(select(Consent).where(
+            Consent.grantee_id == identity.actor.id, Consent.resource_type == "case",
+            Consent.resource_id.in_([c.id for c in cases]), Consent.purpose == "counselling"))) if cases else []
         output = []
         for row in cases:
             person = people.get(row.owner_id)
@@ -669,7 +673,8 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
                 assigned_to=row.assigned_to, assignment_expires_at=row.assignment_expires_at,
                 assignment_reason=row.assignment_reason,
             )
-            decision = decide(identity.actor, ref, "counselling", fields, session=db, audit_salt=salt, audit_allowed=False)
+            decision = decide(identity.actor, ref, "counselling", fields, session=db, audit_salt=salt, audit_allowed=False,
+                              candidates=candidates)
             if not decision.allowed:
                 continue
             data = CaseView.model_validate(await adapter.invoke("case_status", row.id, None, db))

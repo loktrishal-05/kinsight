@@ -1012,5 +1012,16 @@
   "dash.sharingCount": "{n} أشخاص أو خدمات باختيارك",
   "dash.sharingNone": "لا أحد غيرك",
   "dash.kin": "اسأل Kin",
-  "dash.kinText": "أسئلة عن نتيجتك بلغتك"
+  "dash.kinText": "أسئلة عن نتيجتك بلغتك",
+  "ws.shortcuts": "اختصارات لوحة المفاتيح",
+  "ws.close": "إغلاق",
+  "ws.key.move": "الحالة التالية أو السابقة",
+  "ws.key.open": "الانتقال إلى الحالة المحددة",
+  "ws.key.approve": "الموافقة (عند وجود قرار مفتوح)",
+  "ws.key.hold": "تعليق",
+  "ws.key.search": "البحث في القائمة",
+  "ws.key.help": "إظهار هذه القائمة أو إخفاؤها",
+  "ws.done.approve": "تمت الموافقة على {id}",
+  "ws.done.hold": "تم تعليق {id}",
+  "ws.done.edit": "تمت الموافقة على {id} مع تعديلات"
 }
