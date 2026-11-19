@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { EyeOff } from "lucide-react";
 import { useState } from "react";
+import { ChartCard } from "@/components/ChartCard";
 import { Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -35,6 +36,22 @@ export default function Analyst() {
   const W = 640, H = 150, step = (W - 40) / Math.max(1, weekly.length - 1);
   const line = weekly.map((w, i) => `${i ? "L" : "M"}${20 + i * step},${H - 14 - ((w.median_wait ?? 0) / maxW) * (H - 34)}`).join(" ");
 
+  // Care funnel from the live outcome counts; a hidden count stays hidden in the chart, the table and the CSV.
+  const metric = (name: string) => out.data?.metrics.find((m) => m.name === name);
+  const steps = ["result_viewed", "teach_back_passed", "prep_sheet_created", "session_booked", "cascade_reached"].map((n) => [t(`outcome.${n}`), metric(n)?.total ?? null] as [string, number | null]);
+  const top = Math.max(1, ...steps.map(([, v]) => v ?? 0));
+  const funnel = out.data && (
+    <ChartCard id="funnel" title={t("chart.funnel")} file="funnel" head={[t("chart.step"), t("chart.count")]} rows={steps}
+      summary={steps.every(([, v]) => v === null) ? t("chart.allHidden") : t("chart.funnelSummary")}>
+      <ol className="space-y-2" data-not-risk>{steps.map(([label, v]) => (
+        <li key={label} className="grid grid-cols-[minmax(0,14rem)_1fr_5rem] items-center gap-3 text-sm">
+          <span>{label}</span>
+          <span className="h-3 overflow-hidden rounded-full bg-sunk" aria-hidden>{v !== null && <span className="block h-full rounded-full" style={{ width: `${(100 * v) / top}%`, background: "rgb(var(--b500))" }} />}</span>
+          <span className="text-end tabular-nums" dir="ltr">{v ?? <EyeOff aria-label={t("analyst.hidden")} className="ms-auto h-4 w-4" />}</span>
+        </li>))}</ol>
+    </ChartCard>
+  );
+
   return (
     <section className="space-y-6">
       <PageHeader title={t("analyst.title")} lead={t("analyst.lead")} />
@@ -52,8 +69,9 @@ export default function Analyst() {
         <p className="text-sm">{t("outcome.noMarriage")}</p>
       </section>}
 
-      <div className="card space-y-3" data-demo="tiers">
-        <h2 className="text-lg font-semibold">{t("analyst.tiers")}</h2>
+      <ChartCard id="tiers" title={t("analyst.tiers")} file="tiers"
+        summary={t("chart.tiersSummary").replace("{n}", String(total)).replace("{t3}", String(tiers[2][1]))}
+        head={[t("chart.group"), t("chart.count")]} rows={tiers.map(([k, n]) => [t(`tier.${k}`), n >= MIN_CELL ? n : null])}>
         <div className="flex h-4 overflow-hidden rounded-full bg-sunk" role="img" aria-label={tiers.map(([k, n]) => `${t(`tier.${k}`)}: ${n}`).join(", ")}>
           {tiers.map(([k, n]) => <span key={k} style={{ width: `${(100 * n) / total}%`, background: `rgb(var(--b${k === 1 ? 200 : k === 2 ? 500 : 700}))` }} />)}
         </div>
@@ -61,7 +79,9 @@ export default function Analyst() {
           {tiers.map(([k, n]) => <li key={k} className="flex items-center gap-2"><span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: `rgb(var(--b${k === 1 ? 200 : k === 2 ? 500 : 700}))` }} />{t(`tier.${k}`)} <b className="tabular-nums" dir="ltr">{n} ({Math.round((100 * n) / total)}%)</b></li>)}
         </ul>
         <p data-not-risk className="text-xs text-muted">{t("analyst.cohortNote").replace("{n}", String(d.cohort.couples)).replace("{r}", String(Math.round(d.cohort.related_share * 100)))}</p>
-      </div>
+      </ChartCard>
+
+      {funnel}
 
       <div className="card" data-demo="burden">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -81,9 +101,9 @@ export default function Analyst() {
         </ul>
       </div>
 
-      <div className="card" data-demo="weekly">
-        <h2 className="mb-1 text-lg font-semibold">{t("analyst.weekly")}</h2>
-        <p className="mb-3 text-sm text-muted">{t("analyst.weeklyNote")}</p>
+      <ChartCard id="weekly" title={t("analyst.weekly")} file="weekly"
+        summary={`${t("analyst.weeklyNote")} ${t("chart.weeklySummary").replace("{w}", String(weekly.length)).replace("{m}", String(maxW))}`}
+        head={[t("analyst.week"), t("analyst.waitLine"), t("chart.served")]} rows={weekly.map((w, i) => [i + 1, w.median_wait ?? null, w.served])}>
         <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={t("analyst.weekly")} style={{ direction: "ltr" }}>
           {weekly.map((w, i) => <rect key={i} x={20 + i * step - 3.5} y={H - 14 - (w.served / maxS) * (H - 34)} width={7} height={(w.served / maxS) * (H - 34)} rx={2} fill="rgb(var(--b100))" />)}
           <path d={line} fill="none" stroke="rgb(var(--b600))" strokeWidth={2} strokeLinejoin="round" />
@@ -92,7 +112,7 @@ export default function Analyst() {
           <text x={W - 20} y={H - 1} fontSize="10" textAnchor="end" fill="rgb(var(--muted))">{weekly.length}</text>
         </svg>
         <p className="flex flex-wrap gap-4 text-xs text-muted"><span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-brand-600" />{t("analyst.waitLine")}</span><span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-brand-100" />{t("analyst.servedBars")}</span></p>
-      </div>
+      </ChartCard>
 
       <div className="card" data-demo="heatmap">
         <h2 className="mb-1 text-lg font-semibold">{t("analyst.comp")}</h2>
