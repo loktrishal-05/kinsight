@@ -23,7 +23,7 @@ Referral states: `result_released → counselling_requested → counselling_done
 ## Data
 The generator (`services/cohort/generate.py`) builds families from a seed, writes persons/relationships/screening/couples (+ `sim_truth` in a separate folder for evaluation only) and a manifest with hashes. `make cohort` rebuilds `data/demo/`.
 
-The optional FHIR preview maps the signed-in demo persona to its HAPI fixture on the API server. The owner policy writes the audit decision before the API reads the Patient and DiagnosticReport with its linked Observations. The reader checks resource ownership and synthetic tags, and the result page displays verified findings with their source IDs. Findings needing review stay outside the couple engine. [FHIR preview setup](REAL_DATA_ROLLOUT.md#preview-the-assigned-synthetic-health-record)
+The optional FHIR preview maps the signed-in demo persona to its HAPI fixture on the API server. The owner policy writes the audit decision before the API reads and validates the Patient and DiagnosticReport with its linked Observations. The reader checks resource ownership and synthetic tags, and the result page displays verified findings with their source IDs. Unmapped observations retain their source IDs for counsellor follow-up and block release. Findings needing review stay outside the couple engine. [FHIR preview setup](REAL_DATA_ROLLOUT.md#preview-the-assigned-synthetic-health-record)
 
 Lifecycle routes store owner-scoped bookings, pairing and tracking state in the API database. The signed lab feed rejects stale signatures and replayed delivery IDs. The counsellor queue joins assigned cases to consent-filtered owner records. The clinic tools use public ClinVar and gnomAD identifiers for reference checks.
 

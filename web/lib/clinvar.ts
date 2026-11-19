@@ -3,6 +3,14 @@ const URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi";
 const CLASSES: Record<string, number> = { benign: 1, "likely benign": 2, "uncertain significance": 3, "likely pathogenic": 4, pathogenic: 5 };
 const classOf = (text: string) => (text.toLowerCase().startsWith("pathogenic/likely pathogenic") ? 5 : CLASSES[text.toLowerCase().trim()]);
 
+export type ClinVarCheck = {
+  alerts: { variant: string; from: number; to: number; direction: "upgraded" | "downgraded"; needs_clinician_review: boolean }[];
+  classes: Record<string, {
+    label: string;
+    provenance: { source: string; version: string | null; fetched_at: string; url: string };
+  }>;
+};
+
 async function fetchSummaries(ids: string[]) {
   const res = await fetch(`${URL}?db=clinvar&retmode=json&tool=kinsight&id=${ids.join(",")}`);
   if (!res.ok) throw new Error(String(res.status));
@@ -11,7 +19,7 @@ async function fetchSummaries(ids: string[]) {
   return data.result;
 }
 
-export async function liveReclassify(archived: Record<string, number>) {
+export async function liveReclassify(archived: Record<string, number>): Promise<ClinVarCheck> {
   const ids = Object.keys(archived);
   if (!ids.length || ids.length > 50 || ids.some((i) => !/^\d{1,12}$/.test(i))) throw new Error("422");
   const result = await fetchSummaries(ids);
@@ -20,7 +28,13 @@ export async function liveReclassify(archived: Record<string, number>) {
     const from = archived[variant];
     return to && (from >= 4) !== (to >= 4) ? [{ variant, from, to, direction: to >= 4 ? ("upgraded" as const) : ("downgraded" as const), needs_clinician_review: true }] : [];
   });
-  return { alerts };
+  const fetched_at = new Date().toISOString();
+  const classes = Object.fromEntries(ids.map((id) => [id, {
+    label: String(result[id]?.germline_classification?.description ?? ""),
+    provenance: { source: "NCBI ClinVar", fetched_at, version: result[id]?.accession_version ?? null,
+      url: `https://www.ncbi.nlm.nih.gov/clinvar/variation/${id}/` },
+  }]));
+  return { alerts, classes };
 }
 
 // Browse the pathogenic records ClinVar holds for one gene (first 15, most relevant first).

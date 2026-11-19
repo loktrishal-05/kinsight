@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Journey from "@/components/Journey";
 import { TierChip } from "@/components/visuals";
-import { api, LAB_SANDBOX, MOCK } from "@/lib/api";
+import { api, FHIR_SANDBOX, LAB_SANDBOX, MOCK } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession } from "@/lib/session";
 
@@ -26,6 +26,8 @@ export default function Home() {
         <h1 id="home-title" className="max-w-3xl font-display text-[clamp(2rem,4.4vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.035em]">{t("welcome.title")}</h1>
         <p className="max-w-2xl text-ink/75">{t("hero.sub")}</p>
         {LAB_SANDBOX && <Link className="btn" href="/lab-sandbox">{t("labSandbox.title")}</Link>}
+        {FHIR_SANDBOX && (persona === "person_a" || persona === "person_b") &&
+          <Link className="btn" href="/result#fhir-preview-heading">{t("fhirPreview.import")}</Link>}
       </section>
 
       <div className="mt-12 space-y-14">

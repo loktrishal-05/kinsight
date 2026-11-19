@@ -19,6 +19,7 @@ from services.cohort.panel import load_panel
 from services.consent import sharing
 from services.consent.models import Consent, Person
 from services.consent.policy import ResourceRef
+from services.integrations.fhir_client import read_json
 from services.lifecycle.store import FhirImport
 
 from .auth import secret
@@ -30,7 +31,6 @@ ASSIGNED = {
     "synthetic-a": "ks-demo-b2562112-399d-497d-a2ea-9a9d491db685",
     "synthetic-b": "ks-demo-66aa9ecf-d459-469e-8aa2-130d6dd3943b",
 }
-MAX_BYTES = 262_144
 ISSUED = TypeAdapter(AwareDatetime)
 RESOURCE = "fhir_import"
 REVIEWER = "synthetic-counsellor"
@@ -39,20 +39,6 @@ CONSENT_TEXT = "Save this synthetic report and share this version with the demo 
 
 class SnapshotRequest(StrictModel):
     snapshot_id: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
-
-
-def read_json(client, path, *, params=None):
-    with client.stream("GET", path, params=params) as response:
-        response.raise_for_status()
-        data = bytearray()
-        for chunk in response.iter_bytes():
-            if len(data) + len(chunk) > MAX_BYTES:
-                raise ValueError("FHIR response exceeds the preview limit")
-            data.extend(chunk)
-    result = json.loads(data)
-    if not isinstance(result, dict):
-        raise ValueError("Expected a FHIR resource")
-    return result
 
 
 def require_resource(resource, kind, resource_id, subject=None):
@@ -112,6 +98,7 @@ def read_preview(client: httpx.Client, patient_id: str, panel, *, for_review=Fal
     panel_ids = {condition.id for condition in panel.conditions}
     statuses = {code: finding for finding, code in FINDINGS.items()}
     findings = {}
+    unmapped_sources = set()
     result = report.get("result", [])
     if not result or len(result) != len(resources):
         raise ValueError("The FHIR report is missing its referenced observations")
@@ -133,8 +120,12 @@ def read_preview(client: httpx.Client, patient_id: str, panel, *, for_review=Fal
             or observation["status"] not in {"final", "amended", "corrected"}
             or code_from(observation["code"], "http://loinc.org") != "69548-6"
         ):
-            return {**summary, "state": "requires_review", "unmapped": True, "findings": []}
+            unmapped_sources.add(observation_id)
+            continue
         findings[target[0]] = {"condition_id": target[0], "status": finding, "source_id": observation_id}
+    if unmapped_sources:
+        return {**summary, "state": "requires_review", "unmapped": True, "findings": [],
+                "unmapped_source_ids": sorted(unmapped_sources)}
     visible = [finding for finding in findings.values() if finding["status"] != "uncertain"]
     state = "ready" if len(visible) == len(findings) else "requires_review"
     if for_review:
@@ -179,7 +170,8 @@ def register(app, *, base_url, db_session, roles, own, check, limit):
             return row, None, "stale"
         return row, json.loads(row.payload), "released" if row.approved else "pending"
 
-    @app.post("/api/me/imports/fhir/preview")
+    @app.post("/api/me/imports/fhir")
+    @app.post("/api/me/imports/fhir/preview", include_in_schema=False)
     def preview(identity=Depends(roles("person")), db: Session = Depends(db_session)):
         own(db, identity, RESOURCE, {"status", "brief"})
         limit(db, identity)
@@ -222,13 +214,27 @@ def register(app, *, base_url, db_session, roles, own, check, limit):
         sharing.log_change(db, identity.actor, subject, "fhir_import_confirmed", secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
 
-    @app.get("/api/me/imports/fhir")
-    def personal(identity=Depends(roles("person")), db: Session = Depends(db_session)):
+    def personal_status(db, identity, import_id=None):
         own(db, identity, RESOURCE, {"status", "brief"})
-        row, report, state = current(db, identity.actor.id)
+        subject = identity.actor.id
+        if import_id is not None:
+            saved = db.get(FhirImport, subject, populate_existing=True)
+            if saved is None or saved.snapshot_id != import_id:
+                raise HTTPException(404, "Synthetic import unavailable")
+        row, report, state = current(db, subject)
+        if import_id is not None and (row is None or row.snapshot_id != import_id):
+            raise HTTPException(404, "Synthetic import unavailable")
         if state == "pending" and not db.scalar(active_consent(row.consent_id)):
             state = "sharing_ended"
         return {"state": state, "report": report if state == "released" else None, "is_synthetic": True}
+
+    @app.get("/api/me/imports/fhir", include_in_schema=False)
+    def personal(identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        return personal_status(db, identity)
+
+    @app.get("/api/me/imports/{import_id}")
+    def import_status(import_id: str, identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        return personal_status(db, identity, import_id)
 
     def review_access(db, identity, subject):
         return check(

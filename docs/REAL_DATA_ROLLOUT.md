@@ -89,6 +89,12 @@ Set `KINSIGHT_FHIR_SANDBOX_URL=http://127.0.0.1:8088/fhir` on the demo API and `
 
 The confirmed synthetic import is separate from the illustrative couple assessment. SMART authorization, approved patient identity mapping and hosted acceptance remain part of [#28](https://github.com/loktrishal-05/kinsight/issues/28). [SMART App Launch](https://hl7.org/fhir/smart-app-launch/app-launch.html)
 
+### Send a synthetic referral to HAPI
+
+Set `KINSIGHT_FHIR_REFERRAL_URL` to a private disposable HAPI R4 base on the demo API and `NEXT_PUBLIC_FHIR_REFERRAL=1` on the HTTP-backed web build. Person A opens their result and explicitly allows the sandbox referral. After release and teach-back, the assigned counsellor records a requested service stage and selects **Approve and send sandbox referral**. KinSight creates a ServiceRequest and Task in one transaction. Retries use conditional creates with the same identifiers.
+
+The console displays both FHIR IDs and the last sync time. It checks the Task every ten seconds while the console is open and can check again on demand. HAPI's Task must be completed before this path records the corresponding stage with the Task ID as evidence. Revoking delivery consent stops future sends and checks. The demo case resets with the existing demo workflow. [FHIR ServiceRequest](https://hl7.org/fhir/R4/servicerequest.html) · [FHIR Task](https://hl7.org/fhir/R4/task.html)
+
 ## Compare existing lab reports
 
 The public `/report-compare` page accepts text-based PDFs, TSV and TXT files through a picker or drag and drop. It reads files locally. Structured text files and the verified Labcorp negative SMA and Fragile X carrier-screen summaries can supply suggested findings. The participant checks the imported rows against the original before comparing. Other PDF layouts show a text preview for manual entry. PDF reading order can differ from the visual table and image-only sections can be missing. Use only the findings and avoid copying identifiers. The supported columns are gene, condition, reported result, and optional details such as assay coverage, a variant, a copy count, or a repeat count. Scans, photos, and locked PDFs need manual entry. The page accepts up to 1,000 findings per report and preserves multiple findings for a gene and condition. [Labcorp examples](https://www.labcorp.com/womens-health/providers/resources/sample-reports)
@@ -101,7 +107,10 @@ Run `python scripts/update_report_references.py` from the repository root to ref
 
 | Order | Scope | Acceptance check |
 | --- | --- | --- |
-| 1 | Report intake and explanation. Local attachment, verified text import, two bounded PDF summaries, and the comparison guide are implemented. Photo OCR and additional lab layouts remain open. | Each additional layout has public or approved fixtures and tests showing that ambiguous sections, partner identity, and lab wording survive review. [Issue 31](https://github.com/loktrishal-05/kinsight/issues/31) |
-| 2 | Use the verified local fixture to build EHR import and seed an approved hosted synthetic FHIR sandbox. | Each signed-in sandbox account resolves only its assigned report and refreshes on a corrected resource. [Issues 32](https://github.com/loktrishal-05/kinsight/issues/32) · [28](https://github.com/loktrishal-05/kinsight/issues/28) |
-| 3 | Connect a hosted synthetic lab to the HL7 v2 or FHIR profile. Both work with the local signed tracker. | Hosted lab events arrive in order and updates respect person scope, consent, revision review and replay protection. [Issue 30](https://github.com/loktrishal-05/kinsight/issues/30) |
-| 4 | Complete the wider evaluator backlog and clinical pilot gates. | Verify the remaining feedback items against the hosted build and record clinical sign-off separately. [Issue 65](https://github.com/loktrishal-05/kinsight/issues/65) |
+| 1 | Register a SMART client and seed an approved hosted synthetic FHIR sandbox. Connect Genomics Reporting fields to a reviewed panel mapping. | Each signed-in sandbox account resolves only its assigned report. The reviewed result flows through the deterministic engine. [Issue 28](https://github.com/loktrishal-05/kinsight/issues/28) |
+| 2 | Connect the signed synthetic lab feed to the hosted demo. | Hosted lab events arrive in order and respect person scope, consent, revision review and replay protection. [Issue 30](https://github.com/loktrishal-05/kinsight/issues/30) |
+| 3 | Extend local report intake with photo OCR, more report layouts and per-field verification. | Synthetic fixtures cover scans, Arabic and ambiguous findings through human review. [Issue 31](https://github.com/loktrishal-05/kinsight/issues/31) |
+| 4 | Extend Kin's explicit scenario and prep actions with a grounded optional model. | Tool calls are traceable, audited and checked against multi-turn red-team prompts. [Issue 35](https://github.com/loktrishal-05/kinsight/issues/35) |
+| 5 | Add the remaining reference sources and a scheduled reclassification review. | New facts carry provenance and a recorded ClinVar change opens a counsellor task. [Issue 33](https://github.com/loktrishal-05/kinsight/issues/33) |
+
+For development, use the local HAPI fixture tools and public reference skills. [Agent tooling](AGENT_TOOLING.md)

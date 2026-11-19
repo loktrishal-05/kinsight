@@ -24,6 +24,9 @@ services:
       args:
         NEXT_PUBLIC_MOCK: "${NEXT_PUBLIC_MOCK:-1}"
         NEXT_PUBLIC_FHIR_SANDBOX: "${NEXT_PUBLIC_FHIR_SANDBOX:-0}"
+        NEXT_PUBLIC_FHIR_REFERRAL: "${NEXT_PUBLIC_FHIR_REFERRAL:-0}"
+        NEXT_PUBLIC_LAB_SANDBOX: "${NEXT_PUBLIC_LAB_SANDBOX:-0}"
+        NEXT_PUBLIC_KIN_TOOLS: "${NEXT_PUBLIC_KIN_TOOLS:-0}"
         KINSIGHT_API_URL: "http://api:8000"
     environment: { KINSIGHT_API_URL: "http://api:8000" }
     depends_on: [api]

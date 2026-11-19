@@ -45,6 +45,8 @@ def test_preview_uses_the_signed_in_assignment_and_rejects_mismatched_resources(
             findings[0]["component"][0]["valueCodeableConcept"]["coding"][0]["code"] = "UNMAPPED_GENE"
         if problem == "foreign-reference":
             report["result"][0]["reference"] = "https://other.invalid/Observation/fixture"
+        if problem == "invalid-resource":
+            del findings[0]["status"]
         return httpx.Response(200, json={
             "resourceType": "Bundle", "type": "searchset",
             "entry": [{"resource": resource} for resource in [report, *findings]],
@@ -63,7 +65,7 @@ def test_preview_uses_the_signed_in_assignment_and_rejects_mismatched_resources(
         assert client.post(PATH).status_code == 401
         assert client.post(PATH, headers=reviewer).status_code == 403
         assert not requested
-        a_preview = client.post(PATH, headers=a, json={"patient_id": second}).json()
+        a_preview = client.post(IMPORT, headers=a, json={"patient_id": second}).json()
         assert a_preview["report_id"] == first
         assert a_preview["version"] == "opaque.server-id"
         b_preview = client.post(PATH, headers=b).json()
@@ -73,13 +75,17 @@ def test_preview_uses_the_signed_in_assignment_and_rejects_mismatched_resources(
         assert client.post(PATH, headers=a).status_code == 502
         problem = "foreign-reference"
         assert client.post(PATH, headers=a).status_code == 502
+        problem = "invalid-resource"
+        assert client.post(PATH, headers=a).status_code == 502
         problem = "target"
         gated = client.post(PATH, headers=a).json()
         assert gated["state"] == "requires_review"
         assert gated["unmapped"]
         assert gated["findings"] == []
+        report = resources[f"DiagnosticReport/{first}"]
+        assert gated["unmapped_source_ids"] == [report["result"][0]["reference"].split("/")[1]]
     with app.state.sessions() as session:
-        assert len(session.scalars(select(AuditEvent).where(AuditEvent.resource_type == fhir_preview.RESOURCE)).all()) == 5
+        assert len(session.scalars(select(AuditEvent).where(AuditEvent.resource_type == fhir_preview.RESOURCE)).all()) == 6
         assert verify_chain(session)
 
 
@@ -114,6 +120,9 @@ def test_confirm_review_correction_revoke_and_restart(monkeypatch, tmp_path):
         assert client.post(f"{IMPORT}/confirm", headers=b, json=first).status_code == 409
         assert client.post(f"{IMPORT}/confirm", headers=a, json=first).status_code == 204
         assert client.post(f"{IMPORT}/confirm", headers=a, json=first).status_code == 204
+        by_id = f"/api/me/imports/{first['snapshot_id']}"
+        assert client.get(by_id, headers=a).json()["state"] == "pending"
+        assert client.get(by_id, headers=b).status_code == 404
         grants = client.get("/api/me/consents", headers=a).json()
         assert sum(grant["scope"] == "fhir_import_review" for grant in grants) == 1
         assert client.get(IMPORT, headers=a).json()["report"] is None

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "kinsight-fhir-fixtures": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--python", "3.12", "fhir-mcp-server==0.11.0", "--transport", "stdio"],
+      "env": {
+        "FHIR_SERVER_BASE_URL": "http://127.0.0.1:8088/fhir",
+        "FHIR_SERVER_DISABLE_AUTHORIZATION": "True"
+      }
+    }
+  }
+}

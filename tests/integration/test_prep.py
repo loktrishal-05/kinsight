@@ -91,3 +91,23 @@ def test_scenario_route_returns_labelled_estimates_and_fixed_option_order(api):
     assert c.get(f"/api/lifecycle/scenario?{q}").status_code == 401
     bad = "condition_id=COND_001&status_a=not_detected&status_b=untested"
     assert c.get(f"/api/lifecycle/scenario?{bad}", headers=h["person_a"]).status_code == 422
+
+
+def test_kin_tools_use_the_scenario_engine_and_keep_new_questions_private(api):
+    c, h = api
+    kin = "/api/me/kin"
+    scenario = {"condition_id": "COND_001", "status_a": "carrier", "status_b": "untested", "children": 2}
+    answer = c.post(kin, headers=h["person_a"], json={"tool": "run_scenario", **scenario})
+    assert answer.status_code == 200 and "/methods" in answer.json()["sources"]
+    assert answer.json()["data"] == c.get("/api/lifecycle/scenario", params=scenario, headers=h["person_a"]).json()
+    request = {"tool": "add_question_to_prep", "text": "What does the lab test cover?"}
+    assert c.post(kin, headers=h["counsellor"], json=request).status_code == 403
+    assert c.put("/api/lifecycle/prep", headers=h["person_a"], json={**SHEET, "share": ["questions"]}).is_success
+    assert c.post(kin, headers=h["person_a"], json=request).status_code == 409
+    assert c.put("/api/lifecycle/prep", headers=h["person_a"], json=SHEET).is_success
+    for _ in range(2):
+        response = c.post(kin, headers=h["person_a"], json=request)
+        assert response.is_success and request["text"] not in response.text
+    sheet = c.get("/api/lifecycle/prep", headers=h["person_a"]).json()["sheet"]
+    assert [question["text"] for question in sheet["questions"]].count(request["text"]) == 1
+    assert c.get("/api/lifecycle/prep-review/synthetic-a", headers=h["counsellor"]).status_code == 403

@@ -225,6 +225,10 @@ flowchart TB
   D -. drives .-> UI
   UI -->|HTTPS JSON| AUTH --> ROUTES
   ROUTES --> CONSENT --> AUDIT
+  CONSENT --> IMPORT["FHIR import<br/>assigned synthetic report"]
+  IMPORT <--> HAPI["HAPI FHIR R4 sandbox"]
+  IMPORT --> REVIEW["Version confirmation and counsellor review"]
+  REVIEW --> UI
   CONSENT --> ENGINE & AGENTS & ANALYTICS
   AGENTS --> ENGINE
   ENGINE --- CFG

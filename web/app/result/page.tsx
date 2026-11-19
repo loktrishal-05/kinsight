@@ -5,7 +5,7 @@ import Link from "next/link";
 import FhirFindings from "@/components/FhirFindings";
 import { Notice, PageHeader, Paragraphs, StatusChip } from "@/components/ui";
 import { ReadAloud } from "@/components/Voice";
-import { api, FHIR_SANDBOX } from "@/lib/api";
+import { api, FHIR_REFERRAL, FHIR_SANDBOX } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
 import { real } from "@/lib/real";
@@ -18,6 +18,7 @@ export default function MyResult() {
   const results = useQuery({ queryKey: ["results"], queryFn: api.results });
   const expl = useQuery({ queryKey: ["expl", lang, level], queryFn: () => api.explanation(lang, level) });
   const talk = useMutation({ mutationFn: () => api.requestCounselling(), onSuccess: () => qc.invalidateQueries({ queryKey: ["referral"] }) });
+  const delivery = useMutation({ mutationFn: () => real.allowFhirReferral(t("referralDelivery.consent")) });
   return (
     <section className="space-y-6">
       <PageHeader title={t("result.title")} lead={t("result.lead")}
@@ -51,6 +52,13 @@ export default function MyResult() {
         </button>
         <Link className="btn-quiet" href="/prepare">{t("prep.link")}</Link>
       </div>
+      {FHIR_REFERRAL && persona === "person_a" && <div className="card space-y-3">
+        <p>{t("referralDelivery.consent")}</p>
+        <button className="btn-quiet" disabled={delivery.isPending || delivery.isSuccess} onClick={() => delivery.mutate()}>
+          {t(delivery.isSuccess ? "referralDelivery.saved" : "referralDelivery.allow")}
+        </button>
+        {delivery.isError && <p role="alert">{t("referralDelivery.error")}</p>}
+      </div>}
     </section>
   );
 }

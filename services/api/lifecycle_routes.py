@@ -462,7 +462,7 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
     @app.post("/api/lifecycle/reclassify/live")
     async def reclassify_live(body: LiveCheck, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
         """Compare the classes on file with ClinVar right now. Only variation ids are sent to NCBI."""
-        if any(not 1 <= v <= 5 or not k.isdigit() for k, v in body.archived.items()):
+        if any(not 1 <= v <= 5 or not clinvar.VARIATION_ID.fullmatch(k) for k, v in body.archived.items()):
             raise HTTPException(422, "Invalid request")
         limit(db, identity)
         try:

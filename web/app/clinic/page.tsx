@@ -17,7 +17,7 @@ export default function Clinic() {
 }
 
 function ClinicCards() {
-  const { t, td } = useI18n();
+  const { t, td, lang } = useI18n();
   const [preset, setPreset] = useState<typeof TRIAGE_PRESETS[number]>("shared");
   const [form, setForm] = useState<TriageRequest>(triagePreset("shared"));
   const [genesA, setGenesA] = useState("HBB"), [genesB, setGenesB] = useState("HBB");
@@ -80,7 +80,19 @@ function ClinicCards() {
         <button className="btn-quiet" disabled={reclassify.isPending}>{t("safety.compare")}</button>{" "}
         <button type="button" className="btn-quiet" disabled={live.isPending} onClick={() => { reclassify.reset(); live.mutate(); }}>{t("safety.live")}</button>
       </form>
-      {live.data && <div role="status" aria-label="ClinVar"><p className="text-sm text-muted">NCBI ClinVar</p><ul>{live.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)} — {t("safety.review")}</li>)}</ul>{!live.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
+      {live.data && <div role="status" aria-label="ClinVar" className="space-y-2">
+        <ul>{live.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)} — {t("safety.review")}</li>)}</ul>
+        {!live.data.alerts.length && <p>{t("safety.noAlerts")}</p>}
+        <ul>{Object.entries(live.data.classes ?? {}).map(([id, item]) => {
+          const source = item.provenance;
+          if (!source) return null;
+          return <li key={id} className="text-sm text-muted">
+            <a className="underline" href={source.url} target="_blank" rel="noreferrer">{source.source} · {id}</a>
+            {" · "}{item.label || t("safety.none")}{source.version && ` · ${source.version}`}
+            {" · "}<time dateTime={source.fetched_at}>{new Date(source.fetched_at).toLocaleString(lang)}</time>
+          </li>;
+        })}</ul>
+      </div>}
       {reclassify.data && <div role="status"><ul>{reclassify.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)}{a.needs_clinician_review && ` — ${t("safety.review")}`}</li>)}</ul>{!reclassify.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
     </section>
     <section className="card space-y-4" aria-labelledby="explore-title">

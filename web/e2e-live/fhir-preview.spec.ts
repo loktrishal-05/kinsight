@@ -16,6 +16,9 @@ test("only a reviewed current FHIR import is released", async ({ page, browser }
   await expect(page).toHaveURL(/\/home$/);
   await page.getByRole("button", { name: /^Person A/ }).click();
   await expect(page).toHaveURL(/\/result$/);
+  await page.goto("/home");
+  await page.getByRole("link", { name: "Import from my health record" }).click();
+  await expect(page).toHaveURL(/\/result#fhir-preview-heading$/);
   const panel = page.getByRole("region", { name: "Health record preview" });
   const load = panel.getByRole("button", { name: "Load latest report" });
   await load.click();

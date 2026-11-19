@@ -1,16 +1,20 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Pause, Pencil, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FhirFindings from "@/components/FhirFindings";
 import { Notice, PageHeader } from "@/components/ui";
 import { Journey, TierChip } from "@/components/visuals";
-import { api, FHIR_SANDBOX } from "@/lib/api";
+import { api, FHIR_REFERRAL, FHIR_SANDBOX } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { real, type SandboxSubject } from "@/lib/real";
 import { useSession } from "@/lib/session";
 
-const STATES = ["counselling_done", "confirmatory_requested", "confirmatory_done", "specialist_referral_requested", "specialist_referral_done", "closed"];
+const STATES = [
+  ...(FHIR_REFERRAL ? ["counselling_requested"] : []),
+  "counselling_done", "confirmatory_requested", "confirmatory_done", "specialist_referral_requested",
+  "specialist_referral_done", "closed",
+];
 const STATUSES = ["awaiting_counsellor", "released", "awaiting_user", "tracking", "closed"];
 
 export default function Counsellor() {
@@ -118,6 +122,7 @@ export default function Counsellor() {
                 </label>
                 <div className="flex flex-wrap gap-2">{STATES.map((s) => <button key={s} data-demo={s === "closed" ? "close-case" : undefined} className="btn-quiet btn-sm" onClick={() => event.mutate(s)}>{td(`state.${s}`)}</button>)}</div>
                 {err && <div role="alert" data-demo="close-refused"><Notice>{err}</Notice></div>}
+                {FHIR_REFERRAL && persona === "counsellor" && <FhirReferral />}
               </div>
             </>
           )}
@@ -126,6 +131,51 @@ export default function Counsellor() {
       )}
     </section>
   );
+}
+
+function FhirReferral() {
+  const { t, lang } = useI18n();
+  const qc = useQueryClient();
+  const [monitor, setMonitor] = useState(false);
+  const sync = useQuery({
+    queryKey: ["fhir-referral"], queryFn: () => real.fhirReferral("sync"), enabled: monitor, retry: false,
+    refetchInterval: ({ state }) => state.data?.state === "completed" || state.error ? false : 10_000,
+  });
+  const send = useMutation({
+    mutationFn: () => real.fhirReferral("send"),
+    onSuccess: (record) => {
+      qc.setQueryData(["fhir-referral"], record);
+      setMonitor(record.state !== "completed");
+      qc.invalidateQueries({ queryKey: ["referral"] });
+    },
+  });
+  const record = !sync.isError && sync.data;
+  useEffect(() => {
+    if (record && record.state === "completed") {
+      setMonitor(false);
+      qc.invalidateQueries({ queryKey: ["referral"] });
+    }
+  }, [qc, record]);
+  return <div className="space-y-2">
+    <div className="flex flex-wrap gap-2">
+      <button className="btn-quiet" disabled={send.isPending || sync.isFetching} onClick={() => send.mutate()}>
+        {t("referralDelivery.send")}
+      </button>
+      <button className="btn-quiet" disabled={send.isPending || sync.isFetching} onClick={() => {
+        setMonitor(true);
+        sync.refetch();
+      }}>{t("referralDelivery.sync")}</button>
+    </div>
+    {(send.isError || sync.isError) && <p role="alert">{t("referralDelivery.error")}</p>}
+    {record && record.task_id && record.synced_at && <dl aria-live="polite">
+      <dt>{t("referralDelivery.request")}</dt><dd>{record.request_id}</dd>
+      <dt>{t("referralDelivery.task")}</dt><dd>{record.task_id}</dd>
+      <dt>{t("referralDelivery.lastSync")}</dt>
+      <dd><time dateTime={new Date(record.synced_at * 1000).toISOString()}>
+        {new Date(record.synced_at * 1000).toLocaleString(lang)}
+      </time></dd>
+    </dl>}
+  </div>;
 }
 
 function FhirReview() {

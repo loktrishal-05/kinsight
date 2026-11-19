@@ -24,7 +24,7 @@ RESOURCE_FIELDS = {
     "audit": {"events"},
     "pedigree": {"relationships", "warnings"},
     "couple": {"tier", "shared_conditions", "findings", "engine_version"},
-    "case": {"id", "status", "tier", "due_at", "referral", "quiz", "brief"},
+    "case": {"id", "status", "tier", "due_at", "referral", "referral_delivery", "quiz", "brief"},
     "queue": {"status"},
     "invitation": {"id", "scope", "status"},
     "aggregate": {"cells", "budget_remaining"},
@@ -71,6 +71,7 @@ SCOPES = {
     "quiz_status": {"id", "status", "quiz"},
     "sandbox_review": {"brief"},
     "fhir_import_review": {"brief"},
+    "referral_delivery": {"referral_delivery"},
     "prep_review": {"sections"},
     "couple_pooling": {"tier", "shared_conditions", "findings", "engine_version"},
 }

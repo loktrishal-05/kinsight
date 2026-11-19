@@ -13,6 +13,8 @@ import type { z as Zod } from "zod";
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
 export const LAB_SANDBOX = !MOCK && process.env.NEXT_PUBLIC_LAB_SANDBOX === "1";
 export const FHIR_SANDBOX = !MOCK && process.env.NEXT_PUBLIC_FHIR_SANDBOX === "1";
+export const FHIR_REFERRAL = !MOCK && process.env.NEXT_PUBLIC_FHIR_REFERRAL === "1";
+export const KIN_TOOLS = !MOCK && process.env.NEXT_PUBLIC_KIN_TOOLS === "1";
 
 const Fictional = z.object({ is_synthetic: z.literal(true).optional() });
 export const ResultS = Fictional.extend({ condition_id: z.string(), status: z.enum(["carrier", "not_detected", "uncertain"]), label: z.string().optional(), label_ar: z.string().optional() });
@@ -77,7 +79,7 @@ export const api = {
   whisper: async (body: Zod.infer<typeof safety.WhisperRequestS>) => safety.WhisperS.parse(await impl.whisper(safety.WhisperRequestS.parse(body))),
   checkin: async (body: Zod.infer<typeof safety.CheckinRequestS>) => safety.CheckinS.parse(await impl.checkin(safety.CheckinRequestS.parse(body))),
   frequency: async (variants: string[]) => safety.FrequencyS.parse(await impl.frequency(variants)),
-  reclassifyLive: async (archived: Record<string, number>) => safety.ReclassifyS.parse(await impl.reclassifyLive(archived)),
+  reclassifyLive: async (archived: Record<string, number>) => safety.LiveReclassifyS.parse(await impl.reclassifyLive(archived)),
   reclassify: async (body: Zod.infer<typeof safety.ReclassifyRequestS>) => safety.ReclassifyS.parse(await impl.reclassify(safety.ReclassifyRequestS.parse(body))),
   safeVault: async (body: Zod.infer<typeof safety.VaultRequestS>) => safety.VaultS.parse(await impl.safeVault(safety.VaultRequestS.parse(body))),
   unlockVault: async (body: Zod.infer<typeof safety.UnlockRequestS>) => safety.UnlockS.parse(await impl.unlockVault(safety.UnlockRequestS.parse(body))),
