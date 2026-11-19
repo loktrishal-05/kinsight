@@ -35,7 +35,12 @@ export default {
   distDir: process.env.NEXT_DIST || ".next",
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers }];
+    return [
+      { source: "/:path*", headers },
+      { source: "/ocr/worker.min.js", headers: [
+        { key: "Content-Security-Policy", value: "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'" },
+      ] },
+    ];
   },
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${api}/api/:path*` }];
