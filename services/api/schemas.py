@@ -12,6 +12,7 @@ Scope = Literal[
     "relationship_only",
     "quiz_status",
     "couple_pooling",
+    "referral_delivery",
 ]
 Purpose = Literal["own_care", "couple_planning", "counselling", "family_notification"]
 

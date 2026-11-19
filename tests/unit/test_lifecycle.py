@@ -166,9 +166,11 @@ def test_clinvar_parse_cache_and_errors():
 
     out = clinvar.fetch(["1", "2", "3"], opener=opener)
     assert [out[i]["acmg_class"] for i in "123"] == [5, 3, None]
+    assert out["1"]["provenance"]["url"] == "https://www.ncbi.nlm.nih.gov/clinvar/variation/1/"
+    assert out["1"]["provenance"]["fetched_at"].endswith("+00:00")
     clinvar.fetch(["1", "2"], opener=opener)
     assert len(calls) == 1 and "id=1%2C2%2C3" in calls[0] and "tool=kinsight" in calls[0]   # cached on the second call
-    for bad in ([], ["x"], ["1; drop"], [str(i) for i in range(51)]):
+    for bad in ([], ["x"], ["1; drop"], ["١"], ["1" * 13], [str(i) for i in range(51)]):
         with pytest.raises(ValueError):
             clinvar.fetch(bad, opener=opener)
 

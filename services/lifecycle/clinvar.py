@@ -7,14 +7,17 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 
 URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
-TTL_SECONDS = 3600
+TTL_SECONDS = 86_400
 MAX_IDS = 50
+VARIATION_ID = re.compile(r"[0-9]{1,12}")
 # ClinVar germline classification text -> the 1..5 scale used by safety.reclassification
 CLASSES = {"benign": 1, "likely benign": 2, "uncertain significance": 3, "likely pathogenic": 4, "pathogenic": 5}
 _cache: dict[str, tuple[float, dict]] = {}
@@ -33,7 +36,7 @@ def _class_of(text: str) -> int | None:
 
 def fetch(ids: list[str], *, opener=urllib.request.urlopen, now=time.time) -> dict[str, dict]:
     """Current ClinVar class for each variation id: {id: {"acmg_class": int|None, "label": str, "last_evaluated": str}}."""
-    if not ids or len(ids) > MAX_IDS or any(not i.isdigit() or len(i) > 12 for i in ids):
+    if not ids or len(ids) > MAX_IDS or any(not VARIATION_ID.fullmatch(i) for i in ids):
         raise ValueError("Invalid variation ids")
     fresh = {i: v for i in ids if (c := _cache.get(i)) and now() - c[0] < TTL_SECONDS for v in [c[1]]}
     missing = [i for i in ids if i not in fresh]
@@ -49,9 +52,15 @@ def fetch(ids: list[str], *, opener=urllib.request.urlopen, now=time.time) -> di
                 raise SourceUnavailable("ClinVar returned an error")
         except (urllib.error.URLError, TimeoutError, KeyError, ValueError, TypeError):
             raise SourceUnavailable("ClinVar did not return a usable response") from None
+        fetched = now()
         for i in missing:
             g = (result.get(i) or {}).get("germline_classification") or {}
             fresh[i] = {"acmg_class": _class_of(g.get("description", "")), "label": g.get("description", ""),
                         "last_evaluated": g.get("last_evaluated", "")}
-            _cache[i] = (now(), fresh[i])
+            fresh[i]["provenance"] = {
+                "source": "NCBI ClinVar", "version": (result.get(i) or {}).get("accession_version"),
+                "fetched_at": datetime.fromtimestamp(fetched, timezone.utc).isoformat(),
+                "url": f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{i}/",
+            }
+            _cache[i] = (fetched, fresh[i])
     return {i: fresh[i] for i in ids}

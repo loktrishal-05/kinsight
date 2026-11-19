@@ -96,6 +96,7 @@ def test_every_route_has_an_audited_access_policy(monkeypatch, enable_integratio
     monkeypatch.setenv("KINSIGHT_LAB_SANDBOX", "1" if enable_integrations else "0")
     monkeypatch.setenv("KINSIGHT_LAB_SIGNING_SECRET", "synthetic-route-inventory-only")
     monkeypatch.setenv("KINSIGHT_FHIR_SANDBOX_URL", "http://127.0.0.1:8088/fhir")
+    monkeypatch.setenv("KINSIGHT_FHIR_REFERRAL_URL", "http://127.0.0.1:8088/fhir")
     app = create_app("sqlite://")
     assert unguarded(app) == []
 

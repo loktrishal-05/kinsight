@@ -152,6 +152,8 @@ def main() -> int:
         lines.append(f"  - **{n} {v}** ({lic}): {REVIEWED.get(canonicalize_name(n), 'NOT REVIEWED')}")
     lines += ["- Attribution: `caniuse-lite` is CC-BY-4.0 (browser-support data used by the build toolchain); keep this notice.",
               "- Fonts (`@fontsource*`) are SIL OFL-1.1; the fonts are bundled unmodified.",
+              "- WSO2 FHIR MCP Server 0.11.0 is Apache-2.0 and runs in an isolated developer environment. [Upstream licence](https://github.com/wso2/fhir-mcp-server/blob/0.11.0/LICENSE)",
+              "- Google DeepMind Science Skills is Apache-2.0. The external databases used by each skill have their own terms. [Upstream licence](https://github.com/google-deepmind/science-skills/blob/370f8f33e5bb27dffe8289ea9bdec436686613ce/LICENSE)",
               "- Out of scope here: the ClinVar and gnomAD data terms and the licensed questionnaires (see `DATA_SOURCES.md`).", ""]
     (ROOT / "docs" / "LICENSES.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote docs/LICENSES.md: {len(runtime)} python runtime, {len(dev)} dev, {len(web or [])} web; flagged: {len(flagged)}")

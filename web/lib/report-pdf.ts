@@ -4,8 +4,10 @@ const MAX_PDF_TEXT = 400_000;
 
 export async function readReportPdf(file: File, signal: AbortSignal): Promise<{ text: string; firstPage: string }> {
   if (file.size > MAX_PDF_BYTES) throw new Error("pdfLimit");
+  const signature = await file.slice(0, 5).text();
+  if (signature !== "%PDF-") throw new Error("pdfUnreadable");
+  signal.throwIfAborted();
   const data = new Uint8Array(await file.arrayBuffer());
-  if (new TextDecoder().decode(data.subarray(0, 5)) !== "%PDF-") throw new Error("pdfUnreadable");
   const pdfjs = await import("pdfjs-dist");
   signal.throwIfAborted();
   pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
@@ -14,7 +16,7 @@ export async function readReportPdf(file: File, signal: AbortSignal): Promise<{ 
   signal.addEventListener("abort", cancel, { once: true });
   try {
     const pdf = await task.promise;
-    if (pdf.numPages > MAX_PDF_PAGES) throw new Error("pdfLimit");
+    if (pdf.numPages < 1 || pdf.numPages > MAX_PDF_PAGES) throw new Error("pdfLimit");
     let text = "";
     let firstPage = "";
     for (let index = 1; index <= pdf.numPages; index++) {

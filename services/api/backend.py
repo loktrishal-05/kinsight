@@ -12,6 +12,7 @@ import tempfile
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import yaml
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -54,6 +55,7 @@ class DemoBackend:
 
     # ----- demo case -----------------------------------------------------------------------------
     def reset_state(self) -> None:
+        self.referral_instance = uuid4().hex
         self.offset_days = 0
         tier2 = next(c for c in self.panel.conditions if c.inheritance == "AR" and c.counselling_tier == 2)
         tier1 = next(c for c in self.panel.conditions if c.inheritance == "AR" and c.counselling_tier == 1)
@@ -226,6 +228,11 @@ class DemoBackend:
         except ReferralError as e:
             raise ValueError(str(e)) from None
         return {"status": payload["event"]}
+
+    def fhir_referral_state(self):
+        values = self.values()
+        value = values.get("referral") if values.get("released") else None
+        return ReferralState.model_validate(value) if value else ReferralState()
 
     def op_advance_time(self, subject, payload, session):
         self.offset_days += int(payload["days"])

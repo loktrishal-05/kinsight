@@ -35,6 +35,25 @@ class ScenarioView(Fictional):
     options: list[OptionView]
 
 
+def run_scenario(conditions, condition_id, status_a, status_b, relation, children, lang) -> ScenarioView:
+    cond = conditions.get(condition_id)
+    if cond is None:
+        raise HTTPException(404, "Unknown condition")
+    try:
+        out = scenario(cond, status_a, status_b, nasab.evaluate([relation])["phi"], children)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from None
+    carrier = out["partner_carrier"]
+    return ScenarioView.model_validate({
+        "condition_id": cond.id, "inheritance": cond.inheritance, "children": children,
+        "chance_per_pregnancy": estimate(out["per_pregnancy"], out["formula_id"]),
+        "chance_at_least_one": estimate(out["at_least_one"], "at_least_one_of_n"),
+        "partner_carrier_chance": None if carrier is None else estimate(carrier, "partner_carrier"),
+        "options": [{"id": o["id"], "title": o["title"], "changes": o["changes"]} for o in options(lang)],
+        "is_synthetic": True,
+    })
+
+
 def options(lang: str) -> list[dict]:
     path = TEMPLATES / lang / "scenario_options.yaml"
     path = path if path.exists() else TEMPLATES / "en" / "scenario_options.yaml"  # placeholder until reviewed
@@ -55,21 +74,7 @@ def register(app, *, db_session, roles, limit):
         identity=Depends(roles("person", "counsellor")), db: Session = Depends(db_session),
     ):
         limit(db, identity)
-        cond = conditions.get(condition_id)
-        if cond is None:
-            raise HTTPException(404, "Unknown condition")
-        try:
-            out = scenario(cond, status_a, status_b, nasab.evaluate([relation])["phi"], children)
-        except ValueError as error:
-            raise HTTPException(422, str(error)) from None
+        result = run_scenario(conditions, condition_id, status_a, status_b, relation, children, lang)
         sharing.log_change(db, identity.actor, "scenario", "scenario_run", secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
-        carrier = out["partner_carrier"]
-        return {
-            "condition_id": cond.id, "inheritance": cond.inheritance, "children": children,
-            "chance_per_pregnancy": estimate(out["per_pregnancy"], out["formula_id"]),
-            "chance_at_least_one": estimate(out["at_least_one"], "at_least_one_of_n"),
-            "partner_carrier_chance": None if carrier is None else estimate(carrier, "partner_carrier"),
-            "options": [{"id": o["id"], "title": o["title"], "changes": o["changes"]} for o in options(lang)],
-            "is_synthetic": True,
-        }
+        return result

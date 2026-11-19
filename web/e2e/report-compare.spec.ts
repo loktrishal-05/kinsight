@@ -60,3 +60,23 @@ test("private comparison preserves lab findings and separates missing rows", asy
   expect(requests.some((request) => request.includes("review-only-marker") || request.includes("/api/"))).toBe(false);
   expect(await page.evaluate(() => JSON.stringify([localStorage, sessionStorage]).includes("review-only-marker"))).toBe(false);
 });
+
+test("oversized PDFs and page counts are rejected before showing report text", async ({ page, browser }) => {
+  const source = await browser.newPage();
+  await source.setContent(Array.from({ length: 41 }, (_, i) =>
+    `<div style="break-after:page">Synthetic report page ${i + 1}</div>`).join(""));
+  const pages = await source.pdf();
+  await source.close();
+
+  await page.goto("/report-compare");
+  const file = page.getByLabel("Attach Partner A report");
+  const cases = { "size-limit.pdf": Buffer.concat([Buffer.from("%PDF-"), Buffer.alloc(10 * 1024 * 1024)]),
+    "page-limit.pdf": pages };
+  for (const [name, buffer] of Object.entries(cases)) {
+    await file.setInputFiles({ name, mimeType: "application/pdf", buffer });
+    await expect(page.getByText(name, { exact: true })).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: "at most 40 pages" })).toBeVisible();
+    await expect(page.locator("pre")).toHaveCount(0);
+    await expect(page.getByRole("textbox", { name: "Partner A report" })).toBeEmpty();
+  }
+});

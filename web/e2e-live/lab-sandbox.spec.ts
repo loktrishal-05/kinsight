@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 
 test("a lab correction invalidates the open participant view until reviewed", async ({ page, browser }) => {
   test.skip(process.env.NEXT_PUBLIC_LAB_SANDBOX !== "1", "This suite needs the opt-in lab sandbox");
-  test.setTimeout(60_000);
+  test.setTimeout(90_000);
   const waitForPoll = expect.configure({ timeout: 12_000 });
   const workstation = await browser.newPage();
   const signedFeed = Boolean(process.env.KINSIGHT_LAB_SIGNING_SECRET);
@@ -32,10 +32,19 @@ test("a lab correction invalidates the open participant view until reviewed", as
       await tracker.goto("/journey");
       await expect(tracker.locator('li[aria-current="step"]')).toContainText("Booked");
     }
-    await send(1);
     if (tracker) {
+      const runLab = promisify(execFile)(process.env.PYTHON ?? "python", [
+        "-m", "scripts.mock_lab", "--api", process.env.KINSIGHT_API_URL ?? "http://127.0.0.1:8000",
+        "--format", "hl7", "--delay", "6",
+      ], { cwd: resolve(".."), timeout: 50_000 });
+      await Promise.all([
+        waitForPoll(tracker.locator('li[aria-current="step"]')).toContainText("Collected"),
+        runLab,
+      ]);
       await waitForPoll(tracker.locator('li[aria-current="step"]')).toContainText("Report signed");
       await expect(tracker.locator('li[aria-current="step"] time')).toBeVisible();
+    } else {
+      await send(1);
     }
     await waitForPoll(page.getByText("Awaiting counsellor review · Revision 1")).toBeVisible();
     await expect(page.getByText("Carrier finding", { exact: true })).toHaveCount(0);

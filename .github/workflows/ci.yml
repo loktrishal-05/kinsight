@@ -32,7 +32,34 @@ jobs:
             exit 1
           fi
           make fhir-seed FHIR_URL="$KINSIGHT_FHIR_TEST_URL"
-          pytest -q tests/integration/test_fhir_seed.py
+          pytest -q tests/integration/test_fhir_seed.py tests/integration/test_fhir_referral.py
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: 22 }
+      - name: Exercise the synthetic FHIR and signed lab integrations in Chromium
+        timeout-minutes: 10
+        env:
+          KINSIGHT_DEMO: "1"
+          KINSIGHT_DEMO_AUTH: "1"
+          KINSIGHT_TOKEN_SECRET: local-ci-auth-secret-for-synthetic-browser-tests
+          KINSIGHT_AUDIT_SALT: local-ci-audit-salt-for-synthetic-browser-tests
+          KINSIGHT_LAB_SANDBOX: "1"
+          KINSIGHT_LAB_SIGNING_SECRET: local-ci-lab-signing-key-for-synthetic-browser-tests
+          KINSIGHT_FHIR_SANDBOX_URL: http://127.0.0.1:8088/fhir
+          KINSIGHT_FHIR_REFERRAL_URL: http://127.0.0.1:8088/fhir
+          DATABASE_URL: sqlite:///kinsight-integration.db
+          KINSIGHT_API_URL: http://127.0.0.1:8000
+          NEXT_PUBLIC_FHIR_SANDBOX: "1"
+          NEXT_PUBLIC_LAB_SANDBOX: "1"
+          NEXT_PUBLIC_FHIR_REFERRAL: "1"
+        run: |
+          python -m uvicorn services.api.main:app --port 8000 &
+          api_pid=$!
+          trap 'kill "$api_pid"' EXIT
+          curl --fail --silent --show-error --retry 15 --retry-connrefused http://127.0.0.1:8000/api/health
+          cd web
+          npm ci
+          npx playwright install --with-deps chromium
+          npx playwright test -c playwright.live.config.ts fhir-preview.spec.ts lab-sandbox.spec.ts fhir-referral.spec.ts
       - run: pip-audit || true   # report only; tighten once the baseline is clean
   web:
     runs-on: ubuntu-latest

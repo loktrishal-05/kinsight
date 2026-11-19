@@ -5,6 +5,7 @@ import { layoutPedigree } from "./pedigreeLayout";
 import { trackSlow } from "./slow";
 import type * as safety from "./safety";
 import type * as plan from "./plan";
+import type { ClinVarCheck } from "./clinvar";
 import type { Consent, Couple, Pedigree, Quiz, Result, Step } from "./api";
 
 // Tokens live in sessionStorage so a page reload keeps the demo persona (cleared when the tab closes).
@@ -47,6 +48,7 @@ export type FhirPreview = {
   issued_at?: string;
   snapshot_id?: string;
   unmapped?: boolean;
+  unmapped_source_ids?: string[];
   findings: { condition_id: string; status: "carrier" | "not_detected" | "uncertain"; source_id: string }[];
 };
 
@@ -54,9 +56,10 @@ type FhirImportState = {
   state: "missing" | "pending" | "released" | "stale" | "sharing_ended";
   report: FhirPreview | null;
 };
-async function grant(grantee: string, rtype: string, rid: string, scope: string, fields: string[], purpose: string) {
+async function grant(grantee: string, rtype: string, rid: string, scope: string, fields: string[], purpose: string,
+  text_shown = "Fictional consent text") {
   return json("/api/me/consents", post({ grantee_id: grantee, resource_type: rtype, resource_id: rid, scope, fields, purpose,
-    expires_at: Date.now() / 1000 + 3000, text_shown: "Fictional consent text" }));
+    expires_at: Date.now() / 1000 + 3000, text_shown }));
 }
 
 export const real = {
@@ -66,6 +69,7 @@ export const real = {
   whatIf(body: Record<string, string | number>) {
     return json(`/api/lifecycle/scenario?${new URLSearchParams(Object.entries(body).map(([k, v]) => [k, String(v)]))}`);
   },
+  addKinPrepQuestion: (text: string) => json("/api/me/kin", post({ tool: "add_question_to_prep", text })),
   prep: () => json("/api/lifecycle/prep"),
   savePrep: (body: unknown) => json("/api/lifecycle/prep", { method: "PUT", body: JSON.stringify(body) }),
   prepSuggestions(stage: string, lang: string, concerns: string[], tier?: number) {
@@ -80,7 +84,13 @@ export const real = {
     if (!r.ok) throw new Error(String(r.status));
     return r.json();
   },
-  previewFhirReport: () => json<FhirPreview>("/api/me/imports/fhir/preview", post({})),
+  previewFhirReport: () => json<FhirPreview>("/api/me/imports/fhir", post({})),
+  allowFhirReferral: (text: string) =>
+    grant("synthetic-counsellor", "case", CASE, "referral_delivery", ["referral_delivery"], "counselling", text),
+  fhirReferral: (action: "send" | "sync") =>
+    json<{ state: string; task_id?: string; request_id?: string; synced_at?: number }>(
+      `/api/counsellor/cases/${CASE}/referral/fhir/${action}`, post({}),
+    ),
   personalFhirImport: () => json<FhirImportState>("/api/me/imports/fhir"),
   async confirmFhirImport(snapshot_id: string) {
     const response = await raw("/api/me/imports/fhir/confirm", post({ snapshot_id }));
@@ -130,7 +140,7 @@ export const real = {
   whisper: (body: z.infer<typeof safety.WhisperRequestS>) => json("/api/lifecycle/whisper", post(body)),
   checkin: (body: z.infer<typeof safety.CheckinRequestS>) => json("/api/lifecycle/checkin", post(body)),
   frequency: (variants: string[]) => json("/api/lifecycle/frequency", post({ variants })),
-  reclassifyLive: (archived: Record<string, number>) => json("/api/lifecycle/reclassify/live", post({ archived })),
+  reclassifyLive: (archived: Record<string, number>) => json<ClinVarCheck>("/api/lifecycle/reclassify/live", post({ archived })),
   reclassify: (body: z.infer<typeof safety.ReclassifyRequestS>) => json("/api/lifecycle/reclassify", post(body)),
   safeVault: (body: z.infer<typeof safety.VaultRequestS>) => json("/api/lifecycle/safe-vault", { ...post(body), method: "PUT" }),
   unlockVault: (body: z.infer<typeof safety.UnlockRequestS>) => json("/api/lifecycle/safe-vault/unlock", post(body)),

@@ -1,12 +1,14 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Mic, MicOff, SendHorizontal, Square, Volume2, VolumeX, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ABOUT_ESTIMATES, Estimate, hasFigure } from "@/components/ui";
-import { api, MOCK } from "@/lib/api";
+import { api, KIN_TOOLS, MOCK } from "@/lib/api";
 import { answer, detectLang, suggestions, type Lang, type Link as L } from "@/lib/assistant";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
+import { real } from "@/lib/real";
+import { useSession, type Persona } from "@/lib/session";
 import { BCP47, canListen, canSpeak, listen, speak, stopSpeaking } from "@/lib/voice";
 
 type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean };
@@ -26,11 +28,19 @@ export function KinLogo({ size = 40, className = "" }: { size?: number; classNam
   );
 }
 
-export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "page"; onClose?: () => void }) {
+type PanelProps = { mode: "float" | "page"; onClose?: () => void };
+
+export function AssistantPanel(props: PanelProps) {
+  const { persona } = useSession();
+  return persona && <Conversation key={persona} {...props} persona={persona} />;
+}
+
+function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona: Persona }) {
   const { t, lang: uiLang, level } = useI18n();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("auto");
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [restored, setRestored] = useState(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
@@ -42,16 +52,28 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
   const input = useRef<HTMLInputElement>(null);
   const expl = useQuery({ queryKey: ["expl", uiLang, level], queryFn: () => api.explanation(uiLang, level) });
   const cons = useQuery({ queryKey: ["consents"], queryFn: api.consents });
+  const prep = useMutation({
+    mutationFn: real.addKinPrepQuestion,
+    onSuccess: () => setNote(t("assistant.prepSaved")),
+    onError: () => setNote(t("assistant.prepUnavailable")),
+  });
   const fallback: Lang = mode === "auto" ? uiLang : mode;
   const micLang: Lang = mode === "auto" ? fallback : mode;
+  const historyKey = `ks_chat:${persona}`;
 
   useEffect(() => {
-    try { const raw = sessionStorage.getItem("ks_chat"); if (raw) setMsgs(JSON.parse(raw)); } catch { /* private mode */ }
-  }, []);
+    try {
+      sessionStorage.removeItem("ks_chat");
+      const raw = sessionStorage.getItem(historyKey);
+      if (raw) setMsgs(JSON.parse(raw));
+    } catch { /* private mode */ }
+    setRestored(true);
+  }, [historyKey]);
   useEffect(() => {
-    try { sessionStorage.setItem("ks_chat", JSON.stringify(msgs.slice(-30))); } catch { /* private mode */ }
+    if (!restored) return;
+    try { sessionStorage.setItem(historyKey, JSON.stringify(msgs.slice(-30))); } catch { /* private mode */ }
     end.current?.scrollIntoView({ block: "end" });
-  }, [msgs]);
+  }, [historyKey, msgs, restored]);
   useEffect(() => () => { stopRef.current(); stopSpeaking(); }, []);
 
   const say = async (m: Msg) => {
@@ -141,6 +163,13 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
       </div>
 
       {note && <p role="status" className="mx-4 mb-2 rounded-lg bg-note-bg px-3 py-2 text-xs text-note-fg" data-testid="kin-note">{note}</p>}
+      {KIN_TOOLS && (persona === "person_a" || persona === "person_b") &&
+        <div className="flex flex-wrap gap-2 px-4 pb-2">
+          <button className="btn-quiet btn-sm" onClick={() => { router.push("/plan/scenarios"); onClose?.(); }}>{t("scen.title")}</button>
+          <button className="btn-quiet btn-sm" onClick={() => { router.push("/prepare"); onClose?.(); }}>{t("prep.link")}</button>
+          <button className="btn-quiet btn-sm" disabled={!text.trim() || text.trim().length > 300 || prep.isPending}
+            onClick={() => prep.mutate(text.trim())}>{t("assistant.prepSave")}</button>
+        </div>}
       {msgs.length > 0 && (
         <ul className="flex gap-2 overflow-x-auto px-4 pb-2" aria-label={t("assistant.try")}>
           {chips.slice(0, 3).map((c) => <li key={c} className="shrink-0"><button className="btn-quiet btn-sm font-normal" onClick={() => send(c)}>{c}</button></li>)}
