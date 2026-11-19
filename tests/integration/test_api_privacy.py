@@ -156,6 +156,7 @@ ROUTES = [
     ("GET", "/api/governance/data-sources", set(PERSONAS), 200),
     ("GET", "/api/stream", set(PERSONAS), 200),
     ("POST", "/api/copilot/chat", {"person_a", "person_b"}, 200),
+    ("POST", "/api/me/kin", {"person_a", "person_b"}, 200),
     *[("POST", "/api/demo/" + kind, {"demo_operator"}, 200) for kind in ("reset", "load-cohort")],
 ]
 
@@ -192,6 +193,8 @@ def request_body(path, persona):
         return {"event": "counselling_requested", "evidence_code": "synthetic-evidence"}
     if path.endswith("/chat"):
         return {"text": "Explain my fictional result"}
+    if path == "/api/me/kin":
+        return {"tool": "run_scenario", "condition_id": "COND_001", "status_a": "carrier", "status_b": "carrier"}
     return None
 
 
