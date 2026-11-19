@@ -1247,5 +1247,11 @@
   "ref.none": "No entry for this gene.",
   "states.retry": "Try again",
   "states.retry": "Try again",
-  "cascade.noneHint": "Relatives appear here when your own result shows a change that relatives can share, and your family tree includes them."
+  "cascade.noneHint": "Relatives appear here when your own result shows a change that relatives can share, and your family tree includes them.",
+  "status.checking": "Checking the live service…",
+  "status.online": "Live service: online",
+  "status.degraded": "Live service: online, but its database is not answering. Try again in a minute.",
+  "status.waking": "Live service: waking up after a quiet spell (free hosting). This can take up to a minute.",
+  "status.offline": "Live service: not reachable right now. The demo still opens with fictional data.",
+  "status.demo": "Demo mode: fictional data, running in your browser"
 }

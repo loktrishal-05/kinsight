@@ -1,4 +1,5 @@
 "use client";
+import StatusLine from "@/components/StatusLine";
 // Public landing page, outside the app shell: cinematic 3D hero, statement, the five-step path, and a closing call to sign in.
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -69,7 +70,7 @@ export default function Landing() {
       </main>
 
       <footer className="border-t border-line px-5 py-8 text-xs text-muted sm:px-8">
-        <div className="mx-auto max-w-5xl space-y-1"><p>{t("banner")}</p><p>{t("limits")}</p></div>
+        <div className="mx-auto max-w-5xl space-y-1"><StatusLine /><p>{t("banner")}</p><p>{t("limits")}</p></div>
       </footer>
     </div>
   );
