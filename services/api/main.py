@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from services.agents.flags import enabled
+from services.analytics.events import outcomes
 from services.consent import sharing
 from services.consent.aggregates import release
 from services.consent.audit import verify_chain, verify_tamper_example
@@ -583,6 +584,8 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         result = Status.model_validate(
             await adapter.invoke("quiz_answers", id, {**body.model_dump(), "actor_id": identity.actor.id}, db)
         )
+        if result.status == "passed":  # outcome metric: teach-back passed (services/analytics/events.py)
+            sharing.log_change(db, identity.actor, id, "teach_back_passed", secret("KINSIGHT_AUDIT_SALT"))
         db.commit()
         return result
 
@@ -687,6 +690,14 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             return data
 
         return endpoint
+
+    @app.get("/api/analytics/outcomes")
+    async def outcome_metrics(identity=Depends(roles("analyst")), db: Session = Depends(db_session)):
+        """Operational outcome counts (issue 46), threshold-suppressed like the cohort; never a marriage outcome."""
+        check(db, identity, ResourceRef("aggregate", "outcomes"), RESOURCE_FIELDS["aggregate"])
+        data = outcomes(db, secret("KINSIGHT_AUDIT_SALT"), settings().min_cell)
+        db.commit()
+        return {**data, "is_synthetic": True}
 
     for kind in ("dashboard", "comprehension", "capacity"):
         app.add_api_route(

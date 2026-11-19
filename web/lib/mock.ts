@@ -6,6 +6,7 @@ import * as plan from "./plan";
 import * as prepLib from "./prep";
 import * as scen from "./scenario";
 import * as cas from "./cascadeTracker";
+import * as oc from "./outcomes";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
 import { liveFrequency } from "./gnomad";
@@ -58,6 +59,10 @@ const getPair = (id: string) => {
 const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
 const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  // One browser session is far below the privacy threshold, so every outcome count is hidden, exactly as the API would.
+  async outcomes() {
+    return { metrics: oc.NAMES.map((name) => ({ name, label: name, source: "mock", total: null, groups: {} })), min_cell: 10, marriage_outcomes_measured: false };
+  },
   async cascadeTracker() { return cas.mockTracker(S.persona || "person_a", S.cascade); },
   async cascadeContact(relative_id: string, condition_id: string, method: cas.Method) {
     const persona = S.persona || "person_a", key = `${persona}|${relative_id}|${condition_id}`;

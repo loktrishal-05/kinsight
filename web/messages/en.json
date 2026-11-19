@@ -1082,5 +1082,20 @@
   "nav.invite": "Open a family invite",
   "invite.title": "Open a family invite",
   "invite.lead": "A relative shared a one-time link with you. Paste it here to see which condition it is about.",
-  "invite.unavailable": "This link cannot be opened. It may have been used already or have expired."
+  "invite.unavailable": "This link cannot be opened. It may have been used already or have expired.",
+  "outcome.title": "Outcome measures (this deployment)",
+  "outcome.lead": "Live counts from the workflow, grouped by language and reading level. Any group with fewer than {n} people is hidden, as for the cohort figures.",
+  "outcome.hidden": "Hidden: fewer than {n}",
+  "outcome.equity": "Equity gap of more than 10 points between language groups",
+  "outcome.noMarriage": "KinSight measures understanding and access to care. It does not measure marriages, engagements or pregnancy decisions, and never will.",
+  "outcome.result_viewed": "Opened their own result",
+  "outcome.teach_back_passed": "Passed the understanding check",
+  "outcome.prep_sheet_created": "Prepared for their session",
+  "outcome.prep_sheet_shared": "Shared preparation with a counsellor",
+  "outcome.session_booked": "Booked a counselling session",
+  "outcome.counsellor_requested": "Asked to talk with a counsellor",
+  "outcome.cascade_reached": "Relatives reached",
+  "outcome.cascade_tested": "Relatives who reported testing",
+  "outcome.imports_confirmed": "Reports imported from an EHR",
+  "outcome.reviews_overdue": "Counsellor reviews past their expected time"
 }

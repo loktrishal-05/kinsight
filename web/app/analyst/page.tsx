@@ -13,6 +13,7 @@ export default function Analyst() {
   const l = lang === "ar" ? "ar" : "en";
   const ins = useQuery({ queryKey: ["insights"], queryFn: api.insights });
   const dash = useQuery({ queryKey: ["dash"], queryFn: api.dashboard });
+  const out = useQuery({ queryKey: ["outcomes"], queryFn: api.outcomes });
   const [all, setAll] = useState(false);
   const [slots, setSlots] = useState(16);
   const d = ins.data;
@@ -37,6 +38,18 @@ export default function Analyst() {
     <section className="space-y-6">
       <PageHeader title={t("analyst.title")} lead={t("analyst.lead")} />
       <Notice>{t("analyst.suppressed")} {t("analyst.budget")}: <b className="tabular-nums">{dash.data?.budget_remaining}</b></Notice>
+      {out.data && <section className="card space-y-3" aria-labelledby="outcomes-title" data-demo="outcomes" data-not-risk>
+        <h2 id="outcomes-title" className="text-lg font-semibold">{t("outcome.title")}</h2>
+        <p className="text-sm text-muted">{t("outcome.lead").replace("{n}", String(out.data.min_cell))}</p>
+        {out.data.metrics.some((m) => m.equity_alert) && <p role="alert" className="note">{t("outcome.equity")}: {out.data.metrics.filter((m) => m.equity_alert).map((m) => t(`outcome.${m.name}`)).join(", ")}</p>}
+        <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{out.data.metrics.map((m) => (
+          <div key={m.name} className="rounded-lg border border-line p-3">
+            <dt className="text-sm text-muted">{t(`outcome.${m.name}`)}</dt>
+            <dd className="mt-1">{m.total === null ? <span className="inline-flex items-center gap-1.5 text-sm"><EyeOff aria-hidden className="h-4 w-4" />{t("outcome.hidden").replace("{n}", String(out.data?.min_cell))}</span>
+              : <b className="text-2xl tabular-nums" dir="ltr">{m.total}</b>}</dd>
+          </div>))}</dl>
+        <p className="text-sm">{t("outcome.noMarriage")}</p>
+      </section>}
 
       <div className="card space-y-3" data-demo="tiers">
         <h2 className="text-lg font-semibold">{t("analyst.tiers")}</h2>

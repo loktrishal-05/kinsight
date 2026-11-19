@@ -145,7 +145,7 @@ ROUTES = [
     ("POST", "/api/counsellor/cases/{id}/referral/events", {"counsellor"}, 200),
     *[
         ("GET", "/api/analytics/" + kind, {"analyst"}, 200)
-        for kind in ("dashboard", "comprehension", "capacity")
+        for kind in ("dashboard", "comprehension", "capacity", "outcomes")
     ],
     ("POST", "/api/eval/run", {"analyst", "auditor"}, 200),
     ("GET", "/api/eval/{id}", {"analyst", "auditor"}, 200),
