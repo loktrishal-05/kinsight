@@ -77,6 +77,7 @@ export const real = {
     json("/api/me/pedigree", { method: "PUT", body: JSON.stringify({ people: draft.people, relationships: draft.edges.map((e) => ({ ...e, confidence: "known" })) }) }),
   kinship: (draft: { people: object[]; edges: { a_id: string; b_id: string; type: string }[] }, a: string, b: string) =>
     json("/api/lifecycle/kinship", post({ people: draft.people, relationships: draft.edges.map((e) => ({ ...e, confidence: "known" })), a, b })),
+  reference: (gene: string, variant?: string) => json(`/api/lifecycle/reference?${new URLSearchParams({ gene, ...(variant ? { variant } : {}) })}`),
   outcomes: () => json("/api/analytics/outcomes"),
   cascadeTracker: () => json("/api/lifecycle/cascade-tracker"),
   cascadeContact: (relative_id: string, condition_id: string, method: string) => json("/api/lifecycle/cascade-tracker/contact", post({ relative_id, condition_id, method })),

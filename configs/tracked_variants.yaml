@@ -1,0 +1,6 @@
+# Variants on file for open synthetic cases, re-checked against ClinVar every night (scripts/nightly_reclassify.py).
+# Only the ClinVar variation id and the class printed on the (synthetic) report are kept; no person data.
+variants:
+  - case: demo-case
+    clinvar_id: "7105"        # CFTR c.1521_1523del (p.Phe508del)
+    class_on_report: 3        # the synthetic report predates its reclassification, so tonight's check flags it

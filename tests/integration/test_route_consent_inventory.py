@@ -36,6 +36,7 @@ ROLE_ONLY = {
     ("GET", "/api/lifecycle/reengagement"),
     ("GET", "/api/lifecycle/scenario"),
     ("POST", "/api/lifecycle/kinship"),
+    ("GET", "/api/lifecycle/reference"),
     ("POST", "/api/lifecycle/cascade/outcome"),
     *(("POST", "/api/lifecycle/" + operation) for operation in (
         "measures/mmic", "measures/gcos", "nasab", "gestation", "triage", "whisper",
