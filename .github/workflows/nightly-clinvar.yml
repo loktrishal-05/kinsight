@@ -1,0 +1,25 @@
+# Nightly ClinVar re-check (issue 33): every variant on file in an open case is compared with ClinVar today; a class
+# that crosses the 4/5 line opens a counsellor review task. Recorded fixture always; live run only when a database
+# secret is configured.
+name: nightly-clinvar
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: { python-version: "3.11" }
+      - run: pip install -e ".[api]"
+      - name: Re-check on recorded ClinVar data
+        env: { DATABASE_URL: "sqlite:///nightly.db" }
+        run: python scripts/nightly_reclassify.py --fixture tests/fixtures/refdata/clinvar_7105.json
+      - name: Re-check live against the hosted database
+        env: { DATABASE_URL: "${{ secrets.KINSIGHT_NIGHTLY_DATABASE_URL }}" }
+        if: env.DATABASE_URL != ''
+        run: python scripts/nightly_reclassify.py

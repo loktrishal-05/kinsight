@@ -11,6 +11,7 @@ import * as scen from "./scenario";
 import * as rv from "./review";
 import * as cas from "./cascadeTracker";
 import * as oc from "./outcomes";
+import { ReferenceS } from "./refdata";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -66,6 +67,7 @@ const impl = (MOCK ? mock : real) as any;
 export const api = {
   savePedigree: async (draft: { people: { id: string; sex: "male" | "female"; label: string; living: boolean; tested: string }[]; edges: { a_id: string; b_id: string; type: "parent_of" | "partner_of" }[] }) => { await impl.savePedigree(draft); },
   kinship: async (draft: { people: object[]; edges: { a_id: string; b_id: string; type: string }[] }, a: string, b: string) => z.object({ phi: z.number().min(0).max(1), related: z.boolean() }).parse(await impl.kinship(draft, a, b)),
+  reference: async (gene: string, variant?: string) => ReferenceS.parse(await impl.reference(gene, variant)),
   outcomes: async () => oc.OutcomesS.parse(await impl.outcomes()),
   cascadeTracker: async () => cas.TrackerS.parse(await impl.cascadeTracker()),
   cascadeContact: async (relative_id: string, condition_id: string, method: cas.Method) => cas.ContactS.parse(await impl.cascadeContact(relative_id, condition_id, method)),

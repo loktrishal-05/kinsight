@@ -1,5 +1,6 @@
 "use client";
 import { exploreGene } from "@/lib/clinvar";
+import ReferencePanel from "@/components/ReferencePanel";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -95,6 +96,7 @@ function ClinicCards() {
       </div>}
       {reclassify.data && <div role="status"><ul>{reclassify.data.alerts.map((a) => <li key={a.variant}><bdi>{a.variant}</bdi>: {a.from} → {a.to}, {t(`safety.${a.direction}`)}{a.needs_clinician_review && ` — ${t("safety.review")}`}</li>)}</ul>{!reclassify.data.alerts.length && <p>{t("safety.noAlerts")}</p>}</div>}
     </section>
+    <ReferencePanel />
     <section className="card space-y-4" aria-labelledby="explore-title">
       <h2 id="explore-title" className="text-lg font-semibold">{t("safety.explore")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); explore.mutate(); }}>

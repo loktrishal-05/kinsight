@@ -1,0 +1,48 @@
+{
+ "gene": "CFTR",
+ "medlineplus": {
+  "gene": "CFTR",
+  "name": "CF transmembrane conductance regulator",
+  "summary": "The CFTR gene provides instructions for making a protein called the CF transmembrane conductance regulator (CFTR). This protein functions as a channel across the membrane of cells that produce mucus, sweat, saliva, tears, and digestive enzymes. The channel transports negatively charged particles called chloride ions into and out of cells. The transport of chloride ions helps control the movement of water in tissues, which is necessary for the production of thin, freely flowing mucus. Mucus is a slippery substance that lubricates and protects the lining of the airways, digestive system, reproductive system, and other organs and tissues.",
+  "provenance": {
+   "source": "MedlinePlus Genetics",
+   "version": "2008-01",
+   "url": "https://medlineplus.gov/genetics/gene/cftr",
+   "fetched_at": "2026-11-20T00:00:00+00:00"
+  }
+ },
+ "clingen": {
+  "gene": "CFTR",
+  "curations": [
+   {
+    "disease": "cystic fibrosis",
+    "inheritance": "AR",
+    "classification": "Definitive",
+    "released": "06/01/2022",
+    "expert_panel": "General Gene Curation Expert Panel"
+   }
+  ],
+  "provenance": {
+   "source": "ClinGen gene-disease validity",
+   "version": null,
+   "url": "https://search.clinicalgenome.org/kb/genes?search=CFTR",
+   "fetched_at": "2026-11-20T00:00:00+00:00"
+  }
+ },
+ "vep": {
+  "variant": "NM_000492.4:c.1521_1523del",
+  "consequence": "inframe_deletion",
+  "genes": [
+   "CFTR",
+   "CFTR-AS1"
+  ],
+  "provenance": {
+   "source": "Ensembl VEP",
+   "version": null,
+   "url": "https://rest.ensembl.org/vep/human/hgvs/NM_000492.4:c.1521_1523del",
+   "fetched_at": "2026-11-20T00:00:00+00:00"
+  }
+ },
+ "variant": "NM_000492.4:c.1521_1523del",
+ "unavailable": []
+}

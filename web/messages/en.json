@@ -1171,7 +1171,6 @@
   "ws.done.hold": "Put {id} on hold",
   "ws.done.edit": "Approved {id} with edits",
   "a11y.skip": "Skip to main content",
-  "a11y.skip": "Skip to main content",
   "group.result": "My result",
   "group.plan": "Plan and prepare",
   "group.family": "Family",
@@ -1233,5 +1232,17 @@
   "builder.impossible": "This family tree is not possible as drawn. Check for a loop or a person with more than two parents.",
   "builder.save": "Save the family tree",
   "builder.saved": "Saved",
-  "builder.privacy": "The tree stays in your account. Sharing it with your counsellor is a separate choice in the consent centre."
+  "builder.privacy": "The tree stays in your account. Sharing it with your counsellor is a separate choice in the consent centre.",
+  "ref.title": "Reference data for a gene or variant",
+  "ref.lead": "Live from MedlinePlus Genetics, ClinGen and Ensembl VEP. Only the gene symbol or variant you type is sent; each fact shows where and when it came from.",
+  "ref.gene": "Gene",
+  "ref.variant": "Variant (HGVS, optional)",
+  "ref.look": "Look up",
+  "ref.error": "That lookup could not be made. Check the gene symbol and the HGVS notation.",
+  "ref.source": "Source",
+  "ref.fetched": "fetched",
+  "ref.validity": "Gene-disease validity (ClinGen)",
+  "ref.consequence": "Predicted consequence (Ensembl VEP)",
+  "ref.down": "This source is not reachable right now. Try again later; nothing else on the page depends on it.",
+  "ref.none": "No entry for this gene."
 }

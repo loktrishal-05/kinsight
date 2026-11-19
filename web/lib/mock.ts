@@ -8,6 +8,7 @@ import * as prepLib from "./prep";
 import * as scen from "./scenario";
 import * as cas from "./cascadeTracker";
 import * as oc from "./outcomes";
+import { mockReference } from "./refdata";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
 import { liveFrequency } from "./gnomad";
@@ -65,6 +66,7 @@ export const mock = {
     S.tree = { people: draft.people.map(({ id, sex, label }) => ({ id, sex, label })), edges: draft.edges }; save(); return { status: "saved" };
   },
   async kinship() { throw new Error("mock"); },
+  async reference(gene: string, variant?: string) { return mockReference(gene, variant); },
   // One browser session is far below the privacy threshold, so every outcome count is hidden, exactly as the API would.
   async outcomes() {
     return { metrics: oc.NAMES.map((name) => ({ name, label: name, source: "mock", total: null, groups: {} })), min_cell: 10, marriage_outcomes_measured: false };
