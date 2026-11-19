@@ -35,6 +35,16 @@ async function json<T = any>(path: string, init: RequestInit = {}, tok?: string)
 const post = (body: unknown): RequestInit => ({ method: "POST", body: JSON.stringify(body) });
 
 export type SandboxSubject = "synthetic-a" | "synthetic-b";
+type KinReply = { mode: "deterministic" } | {
+  mode: "grounded";
+  text: string;
+  tool: string;
+  sources: string[];
+  link: string | null;
+  refused?: boolean;
+  results?: Pick<Result, "condition_id" | "status">[];
+  scopes?: string[];
+};
 export type SandboxReport = {
   revision: number;
   status: string;
@@ -78,6 +88,8 @@ export const real = {
     return json(`/api/lifecycle/scenario?${new URLSearchParams(Object.entries(body).map(([k, v]) => [k, String(v)]))}`);
   },
   addKinPrepQuestion: (text: string) => json("/api/me/kin", post({ tool: "add_question_to_prep", text })),
+  kinChat: (text: string, history: string[], lang: string) =>
+    json<KinReply>("/api/me/kin", post({ tool: "chat", text, history, lang })),
   prep: () => json("/api/lifecycle/prep"),
   savePrep: (body: unknown) => json("/api/lifecycle/prep", { method: "PUT", body: JSON.stringify(body) }),
   prepSuggestions(stage: string, lang: string, concerns: string[], tier?: number) {

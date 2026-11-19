@@ -6,13 +6,20 @@ import { useEffect, useRef, useState } from "react";
 import { ABOUT_ESTIMATES, Estimate, hasFigure } from "@/components/ui";
 import { api, KIN_TOOLS, MOCK } from "@/lib/api";
 import { answer, detectLang, suggestions, type Lang, type Link as L } from "@/lib/assistant";
+import { conditionLabel } from "@/lib/fixtures";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { real } from "@/lib/real";
 import { useSession, type Persona } from "@/lib/session";
 import { BCP47, canListen, canSpeak, listen, speak, stopSpeaking } from "@/lib/voice";
 
-type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean };
+type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean; tool?: string; sources?: string[] };
 type Mode = "auto" | Lang;
+const KIN_LABELS: Record<string, string> = {
+  "/result": "result.title", "/learn": "learn.title", "/plan/scenarios": "scen.title",
+  "/consents": "consent.title", "/next": "next.title", "/prepare": "prep.link",
+};
+const RESULT_LABELS = { carrier: "result.found", not_detected: "result.notfound", uncertain: "result.unclear" };
+const MODEL = KIN_TOOLS && process.env.NEXT_PUBLIC_KIN_LLM === "1";
 
 function KinLogo({ size = 40, className = "" }: { size?: number; className?: string }) {
   // Generated logo (Canva) with an inline vector fallback if the file is missing.
@@ -93,10 +100,29 @@ function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona
     const you: Msg = { id: Date.now(), role: "you", text: q, lang: ql, voice: viaVoice };
     const consents = (cons.data ?? []).filter((c) => !c.revoked_at).map((c) => t(`scope.${c.scope}`));
     let r = answer(q, { uiLang: fallback, ownBlocks: expl.data?.blocks ?? [], consents });
-    if (!MOCK && !r.refused) { // the server runs the same guard and records the decision; if it refuses, it wins
+    let tool: string | undefined;
+    if (MODEL && !r.refused && q.length <= 2000 && (persona === "person_a" || persona === "person_b")) {
+      const history = msgs.filter((m, i) => m.role === "you" && !msgs[i + 1]?.refused && m.text.length <= 2000)
+        .slice(-4).map((m) => m.text);
+      try {
+        const s = await real.kinChat(q, history, ql);
+        if (s.mode === "grounded") {
+          tool = s.tool;
+          const label = s.link ? t(KIN_LABELS[s.link]) : "";
+          const ownResults = s.results?.map((row) => `${conditionLabel(row.condition_id, r.lang)} · ${t(RESULT_LABELS[row.status])}`);
+          const scopes = s.scopes?.map((scope) => t(`scope.${scope}`));
+          const text = s.text || ownResults?.join("\n") || scopes?.join("\n")
+            || (s.results ? t("assistant.noResults") : s.scopes ? t("assistant.noSharing")
+              : tool === "counsellor" ? t("assistant.counsellorQueued")
+                : tool === "review_waiting" ? t("assistant.reviewWaiting") : label);
+          r = { ...r, text, refused: !!s.refused, links: s.link ? [{ href: s.link, label }] : [], sources: s.sources };
+        }
+      } catch { /* local answer remains available */ }
+    }
+    if (!MOCK && !tool && !r.refused) { // the server refusal wins
       try { const s = await api.copilot(q); if (s.refused) r = answer("partner raw result", { uiLang: r.lang, ownBlocks: [], consents: [] }); } catch { /* offline: local answer stands */ }
     }
-    const kin: Msg = { id: you.id + 1, role: "kin", text: r.text, lang: r.lang, links: r.links, refused: r.refused };
+    const kin: Msg = { id: you.id + 1, role: "kin", text: r.text, lang: r.lang, links: r.links, refused: r.refused, tool, sources: tool ? r.sources : undefined };
     setMsgs((m) => [...m, you, kin]);
     setBusy(false);
     if (readAloud || viaVoice) void say(kin);
@@ -156,6 +182,13 @@ function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona
             {m.links?.map((l) => (
               <button key={l.href} className="btn-quiet btn-sm" onClick={() => { router.push(l.href); onClose?.(); }}>{l.label}</button>
             ))}
+            {!!m.sources?.length && (
+              <details className="max-w-[88%] break-words text-xs text-muted">
+                <summary className="cursor-pointer">{t("assistant.sources")}</summary>
+                <p className="pt-1" dir="ltr">{m.tool}</p>
+                <ul dir="ltr">{m.sources.map((source) => <li key={source}>{source}</li>)}</ul>
+              </details>
+            )}
           </div>
         ))}
         {busy && <p className="text-xs text-muted">{t("assistant.thinking")}</p>}
@@ -188,7 +221,7 @@ function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona
           ? <button type="button" className="btn-quiet h-10 w-10 px-0" aria-label={t("assistant.stopSpeaking")} onClick={() => { stopSpeaking(); setSpeaking(false); }}><Square aria-hidden className="h-4 w-4" /></button>
           : <button className="btn h-10 w-10 px-0" disabled={!text.trim() || busy} aria-label={t("ask.send")}><SendHorizontal aria-hidden className="h-4 w-4 rtl:rotate-180" /></button>}
       </form>
-      <p className="px-4 pb-3 text-[11px] text-muted">{t("assistant.privacy")}{caps.speak ? "" : ` ${t("assistant.noSpeech")}`}</p>
+      <p className="px-4 pb-3 text-[11px] text-muted">{t(MODEL ? "assistant.modelPrivacy" : "assistant.privacy")}{caps.speak ? "" : ` ${t("assistant.noSpeech")}`}</p>
     </section>
   );
 }

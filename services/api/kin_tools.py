@@ -7,12 +7,16 @@ from uuid import uuid4
 
 from fastapi import Depends, HTTPException
 from pydantic import Field
-from sqlalchemy import update
+from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
+from services.agents import kin as chooser
 from services.cohort.panel import load_panel
 from services.consent import sharing
-from services.lifecycle.store import PrepSheet
+from services.consent.models import Consent, Couple
+from services.consent.policy import RESOURCE_FIELDS
+from services.lifecycle import review
+from services.lifecycle.store import PrepSheet, ReviewItem
 
 from .auth import secret
 from .prep_routes import RESOURCE
@@ -35,12 +39,91 @@ class Prep(StrictModel):
     text: Annotated[str, Field(min_length=1, max_length=300)]
 
 
-def register(app, *, db_session, roles, own, limit):
+TurnText = Annotated[str, Field(min_length=1, max_length=2000)]
+
+
+class Chat(StrictModel):
+    tool: Literal["chat"]
+    text: TurnText
+    history: Annotated[list[TurnText], Field(max_length=4)] = Field(default_factory=list)
+    lang: Literal["en", "ar", "hi", "ta", "te", "kn", "ml"] = "en"
+
+
+LINKS = {
+    "get_my_result": "/result", "glossary": "/learn", "run_scenario": "/plan/scenarios",
+    "my_consents": "/consents", "next_steps": "/next", "add_question_to_prep": "/prepare",
+    "counsellor": "/next", "review_waiting": "/result",
+}
+
+
+def review_waiting(db, subject):
+    couples = select(Couple.id).where(or_(Couple.person_a == subject, Couple.person_b == subject))
+    return db.scalar(select(ReviewItem.id).where(
+        ReviewItem.kind == "couple_result", ReviewItem.state.in_(review.OPEN),
+        ReviewItem.subject_id.in_(couples),
+    ).limit(1)) is not None
+
+
+def chat(body, identity, db, own, limit, backend):
+    if backend is None or not chooser.enabled():
+        return {"mode": "deterministic"}
+    person = own(db, identity, "profile", {"id", "reading_level"})
+    limit(db, identity)
+    subject = identity.actor.id
+    content = chooser.pack(body.lang)
+    reply = {"mode": "grounded", "text": "", "sources": [], "is_synthetic": True}
+    if any(chooser.blocked(turn) for turn in [*body.history, body.text]):
+        tool = "refused"
+        reply.update(text=content["kin"]["refusal"], refused=True)
+    elif chooser.COUNSELLOR.fullmatch(body.text.strip()):
+        own(db, identity, "lifecycle", {"status"})
+        db.refresh(person, with_for_update=True)
+        review.enqueue(db, "counselling_request", subject, f"{subject}:kin")
+        tool = "counsellor"
+        reply["sources"] = ["/api/lifecycle/review-items"]
+    else:
+        choice = chooser.choose(body.history, body.text, tuple(content["glossary"]))
+        if choice is None:
+            return {"mode": "deterministic"}
+        tool, key = choice
+        if tool in {"get_my_result", "explain_block"}:
+            own(db, identity, "lifecycle", {"status"})
+            if review_waiting(db, subject):
+                tool = "review_waiting"
+                reply["sources"] = ["/api/lifecycle/review-items"]
+        if tool == "get_my_result":
+            own(db, identity, "result", RESOURCE_FIELDS["result"])
+            reply.update(results=backend.op_results(subject, None, db), sources=["/api/me/results"])
+        elif tool == "explain_block":
+            block = backend.templates[(body.lang, person.reading_level)][key]
+            reply.update(text=block.text, sources=[f"template:{body.lang}/{person.reading_level}/{block.block_id}"])
+        elif tool == "glossary":
+            entry = content["glossary"][key]
+            reply.update(text=f"{entry['term']}. {entry['meaning']}", sources=[f"glossary:{key}"])
+        elif tool == "my_consents":
+            own(db, identity, "consent", RESOURCE_FIELDS["consent"])
+            scopes = sorted(set(db.scalars(select(Consent.scope).where(
+                Consent.grantor_id == subject, Consent.revoked_at.is_(None), Consent.expires_at > time.time(),
+            ))))
+            reply.update(scopes=scopes, sources=["/api/me/consents"])
+        elif tool != "review_waiting":
+            reply["sources"] = [{
+                "run_scenario": "/api/lifecycle/scenario", "next_steps": "/next",
+                "add_question_to_prep": "/api/lifecycle/prep",
+            }[tool]]
+    sharing.log_change(db, identity.actor, subject, f"kin_{tool}", secret("KINSIGHT_AUDIT_SALT"))
+    db.commit()
+    return {**reply, "tool": tool, "link": LINKS.get(tool)}
+
+
+def register(app, *, db_session, roles, own, limit, backend):
     conditions = {c.id: c for c in load_panel().conditions}
 
     @app.post("/api/me/kin")
-    def kin(body: Annotated[Scenario | Prep, Field(discriminator="tool")],
+    def kin(body: Annotated[Scenario | Prep | Chat, Field(discriminator="tool")],
             identity=Depends(roles("person")), db: Session = Depends(db_session)):
+        if isinstance(body, Chat):
+            return chat(body, identity, db, own, limit, backend)
         own(db, identity, "profile" if isinstance(body, Scenario) else RESOURCE,
             {"id"} if isinstance(body, Scenario) else {"sections"})
         limit(db, identity)

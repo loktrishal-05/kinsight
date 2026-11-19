@@ -54,12 +54,16 @@ def _norm(text: str) -> str:
     return unicodedata.normalize("NFKC", text)[:MAX_LEN].translate(BIDI)
 
 
+def refusal_reason(text: str) -> str | None:
+    t = _norm(text)
+    return next((code for code, pattern in RULES if pattern.search(t)), None)
+
+
 def answer(text: str, lang: str, own_blocks: list[str], glossary: dict, consents: list[str]) -> Answer:
     """own_blocks and consents come from the caller's consent-filtered reads; nothing else is reachable here."""
     t = _norm(text)
-    for code, pat in RULES:
-        if pat.search(t):
-            return Answer(REFUSALS.get(lang, REFUSALS["en"]), True, code, [])
+    if code := refusal_reason(text):
+        return Answer(REFUSALS.get(lang, REFUSALS["en"]), True, code, [])
     low = t.lower()
     for term, tr in glossary.items():
         if term != "status" and isinstance(tr, dict) and tr.get("en", "").lower() in low and re.search(ALLOWED["term"], low, re.IGNORECASE):

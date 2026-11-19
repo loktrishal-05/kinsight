@@ -4,6 +4,7 @@ COPY pyproject.toml ./
 COPY services ./services
 COPY configs ./configs
 COPY templates ./templates
+COPY web/content ./web/content
 COPY data ./data
 COPY scripts ./scripts
 COPY DATA_SOURCES.md ./DATA_SOURCES.md
