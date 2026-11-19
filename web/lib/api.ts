@@ -10,6 +10,7 @@ import * as prep from "./prep";
 import * as scen from "./scenario";
 import * as rv from "./review";
 import * as cas from "./cascadeTracker";
+import * as oc from "./outcomes";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -63,6 +64,7 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  outcomes: async () => oc.OutcomesS.parse(await impl.outcomes()),
   cascadeTracker: async () => cas.TrackerS.parse(await impl.cascadeTracker()),
   cascadeContact: async (relative_id: string, condition_id: string, method: cas.Method) => cas.ContactS.parse(await impl.cascadeContact(relative_id, condition_id, method)),
   cascadeOutcome: async (code: string, outcome: "tested" | "declined") => z.object({ status: z.literal("recorded") }).parse(await impl.cascadeOutcome(code, outcome)),

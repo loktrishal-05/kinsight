@@ -952,5 +952,20 @@
   "nav.invite": "فتح دعوة عائلية",
   "invite.title": "فتح دعوة عائلية",
   "invite.lead": "شارك معك أحد أقاربك رابطا لمرة واحدة. الصقه هنا لتعرف الحالة المعنية.",
-  "invite.unavailable": "لا يمكن فتح هذا الرابط. ربما استُخدم من قبل أو انتهت صلاحيته."
+  "invite.unavailable": "لا يمكن فتح هذا الرابط. ربما استُخدم من قبل أو انتهت صلاحيته.",
+  "outcome.title": "مقاييس النتائج (هذا النشر)",
+  "outcome.lead": "أعداد حية من سير العمل، مجمّعة حسب اللغة ومستوى القراءة. تُخفى أي مجموعة تضم أقل من {n} أشخاص، كما في أرقام المجموعة.",
+  "outcome.hidden": "مخفي: أقل من {n}",
+  "outcome.equity": "فجوة إنصاف تزيد على 10 نقاط بين مجموعات اللغة",
+  "outcome.noMarriage": "يقيس KinSight الفهم والوصول إلى الرعاية. ولا يقيس الزواج أو الخطوبة أو قرارات الحمل، ولن يفعل ذلك أبدا.",
+  "outcome.result_viewed": "فتحوا نتيجتهم",
+  "outcome.teach_back_passed": "اجتازوا اختبار الفهم",
+  "outcome.prep_sheet_created": "استعدوا لجلستهم",
+  "outcome.prep_sheet_shared": "شاركوا التحضير مع مستشار",
+  "outcome.session_booked": "حجزوا جلسة استشارة",
+  "outcome.counsellor_requested": "طلبوا التحدث مع مستشار",
+  "outcome.cascade_reached": "أقارب تم الوصول إليهم",
+  "outcome.cascade_tested": "أقارب أفادوا بإجراء الفحص",
+  "outcome.imports_confirmed": "تقارير مستوردة من سجل صحي",
+  "outcome.reviews_overdue": "مراجعات تجاوزت الوقت المتوقع"
 }
