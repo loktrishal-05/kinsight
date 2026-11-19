@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Pause, Pencil, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Check, Keyboard, Pause, Pencil, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import FhirFindings from "@/components/FhirFindings";
 import { Notice, PageHeader } from "@/components/ui";
 import { Journey, TierChip } from "@/components/visuals";
@@ -28,10 +28,26 @@ export default function Counsellor() {
   const [tier, setTier] = useState(0);
   const [status, setStatus] = useState("");
   const [overdueOnly, setOverdueOnly] = useState(false);
+  const [help, setHelp] = useState(false);
+  const [said, setSaid] = useState("");
+  const search = useRef<HTMLInputElement>(null);
+  const caseHeading = useRef<HTMLHeadingElement>(null);
+  // Filters live in the URL so a filtered queue can be bookmarked or shared within the team.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    setQ(p.get("q") ?? ""); setTier(Number(p.get("tier") ?? 0) || 0); setStatus(p.get("status") ?? ""); setOverdueOnly(p.get("overdue") === "1");
+  }, []);
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (q) p.set("q", q); if (tier) p.set("tier", String(tier)); if (status) p.set("status", status); if (overdueOnly) p.set("overdue", "1");
+    const next = `${window.location.pathname}${p.size ? `?${p}` : ""}`;
+    if (next !== `${window.location.pathname}${window.location.search}`) window.history.replaceState(null, "", next);
+  }, [q, tier, status, overdueOnly]);
   const queue = useQuery({ queryKey: ["queue"], queryFn: api.queue });
   const brief = useQuery({ queryKey: ["brief", sel], queryFn: () => api.brief(sel) });
   const steps = useQuery({ queryKey: ["referral"], queryFn: api.referral });
-  const decide = useMutation({ mutationFn: (d: string) => api.decide(sel, d), onSuccess: () => qc.invalidateQueries() });
+  const decide = useMutation({ mutationFn: (d: string) => api.decide(sel, d),
+    onSuccess: (_r, d) => { setSaid(t(`ws.done.${d}`).replace("{id}", sel)); qc.invalidateQueries(); } });
   const event = useMutation({
     mutationFn: (e: string) => api.referralEvent(sel, e, evidence),
     onSuccess: () => { setErr(""); qc.invalidateQueries(); },
@@ -46,9 +62,38 @@ export default function Counsellor() {
   const due = (d?: number) => (d === undefined ? "" : d < 0 ? t("counsellor.overdueBy").replace("{n}", String(-d)) : d === 0 ? t("counsellor.today") : t("counsellor.inDays").replace("{n}", String(d)));
   const current = rows.find((r) => r.id === sel);
 
+  // Keyboard triage: j/k move, Enter opens the case, a approve, h hold, / search, ? shortcuts. Never while typing.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement;
+      if (e.ctrlKey || e.metaKey || e.altKey || ["INPUT", "SELECT", "TEXTAREA"].includes(el.tagName) || el.isContentEditable) return;
+      const i = shown.findIndex((r) => r.id === sel);
+      const go = (n: number) => { const r = shown[Math.max(0, Math.min(shown.length - 1, n))]; if (r) { setSel(r.id); document.getElementById(`row-${r.id}`)?.scrollIntoView({ block: "nearest" }); } };
+      if (e.key === "j") go(i + 1);
+      else if (e.key === "k") go(i - 1);
+      else if (e.key === "Enter" && el.tagName !== "BUTTON" && el.tagName !== "A") caseHeading.current?.focus();
+      else if (e.key === "a" && sel === "demo-case") decide.mutate("approve");
+      else if (e.key === "h" && sel === "demo-case") decide.mutate("hold");
+      else if (e.key === "/") { e.preventDefault(); search.current?.focus(); }
+      else if (e.key === "?") setHelp((h) => !h);
+      else if (e.key === "Escape") setHelp(false);
+      else return;
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [shown, sel, decide]);
+
   return (
     <section className="space-y-6">
-      <PageHeader title={t("counsellor.title")} lead={t("counsellor.lead")} />
+      <PageHeader title={t("counsellor.title")} lead={t("counsellor.lead")}
+        action={<button className="btn-quiet btn-sm" onClick={() => setHelp(true)} aria-haspopup="dialog"><Keyboard aria-hidden className="h-4 w-4" />{t("ws.shortcuts")}</button>} />
+      <p role="status" className="sr-only" data-demo="ws-status">{said}</p>
+      {help && <div role="dialog" aria-modal="true" aria-labelledby="ws-help-title" className="card space-y-2" data-demo="ws-help">
+        <h2 id="ws-help-title" className="text-lg font-semibold">{t("ws.shortcuts")}</h2>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">{[["j / k", "ws.key.move"], ["Enter", "ws.key.open"], ["a", "ws.key.approve"], ["h", "ws.key.hold"], ["/", "ws.key.search"], ["?", "ws.key.help"]].map(([k, v]) =>
+          <div key={k} className="contents"><dt><kbd className="rounded border border-line px-1.5 font-mono text-xs">{k}</kbd></dt><dd>{t(v)}</dd></div>)}</dl>
+        <button className="btn-quiet btn-sm" onClick={() => setHelp(false)}>{t("ws.close")}</button>
+      </div>}
       {FHIR_SANDBOX && persona === "counsellor" && <FhirReview />}
       {persona === "counsellor" && <ReviewQueue />}
       {persona === "counsellor" && <PrepReview />}
@@ -61,11 +106,12 @@ export default function Counsellor() {
         ))}
       </dl>
 
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
       <div className="card-flush" data-demo="queue">
         <div className="flex flex-wrap items-center gap-3 border-b border-line p-3">
           <label className="relative block min-w-[10rem] flex-1">
             <Search aria-hidden className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input className="field ps-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("counsellor.search")} aria-label={t("counsellor.search")} />
+            <input ref={search} className="field ps-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("counsellor.search")} aria-label={t("counsellor.search")} />
           </label>
           <div role="group" aria-label={t("counsellor.tier")} className="seg">
             {[0, 3, 2, 1].map((x) => <button key={x} data-demo={x ? `tier-${x}` : "tier-all"} aria-pressed={tier === x} onClick={() => setTier(x)}>{x === 0 ? t("counsellor.all") : `${t("counsellor.tier")} ${x}`}</button>)}
@@ -83,7 +129,7 @@ export default function Counsellor() {
             </thead>
             <tbody>
               {shown.map((r) => (
-                <tr key={r.id} onClick={() => setSel(r.id)} aria-selected={sel === r.id} tabIndex={0} onKeyDown={(e) => e.key === "Enter" && setSel(r.id)}
+                <tr key={r.id} id={`row-${r.id}`} onClick={() => setSel(r.id)} aria-selected={sel === r.id} tabIndex={0} onKeyDown={(e) => e.key === "Enter" && setSel(r.id)}
                   className={`cursor-pointer border-t border-line transition-colors hover:bg-brand-50 ${sel === r.id ? "bg-brand-50" : ""}`}>
                   <td className="px-4 py-2.5 font-medium tabular-nums" dir="ltr">{r.id}</td>
                   <td className="px-4 py-2.5"><TierChip tier={r.tier} /></td>
@@ -100,8 +146,9 @@ export default function Counsellor() {
       </div>
 
       {current && (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center gap-3"><h2 className="text-lg font-semibold" dir="ltr">{current.id}</h2><TierChip tier={current.tier} /></div>
+        <div className="space-y-6 xl:sticky xl:top-24" data-demo="case">
+          <div className="sticky top-14 z-10 flex flex-wrap items-center gap-3 bg-canvas py-2"><h2 ref={caseHeading} tabIndex={-1} className="text-lg font-semibold outline-none" dir="ltr">{current.id}</h2><TierChip tier={current.tier} />
+            {current.status !== "closed" && <span className="chip bg-sunk">{due(current.due_days)}</span>}<span className="text-sm text-muted">{(current.language ?? "").toUpperCase()}</span></div>
           <div className="card" data-demo="brief">
             <h3 className="mb-3 font-semibold">{t("counsellor.brief")}</h3>
             <ul className="list-disc space-y-1 ps-5">{brief.data?.map((b, i) => <li key={i}>{brief_(b)}</li>)}</ul>
@@ -130,6 +177,7 @@ export default function Counsellor() {
           {sel !== "demo-case" && <Notice>{t("counsellor.sampleOnly")}</Notice>}
         </div>
       )}
+      </div>
     </section>
   );
 }

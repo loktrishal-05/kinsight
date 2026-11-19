@@ -1142,5 +1142,16 @@
   "dash.sharingCount": "{n} people or services, by your choice",
   "dash.sharingNone": "Nobody else",
   "dash.kin": "Ask Kin",
-  "dash.kinText": "Questions about your result, in your language"
+  "dash.kinText": "Questions about your result, in your language",
+  "ws.shortcuts": "Keyboard shortcuts",
+  "ws.close": "Close",
+  "ws.key.move": "Next or previous case",
+  "ws.key.open": "Go to the selected case",
+  "ws.key.approve": "Approve (where a decision is open)",
+  "ws.key.hold": "Hold",
+  "ws.key.search": "Search the queue",
+  "ws.key.help": "Show or hide this list",
+  "ws.done.approve": "Approved {id}",
+  "ws.done.hold": "Put {id} on hold",
+  "ws.done.edit": "Approved {id} with edits"
 }

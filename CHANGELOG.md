@@ -4,6 +4,7 @@
 
 - Linting: ruff with the full rule set (bugbear, bandit, pyupgrade, naming, complexity), mypy --strict on genetics and consent, Biome lint with accessibility rules, knip, and `npm run check`; fixed the accessibility issues they found.
 - Fixed a race: two requests at once could claim the same link in the hash-chained audit log, and the loser got 409. The API now retries a rolled-back transaction itself, and counsellor panels poll less often.
+- Counsellor workspace: split pane with a sticky case header, keyboard triage (j/k, Enter, a, h, /, ?), filters kept in the URL, and a queue page that now reads in 7 SQL statements regardless of its length (was 29 for 24 cases).
 
 - Added outcome measures for the analyst (results opened, understanding check, preparation, bookings, counsellor requests, cascade reach and testing, imports, overdue reviews) with small-cell suppression, an equity-gap alert and docs/METRICS.md. No marriage or pregnancy outcome is measured.
 - Person home is now a dashboard: one calm next step and a card each for result, couple view (with its estimate label or the review waiting state), preparation, family testing, sharing and Kin.
