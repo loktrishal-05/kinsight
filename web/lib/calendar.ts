@@ -4,7 +4,7 @@ export const SUMMARY = "KinSight appointment";
 const DETAILS = "Your KinSight counselling appointment.";
 
 const stamp = (seconds: number) => new Date(seconds * 1000).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-const escape = (text: string) => text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+const escapeCalendarText = (text: string) => text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
 
 // RFC 5545 3.1: lines longer than 75 octets are folded with CRLF followed by a space.
 function fold(line: string): string {
@@ -27,8 +27,8 @@ export function ics({ id, start, minutes = 45, video, now = Date.now() / 1000 }:
     `DTSTAMP:${stamp(now)}`,
     `DTSTART:${stamp(start)}`,
     `DTEND:${stamp(start + minutes * 60)}`,
-    `SUMMARY:${escape(SUMMARY)}`,
-    `DESCRIPTION:${escape(video ? `${DETAILS}\nVideo: ${video}` : DETAILS)}`,
+    `SUMMARY:${escapeCalendarText(SUMMARY)}`,
+    `DESCRIPTION:${escapeCalendarText(video ? `${DETAILS}\nVideo: ${video}` : DETAILS)}`,
     ...(video ? [`URL:${video}`] : []),
     "END:VEVENT", "END:VCALENDAR",
   ];
