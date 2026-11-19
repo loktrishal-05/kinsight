@@ -368,8 +368,15 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     @app.get("/api/health")
     async def health():
         config = settings().model_dump_json()
+        try:  # a real round trip, so the status line and uptime checks see a database problem, not just a live process
+            with engine.connect() as connection:
+                connection.execute(select(1))
+            reachable = True
+        except Exception:  # any driver error means unreachable; the API itself stays up (200) so it is not restarted
+            reachable = False
         return {
-            "status": "ok",
+            "status": "ok" if reachable else "degraded",
+            "database_reachable": reachable,
             "is_synthetic": True,
             "versions": {key: version(key) for key in ("fastapi", "pydantic", "sqlalchemy")},
             "config_hash": hashlib.sha256(config.encode()).hexdigest(),
