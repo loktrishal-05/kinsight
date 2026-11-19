@@ -67,3 +67,33 @@ export function Estimate({ est, children, block = false }: { est: EstimateRef; c
 export function Paragraphs({ blocks }: { blocks: string[] }) {
   return <>{blocks.map((b, i) => hasFigure(b) ? <p key={i}><Estimate est={ABOUT_ESTIMATES} block>{b}</Estimate></p> : <p key={i}>{b}</p>)}</>;
 }
+
+// Shared states (docs: web/DESIGN.md, "States"). Skeletons hold the layout while data loads; errors say what happened
+// in plain words and offer a retry where one makes sense; empty states explain what will appear and how.
+export function Skeleton({ lines = 3 }: { lines?: number }) {
+  const { t } = useI18n();
+  return (
+    <div role="status" aria-label={t("loading")} className="space-y-2" data-demo="skeleton">
+      {Array.from({ length: lines }, (_, i) => <span key={i} aria-hidden className="block h-4 animate-pulse rounded bg-sunk" style={{ width: `${92 - i * 14}%` }} />)}
+    </div>
+  );
+}
+
+export function ErrorState({ children, onRetry }: { children: ReactNode; onRetry?: () => void }) {
+  const { t } = useI18n();
+  return (
+    <div role="alert" className="note flex flex-wrap items-center gap-3" data-demo="error-state">
+      <span className="flex-1">{children}</span>
+      {onRetry && <button type="button" className="btn-quiet btn-sm" onClick={onRetry}>{t("states.retry")}</button>}
+    </div>
+  );
+}
+
+export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
+  return (
+    <div className="rounded-xl border border-dashed border-line px-5 py-8 text-center" data-demo="empty-state">
+      <p className="font-semibold">{title}</p>
+      {children && <div className="mt-1 text-sm text-muted">{children}</div>}
+    </div>
+  );
+}

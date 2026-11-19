@@ -266,6 +266,23 @@ Confident but quiet; a small lift on hover.
 ### Navigation
 Start-side list in groups under uppercase labels; items are 14px medium, 8px radius, icon 18px muted. Active: teal wash with brand-800 text and teal icon. Hover: sunk. The segmented control (language, reading level) is a bordered 8px track with 32px buttons; the pressed one is brand-600.
 
+### Shared components (web/components/ui.tsx)
+Use these instead of ad-hoc markup; `e2e/structure.spec.ts` checks one `h1` and one `main` on every page.
+- **PageHeader:** the page's only `h1`, an optional lead and one action on the end side.
+- **Estimate:** wraps every risk figure with the "educational estimate, not a diagnosis" label and a method link; crawled in every language by `e2e/estimate-label.spec.ts`.
+- **Notice:** a calm note with an icon; never a warning colour.
+- **Steps:** a numbered progress row with `aria-current="step"`.
+- **ChartCard (web/components/ChartCard.tsx):** a chart with a text summary, a "Show as table" toggle and an aggregate-only CSV.
+- **Skeleton:** holds the layout while data loads (`role="status"`, pulsing bars). No spinners.
+- **ErrorState:** says what went wrong in plain words (`role="alert"`) and offers "Try again" when a retry can help.
+- **EmptyState:** a dashed box that says what will appear here and how to get it.
+
+### States
+- **Loading:** a Skeleton the size of the content it replaces. Never a blank card, never a spinner.
+- **Error:** an ErrorState with a retry for reads; for actions, the form keeps the person's input and the ErrorState explains what to change.
+- **Empty:** an EmptyState that names the next step, never only "No data".
+- **Waiting for a counsellor:** the ReviewStatus notice with the expected time, never the content itself.
+
 ### Mashrabiya Hero (signature)
 A three.js scene loaded on demand: 28 x 26 instanced star tiles in lattice sand, closed and turned slightly in perspective, open outward from the centre as scroll progresses (0.015 to 0.46), the camera passing through. Behind them a family tree (white nodes, the couple and the consanguineous loop in teal), whose members become 100 lights that settle into a 10x10 grid: 25 teal-deep with a faint emissive glow, 75 light dots. The sky shader calms from sun-warm to the canvas as the chance resolves. Copy layers ride three scroll windows (0.13-0.38, 0.34-0.6, 0.62-1.0), each blurring in and out over 6% of progress. Without WebGL the text and actions stand alone; under reduced motion the scene renders the resolved still and the beats render as a static three-column list.
 
@@ -285,9 +302,13 @@ Reveals use expo-out `cubic-bezier(.16,1,.3,1)`: the hero copy assembles from 48
 - **Do** mirror layout, gradients, icons and 3D camera offsets in RTL.
 - **Do** use the eight-point star lattice as the signature motif, at low opacity when it is decorative.
 
+- **Do** use Skeleton, ErrorState and EmptyState for every loading, failing and empty view.
+- **Do** keep one `h1` per page, from PageHeader.
+
 ### Don't:
 - **Don't** use red or green for carrier status.
 - **Don't** put a label, kicker or eyebrow above a headline.
 - **Don't** use the display faces on app screens; they belong to landing and persuasion headings.
 - **Don't** use hard offset or untinted black shadows in light mode.
+- **Don't** write a bare `<p role="alert">` or a loading sentence; use the shared states.
 - **Don't** hard-code hex colours in components; the landing hero's lighting (three.js scene and stage gradient) is the only exception.

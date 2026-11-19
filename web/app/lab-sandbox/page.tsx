@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader, Skeleton } from "@/components/ui";
 import { LAB_SANDBOX } from "@/lib/api";
 import { conditionLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
@@ -32,7 +32,7 @@ export default function LabSandbox() {
 
 function Failure() {
   const { t } = useI18n();
-  return <p role="alert">{t("labSandbox.error")}</p>;
+  return <ErrorState>{t("labSandbox.error")}</ErrorState>;
 }
 
 function Report({ report }: { report: SandboxReport }) {
@@ -56,7 +56,7 @@ function PersonalReport() {
     <button className="btn" onClick={() => share.mutate()} disabled={share.isPending || share.isSuccess}>{t("labSandbox.share")}</button>
     {share.isSuccess && <p role="status">{t("labSandbox.shared")}</p>}
     {(result.isError || share.isError) && <Failure />}
-    {result.isPending && <p role="status">{t("loading")}</p>}
+    {result.isPending && <Skeleton lines={3} />}
     {result.isSuccess && <>
       <p role="status">{t(`labSandbox.${result.data.state}`)}{result.data.revision ? ` · ${t("labSandbox.revision")} ${result.data.revision}` : ""}</p>
       {result.data.report && <Report report={result.data.report} />}

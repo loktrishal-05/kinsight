@@ -4,7 +4,7 @@ import { CheckCircle2, MessageSquareText } from "lucide-react";
 import Link from "next/link";
 import { ReviewStatus } from "@/components/ReviewStatus";
 import FhirFindings from "@/components/FhirFindings";
-import { Notice, PageHeader, Paragraphs, StatusChip } from "@/components/ui";
+import { ErrorState, Notice, PageHeader, Paragraphs, Skeleton, StatusChip } from "@/components/ui";
 import { ReadAloud } from "@/components/Voice";
 import { api, FHIR_REFERRAL, FHIR_SANDBOX } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
@@ -26,7 +26,7 @@ export default function MyResult() {
         action={<Link className="btn-quiet" href="/report-compare">{t("reportCompare.title")}</Link>} />
       {FHIR_SANDBOX && (persona === "person_a" || persona === "person_b") && <FhirReportPreview key={persona} />}
       <div className="card-flush" data-demo="results">
-        {results.isLoading && <p className="p-5 text-muted">{t("loading")}</p>}
+        {results.isLoading && <div className="p-5"><Skeleton lines={3} /></div>}
         <ul className="px-5">
           {results.data?.map((r) => (
             <li key={r.condition_id} className="row">
@@ -59,7 +59,7 @@ export default function MyResult() {
         <button className="btn-quiet" disabled={delivery.isPending || delivery.isSuccess} onClick={() => delivery.mutate()}>
           {t(delivery.isSuccess ? "referralDelivery.saved" : "referralDelivery.allow")}
         </button>
-        {delivery.isError && <p role="alert">{t("referralDelivery.error")}</p>}
+        {delivery.isError && <ErrorState>{t("referralDelivery.error")}</ErrorState>}
       </div>}
     </section>
   );
@@ -89,8 +89,8 @@ function FhirReportPreview() {
     }}>
       {t(preview.isPending ? "loading" : "fhirPreview.load")}
     </button>
-    {(preview.isError || saved.isError) && <p role="alert">{t("fhirPreview.error")}</p>}
-    {confirm.isError && <p role="alert">{t("fhirPreview.confirmError")}</p>}
+    {(preview.isError || saved.isError) && <ErrorState>{t("fhirPreview.error")}</ErrorState>}
+    {confirm.isError && <ErrorState>{t("fhirPreview.confirmError")}</ErrorState>}
     {saved.isSuccess && saved.data.state !== "missing" && <div className="space-y-2">
       <p aria-live="polite">{t(`fhirImport.${saved.data.state}`)}</p>
       {!report && saved.data.report && <FhirFindings report={saved.data.report} />}

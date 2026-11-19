@@ -4,7 +4,7 @@ import ReferencePanel from "@/components/ReferencePanel";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Estimate, Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Estimate, Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { TRIAGE_PRESETS, geneCall, triagePreset, type TriageRequest } from "@/lib/safety";
 import { useI18n } from "@/lib/i18n";
@@ -48,7 +48,7 @@ function ClinicCards() {
   return <section className="space-y-6">
     <PageHeader title={t("safety.clinicTitle")} />
     {MOCK && <Notice>{t("safety.demo")}</Notice>}
-    {[triage, reclassify, live, explore, frequency, tamm, emergency].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
+    {[triage, reclassify, live, explore, frequency, tamm, emergency].some((m) => m.isError) && <ErrorState>{t("safety.error")}</ErrorState>}
     <section className="card space-y-4" aria-labelledby="triage-title">
       <h2 id="triage-title" className="text-lg font-semibold">{t("safety.triage")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); triage.mutate(); }}>

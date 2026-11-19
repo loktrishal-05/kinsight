@@ -3,7 +3,7 @@ import Restricted from "@/components/Restricted";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { DATA, conditionLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
@@ -45,7 +45,7 @@ function JourneyCards({ persona }: { persona: string }) {
   return <section className="space-y-6">
     <PageHeader title={t("lifecycle.title")} />
     {MOCK && <Notice>{t("lifecycle.demo")}</Notice>}
-    {error && <p role="alert" className="note">{t("lifecycle.error")}</p>}
+    {error && <ErrorState>{t("lifecycle.error")}</ErrorState>}
     {[tracker, certificate, receipt].some((q) => q.isPending) && <p role="status">{t("lifecycle.loading")}</p>}
     <section className="card space-y-4" aria-labelledby="lab-title">
       <h2 id="lab-title" className="text-lg font-semibold">{t("lifecycle.lab")}</h2>

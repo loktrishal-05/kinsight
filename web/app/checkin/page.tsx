@@ -2,7 +2,7 @@
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import type { CheckinRequest } from "@/lib/safety";
 import { useI18n } from "@/lib/i18n";
@@ -32,7 +32,7 @@ function CheckinCards() {
   return <section className="space-y-6">
     <PageHeader title={t("safety.checkinTitle")} />
     {MOCK && <Notice>{t("safety.demo")}</Notice>}
-    {[checkin, vault, unlock, whisper].some((m) => m.isError) && <p role="alert" className="note">{t("safety.error")}</p>}
+    {[checkin, vault, unlock, whisper].some((m) => m.isError) && <ErrorState>{t("safety.error")}</ErrorState>}
     <section className="card space-y-4" aria-labelledby="checkin-title">
       <h2 id="checkin-title" className="text-lg font-semibold">{t("safety.checkin")}</h2>
       <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); checkin.mutate(); }}>

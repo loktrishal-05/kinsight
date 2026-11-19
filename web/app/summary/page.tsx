@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
-import { PageHeader, Paragraphs, StatusChip } from "@/components/ui";
+import { ErrorState, PageHeader, Paragraphs, StatusChip } from "@/components/ui";
 import { TierChip } from "@/components/visuals";
 import { api } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
@@ -25,7 +25,7 @@ export default function Summary() {
           <li key={r.condition_id} className="row"><span>{rowLabel(r, lang)}</span><StatusChip status={r.status} /></li>
         ))}</ul>
         {couple.isSuccess && couple.data.tier && <p className="flex items-center gap-2 text-sm">{t("summary.level")}: <TierChip tier={couple.data.tier} /></p>}
-        {couple.isError && <p role="alert">{t("couple.loadError")}</p>}
+        {couple.isError && <ErrorState>{t("couple.loadError")}</ErrorState>}
       </div>
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("result.explanation")}</h2>

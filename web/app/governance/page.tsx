@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ShieldAlert, ShieldCheck } from "lucide-react";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
@@ -19,7 +19,7 @@ export default function Governance() {
           <button className="btn" data-demo="verify" disabled={verification.isPending} onClick={() => verification.mutate(false)}><ShieldCheck aria-hidden className="h-4 w-4" />{t("gov.verify")}</button>
           <button className="btn-quiet" data-demo="tamper" disabled={verification.isPending} onClick={() => verification.mutate(true)}><ShieldAlert aria-hidden className="h-4 w-4" />{t("gov.tamper")}</button>
         </div>
-        {verification.isError && <p role="alert">{t("gov.verifyError")}</p>}
+        {verification.isError && <ErrorState>{t("gov.verifyError")}</ErrorState>}
         {verification.data && <div role="status" className="space-y-2">
           <p data-testid="chain" data-valid={verification.data.valid} className={`chip text-sm ${verification.data.valid ? "bg-brand-50 text-brand-800" : "bg-unsure-bg text-unsure-fg"}`}>
             {t(verification.data.valid ? "gov.chainValid" : "gov.chainBroken")}
