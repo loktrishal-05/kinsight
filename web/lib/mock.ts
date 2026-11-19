@@ -3,6 +3,7 @@
 import { z } from "zod";
 import * as safety from "./safety";
 import * as plan from "./plan";
+import { layoutPedigree } from "./pedigreeLayout";
 import * as prepLib from "./prep";
 import * as scen from "./scenario";
 import * as cas from "./cascadeTracker";
@@ -30,7 +31,7 @@ type Link = { condition_id: string; expires_at: number; used: boolean; contact?:
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>; reviews: Record<string, string>; cascade: Record<string, { status: string; method: string }>;
+  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>; tree?: { people: { id: string; sex: "male" | "female"; label: string }[]; edges: { a_id: string; b_id: string; type: "parent_of" | "partner_of" }[] }; reviews: Record<string, string>; cascade: Record<string, { status: string; method: string }>;
   vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
@@ -59,6 +60,11 @@ const getPair = (id: string) => {
 const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
 const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  // The family tree editor saves here in mock mode. Kinship is the engine's job, so it needs the live service.
+  async savePedigree(draft: { people: { id: string; sex: "male" | "female"; label: string }[]; edges: { a_id: string; b_id: string; type: "parent_of" | "partner_of" }[] }) {
+    S.tree = { people: draft.people.map(({ id, sex, label }) => ({ id, sex, label })), edges: draft.edges }; save(); return { status: "saved" };
+  },
+  async kinship() { throw new Error("mock"); },
   // One browser session is far below the privacy threshold, so every outcome count is hidden, exactly as the API would.
   async outcomes() {
     return { metrics: oc.NAMES.map((name) => ({ name, label: name, source: "mock", total: null, groups: {} })), min_cell: 10, marriage_outcomes_measured: false };
@@ -261,6 +267,11 @@ export const mock = {
     return S.attempts >= 2 ? { passed: false, counsellor_offered: true } : { passed: false, reexplain: true };
   },
   async pedigree() {
+    if (S.tree) {
+      const names = new Map(S.tree.people.map((x) => [x.id, x.label]));
+      return { people: layoutPedigree(S.tree.edges, S.tree.people).map((x) => ({ ...x, label: names.get(x.id) ?? x.label })), related: [],
+        relationships: S.tree.edges.map((e) => ({ ...e, confidence: "known" as const })), warnings: [] };
+    }
     const P = (id: string, sex: "male" | "female", gen: number, col: number, parents?: [string, string], confirmed = true) => ({ id, sex, gen, col, confirmed, parents });
     const related = sc().related;
     const people = related

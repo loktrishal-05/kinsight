@@ -59,6 +59,7 @@ from . import (
     kin_tools,
     lab_feed,
     lifecycle_routes,
+    pedigree_routes,
     pilot_routes,
     prep_routes,
     referral_delivery,
@@ -870,6 +871,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     if enabled("lifecycle"):
         prep_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
         scenario_routes.register(app, db_session=db_session, roles=roles, limit=limit)
+        pedigree_routes.register(app, db_session=db_session, roles=roles, limit=limit)
         kin_tools.register(app, db_session=db_session, roles=roles, own=own, limit=limit)
         review_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
         cascade_routes.register(app, adapter=adapter, db_session=db_session, roles=roles, own=own, limit=limit)

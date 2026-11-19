@@ -64,6 +64,8 @@ const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  savePedigree: async (draft: { people: { id: string; sex: "male" | "female"; label: string; living: boolean; tested: string }[]; edges: { a_id: string; b_id: string; type: "parent_of" | "partner_of" }[] }) => { await impl.savePedigree(draft); },
+  kinship: async (draft: { people: object[]; edges: { a_id: string; b_id: string; type: string }[] }, a: string, b: string) => z.object({ phi: z.number().min(0).max(1), related: z.boolean() }).parse(await impl.kinship(draft, a, b)),
   outcomes: async () => oc.OutcomesS.parse(await impl.outcomes()),
   cascadeTracker: async () => cas.TrackerS.parse(await impl.cascadeTracker()),
   cascadeContact: async (relative_id: string, condition_id: string, method: cas.Method) => cas.ContactS.parse(await impl.cascadeContact(relative_id, condition_id, method)),
