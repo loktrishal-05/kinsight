@@ -35,6 +35,7 @@ ROLE_ONLY = {
     ("GET", "/api/lifecycle/booking/slots"),
     ("GET", "/api/lifecycle/reengagement"),
     ("GET", "/api/lifecycle/scenario"),
+    ("POST", "/api/lifecycle/cascade/outcome"),
     *(("POST", "/api/lifecycle/" + operation) for operation in (
         "measures/mmic", "measures/gcos", "nasab", "gestation", "triage", "whisper",
         "whisper/dispatch", "checkin", "reclassify", "tamm", "break-glass", "cascade",

@@ -63,6 +63,20 @@ class ReviewItem(LifecycleBase):
     decided_at: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
+class CascadeContact(LifecycleBase):
+    """The person's own tracker row for one relative and condition. The relative side only ever holds hashed codes,
+    so an invite or outcome can update the row without the relative learning who sent it or what they carry."""
+    __tablename__ = "lc_cascade_contact"
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    owner_id: Mapped[str] = mapped_column(String, index=True)
+    relative_id: Mapped[str] = mapped_column(String)
+    condition_id: Mapped[str] = mapped_column(String)
+    method: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String)
+    invite_hash: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    updated_at: Mapped[float] = mapped_column(Float)
+
+
 class LcPairing(LifecycleBase):
     __tablename__ = "lc_pairing"
     id: Mapped[str] = mapped_column(String, primary_key=True)

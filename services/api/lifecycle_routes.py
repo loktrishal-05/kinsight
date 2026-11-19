@@ -33,6 +33,7 @@ from services.lifecycle import (
 )
 from services.lifecycle.cascade import CascadeTokens
 
+from . import cascade_routes
 from .auth import secret
 from .interfaces import Unavailable
 from .schemas import TriageView, estimate
@@ -455,8 +456,9 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
     async def cascade_redeem(body: Token, identity=Depends(roles("relative", "person")), db: Session = Depends(db_session)):
         limit(db, identity)
         out = tokens(db).redeem(body.token, time.time())  # PermissionError -> 403 with no reason
+        follow_up = cascade_routes.opened(db, body.token)  # tracker invites: tell the sender "opened", nothing more
         audit(db, identity, out["condition_id"], "cascade_redeemed")
-        return {**out, "is_synthetic": True}
+        return {**out, **({"follow_up": follow_up} if follow_up else {}), "is_synthetic": True}
 
     class LiveCheck(BaseModel):
         model_config = ConfigDict(extra="forbid")

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added the extended-family cascade tracker at /cascade (relatives from the family tree with a kinship-based estimate, private invites, anonymous notices, told-in-person, and self-reported outcomes) and a relative-facing /invite page.
+
 - Added the unified counsellor review queue: one item per thing a counsellor must see first (couple result, imports, lab reports, requests to talk, reclassifications), audited decisions, and a calm waiting state for the person.
 
 - Added security headers (CSP, HSTS, Permissions-Policy, COOP/CORP), an API CORS allow-list and body cap, and docs/THREAT_MODEL.md.
