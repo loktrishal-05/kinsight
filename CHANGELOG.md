@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added the what-if scenario explorer at /plan/scenarios: chance per pregnancy, at least one of N, untested partner by relationship, and neutral descriptions of each route, all from the existing engine formulas.
+
 - Added the pre-counselling preparation sheet at /prepare: reviewed neutral question bank (English and Arabic), editable questions, printable sheet and per-section sharing with the counsellor, off by default.
 
 - Every risk figure now travels as an educational-estimate envelope in the API and renders with a visible label and a method link in all seven languages; schema and crawl guard tests keep it that way.

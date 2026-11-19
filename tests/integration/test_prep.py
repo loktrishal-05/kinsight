@@ -76,3 +76,18 @@ def test_web_mock_bank_matches_the_reviewed_yaml():
     web = json.loads((Path(__file__).parents[2] / "web/lib/fixtures/prep_bank.json").read_text(encoding="utf-8"))
     for lang in ("en", "ar"):
         assert web[lang] == json.loads(json.dumps(bank(lang)[0])), "run scripts/export_prep_bank.py"
+
+
+def test_scenario_route_returns_labelled_estimates_and_fixed_option_order(api):
+    c, h = api
+    q = "condition_id=COND_001&status_a=carrier&status_b=untested&relation=first_cousins&children=3"
+    r = c.get(f"/api/lifecycle/scenario?{q}", headers=h["person_a"])
+    body = r.json()
+    assert r.status_code == 200 and body["chance_per_pregnancy"]["kind"] == "educational_estimate"
+    assert body["chance_per_pregnancy"]["value"] == pytest.approx(0.25 * (0.125 + 0.875 * 0.04))
+    assert body["chance_at_least_one"]["value"] > body["chance_per_pregnancy"]["value"]
+    assert [o["id"] for o in body["options"]] == ["natural_conception", "prenatal_diagnosis", "pgt_m", "donor_gametes", "adoption"]
+    assert c.get(f"/api/lifecycle/scenario?{q}", headers=h["analyst"]).status_code == 403
+    assert c.get(f"/api/lifecycle/scenario?{q}").status_code == 401
+    bad = "condition_id=COND_001&status_a=not_detected&status_b=untested"
+    assert c.get(f"/api/lifecycle/scenario?{bad}", headers=h["person_a"]).status_code == 422

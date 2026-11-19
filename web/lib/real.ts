@@ -60,6 +60,9 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  whatIf(body: Record<string, string | number>) {
+    return json(`/api/lifecycle/scenario?${new URLSearchParams(Object.entries(body).map(([k, v]) => [k, String(v)]))}`);
+  },
   prep: () => json("/api/lifecycle/prep"),
   savePrep: (body: unknown) => json("/api/lifecycle/prep", { method: "PUT", body: JSON.stringify(body) }),
   prepSuggestions(stage: string, lang: string, concerns: string[], tier?: number) {
