@@ -19,3 +19,15 @@ test("removing a person removes every link to them", () => {
   expect(out.people.map((p) => p.id)).not.toContain("mum");
   expect(out.edges.some((e) => e.a_id === "mum" || e.b_id === "mum")).toBe(false);
 });
+
+test("mock mode: a saved tree comes back laid out with its names, and kinship says it needs the service", async () => {
+  const { api } = await import("../lib/api");
+  const { mock } = await import("../lib/mock");
+  mock.reset();
+  await api.savePedigree({ people: base.people.map((p) => ({ ...p })), edges: base.edges });
+  const tree = await api.pedigree();
+  expect(tree.people.map((p) => p.id).sort()).toEqual(["dad", "me", "mum", "p"]);
+  expect(tree.people.find((p) => p.id === "me")?.label).toBe("Me");
+  expect(tree.relationships.some((e) => e.type === "partner_of")).toBe(true);
+  await expect(api.kinship(base, "me", "p")).rejects.toThrow();
+});
