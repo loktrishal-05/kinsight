@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -52,6 +53,7 @@ function PlanCards({ persona }: { persona: string }) {
       {booking && <div role="status" className="space-y-3"><p>{t("plan.currentBooking")}: {date(booking.slot_at)} &middot; {t(`plan.status.${booking.status}`)}</p>
         {booking.status === "booked" && <button className="btn-quiet" disabled={cancel.isPending} onClick={() => cancel.mutate()}>{t("plan.cancel")}</button>}
       </div>}
+      <Link className="btn-quiet w-fit" href="/prepare">{t("prep.link")}</Link>
     </section>
     <section className="card space-y-4" aria-labelledby="gestation-title">
       <h2 id="gestation-title" className="text-lg font-semibold">{t("plan.gestation")}</h2>

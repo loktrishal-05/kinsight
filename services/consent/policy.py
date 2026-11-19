@@ -17,6 +17,7 @@ RESOURCE_FIELDS = {
     "result": {"condition_id", "status", "panel_version"},
     "sandbox_report": {"status", "brief"},
     "fhir_import": {"status", "brief"},
+    "prep_sheet": {"sections"},
     "lifecycle": {"status"},
     "explanation": {"blocks", "released"},
     "consent": {"id", "grantee_id", "scope", "purpose", "expires_at", "revoked_at"},
@@ -37,6 +38,7 @@ ROLE_RESOURCES = {
         "result",
         "sandbox_report",
         "fhir_import",
+        "prep_sheet",
         "lifecycle",
         "explanation",
         "consent",
@@ -47,7 +49,7 @@ ROLE_RESOURCES = {
     },
     "partner": {"couple", "result", "invitation"},
     "relative": {"result", "pedigree", "case", "invitation"},
-    "counsellor": {"case", "queue", "result", "explanation", "pedigree", "couple", "sandbox_report", "fhir_import"},
+    "counsellor": {"case", "queue", "result", "explanation", "pedigree", "couple", "sandbox_report", "fhir_import", "prep_sheet"},
     "analyst": {"aggregate", "evaluation"},
     "auditor": {"audit", "governance", "evaluation"},
     "demo_operator": {"demo"},
@@ -69,6 +71,7 @@ SCOPES = {
     "quiz_status": {"id", "status", "quiz"},
     "sandbox_review": {"brief"},
     "fhir_import_review": {"brief"},
+    "prep_review": {"sections"},
     "couple_pooling": {"tier", "shared_conditions", "findings", "engine_version"},
 }
 

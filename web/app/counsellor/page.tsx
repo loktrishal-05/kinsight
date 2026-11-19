@@ -46,6 +46,7 @@ export default function Counsellor() {
     <section className="space-y-6">
       <PageHeader title={t("counsellor.title")} lead={t("counsellor.lead")} />
       {FHIR_SANDBOX && persona === "counsellor" && <FhirReview />}
+      {persona === "counsellor" && <PrepReview />}
       <dl data-demo="workload" className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t("counsellor.workload")}>
         {[[t("counsellor.open"), count((r) => r.status !== "closed")], [t("tier.3"), count((r) => r.tier === 3 && r.status !== "closed")],
           [t("counsellor.waiting"), count((r) => r.status === "awaiting_counsellor")], [t("next.overdue"), count((r) => (r.due_days ?? 0) < 0 && r.status !== "closed")]].map(([k, v]) => (
@@ -170,5 +171,29 @@ function FhirReview() {
       {record.can_approve && selected && <button className="btn" disabled={approve.isPending}
         onClick={() => approve.mutate({ patient: selected, snapshot: record.snapshot_id })}>{t("labSandbox.approve")}</button>}
     </>}
+  </section>;
+}
+
+// The preparation sheet a person chose to share: only the switched-on sections arrive, and none at all without consent.
+function PrepReview() {
+  const { t } = useI18n();
+  const [subject, setSubject] = useState("synthetic-a");
+  const review = useQuery({ queryKey: ["prep-review", subject], queryFn: () => api.counsellorPrep(subject), refetchInterval: 5_000, retry: false });
+  const s = review.data?.sections as { values?: string[]; concerns?: string[]; worries_text?: string; questions?: { id: string; text: string }[]; bring?: string[] } | undefined;
+  return <section className="card space-y-3" aria-labelledby="prep-review-heading" data-demo="prep-review">
+    <h2 id="prep-review-heading" className="text-lg font-semibold">{t("prep.counsellor.title")}</h2>
+    <label className="block text-sm">{t("labSandbox.participant")}
+      <select className="field mt-1 max-w-xs" value={subject} onChange={(e) => setSubject(e.target.value)}>
+        <option value="synthetic-a">{t("persona.person_a")}</option><option value="synthetic-b">{t("persona.person_b")}</option>
+      </select>
+    </label>
+    {review.isError && <p role="alert">{t("fhirPreview.error")}</p>}
+    {review.isSuccess && !s && <p role="status">{t("prep.counsellor.none")}</p>}
+    {s && <div className="space-y-2 text-sm">
+      {s.questions && <div><h3 className="font-semibold">{t("prep.step.questions")}</h3><ol className="list-decimal ps-5">{s.questions.map((q) => <li key={q.id}>{q.text}</li>)}</ol></div>}
+      {s.concerns && <div><h3 className="font-semibold">{t("prep.step.worries")}</h3><ul className="list-disc ps-5">{s.concerns.map((c) => <li key={c}>{c.replaceAll("_", " ")}</li>)}</ul>{s.worries_text && <p className="whitespace-pre-line">{s.worries_text}</p>}</div>}
+      {s.values && <div><h3 className="font-semibold">{t("prep.step.values")}</h3><ul className="list-disc ps-5">{s.values.map((v) => <li key={v}>{t(`values.${v}`)}</li>)}</ul></div>}
+      {s.bring && <div><h3 className="font-semibold">{t("prep.step.bring")}</h3><ul className="list-disc ps-5">{s.bring.map((b) => <li key={b}>{b.replaceAll("_", " ")}</li>)}</ul></div>}
+    </div>}
   </section>;
 }

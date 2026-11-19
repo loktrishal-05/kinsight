@@ -6,6 +6,7 @@ import { mock } from "./mock";
 import { real } from "./real";
 import * as safety from "./safety";
 import * as plan from "./plan";
+import * as prep from "./prep";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -57,6 +58,10 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  prep: async () => prep.MineS.parse(await impl.prep()).sheet,
+  savePrep: async (body: prep.Sheet) => prep.SavedS.parse(await impl.savePrep(prep.SheetS.parse(body))),
+  prepSuggestions: async (stage: prep.Stage, lang: string, concerns: prep.Concern[], tier?: number) => prep.SuggestionsS.parse(await impl.prepSuggestions(stage, lang, concerns, tier)),
+  counsellorPrep: async (subject: string) => { const r = await impl.counsellorPrep(subject); return r === null ? null : prep.ReviewS.parse(r); },
   demoBooking: () => MOCK ? mock.currentBooking() : null,
   bookingSlots: async (sla: number) => plan.SlotsS.parse(await impl.bookingSlots(plan.SlaS.parse(sla))),
   book: async (body: Zod.infer<typeof plan.BookingRequestS>) => plan.BookingS.parse(await impl.book(plan.BookingRequestS.parse(body))),

@@ -49,7 +49,7 @@ from services.consent.roles import PERSONAS
 from services.consent.settings import settings
 from services.lifecycle.store import FhirImport, LcSample, LifecycleBase, SandboxReport
 
-from . import fhir_preview, lab_feed, lifecycle_routes, pilot_routes
+from . import fhir_preview, lab_feed, lifecycle_routes, pilot_routes, prep_routes
 from .auth import Identity, issue_token, secret, verify_token
 from .backend import DemoBackend
 from .interfaces import Backend, Unavailable, UnwiredBackend
@@ -764,6 +764,9 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         app.add_api_route(
             f"/api/demo/{operation}", demo_route(operation), methods=["POST"], response_model=Status
         )
+
+    if enabled("lifecycle"):
+        prep_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
 
     if sandbox:
         pilot_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit, signed_feed=signed_feed)
