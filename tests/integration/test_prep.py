@@ -20,6 +20,7 @@ SHEET = {
 def api(monkeypatch):
     monkeypatch.setenv("KINSIGHT_TOKEN_SECRET", "synthetic-only-token-secret-32-bytes")
     monkeypatch.setenv("KINSIGHT_AUDIT_SALT", "synthetic-only-audit-salt-32-bytes")
+    monkeypatch.setenv("KINSIGHT_DEMO", "1")
     monkeypatch.setenv("KINSIGHT_DEMO_AUTH", "1")
     with TestClient(create_app("sqlite://")) as client:
         heads = {p: {"Authorization": "Bearer " + client.post("/api/auth/persona", json={"persona": p}).json()["access_token"]}

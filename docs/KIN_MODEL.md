@@ -13,7 +13,7 @@ Keep the server and model in local inference mode. Use fictional questions only.
    credentials, use a non-secret local placeholder.
 2. Use the endpoint in `configs/llm.yaml` or set `KIN_LLM_URL` to another
    numeric loopback URL in the same network namespace as the API.
-3. Run the API with demo auth. Run the web app with
+3. Run the API with `KINSIGHT_DEMO=1` and demo auth. Run the web app with
    `NEXT_PUBLIC_MOCK=0`, `NEXT_PUBLIC_KIN_TOOLS=1` and `NEXT_PUBLIC_KIN_LLM=1`.
 4. Ask about a glossary term, then ask a follow-up. Open **How I got this**
    under the reply to see the selected tool and its source.
