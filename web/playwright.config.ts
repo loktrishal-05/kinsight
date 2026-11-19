@@ -12,5 +12,7 @@ export default defineConfig({
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "phone", use: { ...devices["Pixel 5"] } },
+    // iPhone-sized screen in Chromium (CI installs Chromium only): narrow-screen checks and the core journey.
+    { name: "iphone", use: { ...devices["iPhone 14"], browserName: "chromium" }, testMatch: ["mobile.spec.ts", "demo-path.spec.ts", "dashboard.spec.ts"] },
   ],
 });
