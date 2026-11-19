@@ -1153,5 +1153,6 @@
   "ws.key.help": "Show or hide this list",
   "ws.done.approve": "Approved {id}",
   "ws.done.hold": "Put {id} on hold",
-  "ws.done.edit": "Approved {id} with edits"
+  "ws.done.edit": "Approved {id} with edits",
+  "a11y.skip": "Skip to main content"
 }

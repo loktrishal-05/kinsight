@@ -50,7 +50,7 @@ function JourneyCards({ persona }: { persona: string }) {
     <section className="card space-y-4" aria-labelledby="lab-title">
       <h2 id="lab-title" className="text-lg font-semibold">{t("lifecycle.lab")}</h2>
       {tracker.data?.source === "signed_lab" && <p className="text-sm text-muted">{t("lifecycle.labSource")}</p>}
-      <ol className="space-y-2">
+      <ol className="space-y-2" aria-live="polite">
         {tracker.data?.stages.map((stage, i) => <li key={stage} aria-current={tracker.data.stage === i + 1 ? "step" : undefined}
           className={`border-s-4 py-2 ps-4 ${tracker.data.stage === i + 1 ? "border-brand-600 bg-brand-50 font-semibold text-brand-800" : "border-line"}`}>
           <span>{i + 1}. {td(`lifecycle.stage.${stage}`)}</span>
@@ -89,7 +89,8 @@ function JourneyCards({ persona }: { persona: string }) {
     </section>
     <section className="card space-y-4" aria-labelledby="receipt-title">
       <h2 id="receipt-title" className="text-lg font-semibold">{t("lifecycle.receipt")}</h2>
-      <div className="overflow-x-auto"><table className="w-full text-start text-sm">
+      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a horizontally scrolling region must be focusable so keyboard users can scroll it (WCAG 2.1.1) */}
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-labelledby="receipt-title"><table className="w-full text-start text-sm">
         <caption className="mb-3 text-start text-muted">{t("lifecycle.privateReceipt")}</caption>
         <thead><tr>{["label", "gross", "insurer", "grant", "copay"].map((key) => <th className="p-2 text-start" key={key} scope="col">{t(`lifecycle.${key}`)}</th>)}</tr></thead>
         <tbody>{receipt.data?.lines.map((line, i) => <tr key={i}><th scope="row" className="p-2 text-start">{td(line.label)}</th>{[line.gross, line.insurer, line.grant, line.copay].map((amount, j) => <td className="p-2 tabular-nums" dir="ltr" key={j}>{amount}</td>)}</tr>)}</tbody>

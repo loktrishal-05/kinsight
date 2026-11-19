@@ -30,7 +30,8 @@ export default function Analyst() {
   const bands = ["18-24", "25-29", "30-34", "35-44"];
   const combos = (["en", "ar"] as const).flatMap((g) => (["basic", "standard"] as const).map((v) => [g, v] as const));
   const cell = (g: string, v: string, b: string) => d.comprehension.cells.find((c) => c.language === g && c.level === v && c.age_band === b);
-  const tone = (p: number) => `rgb(var(--b600) / ${Math.max(0.12, (p - 55) / 45).toFixed(2)})`;
+  // Tint capped at 45% so dark text keeps a contrast of at least about 8:1 on every cell (WCAG 1.4.3).
+  const tone = (p: number) => `rgb(var(--b600) / ${(0.08 + 0.37 * Math.min(1, Math.max(0, (p - 55) / 45))).toFixed(2)})`;
   const W = 640, H = 150, step = (W - 40) / Math.max(1, weekly.length - 1);
   const line = weekly.map((w, i) => `${i ? "L" : "M"}${20 + i * step},${H - 14 - ((w.median_wait ?? 0) / maxW) * (H - 34)}`).join(" ");
 
@@ -96,7 +97,8 @@ export default function Analyst() {
       <div className="card" data-demo="heatmap">
         <h2 className="mb-1 text-lg font-semibold">{t("analyst.comp")}</h2>
         <p className="mb-3 text-sm text-muted">{d.comprehension.label}</p>
-        <div className="overflow-x-auto">
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: a horizontally scrolling region must be focusable so keyboard users can scroll it (WCAG 2.1.1) */}
+        <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t("analyst.comp")}>
           <table className="w-full min-w-[26rem] text-sm">
             <thead><tr className="text-xs text-muted"><th className="py-2 text-start font-semibold" />{bands.map((b) => <th key={b} className="px-2 py-2 text-center font-semibold" dir="ltr">{b}</th>)}</tr></thead>
             <tbody>
@@ -104,7 +106,7 @@ export default function Analyst() {
                 <tr key={g + v}>
                   <th scope="row" className="py-1 pe-3 text-start font-medium">{g.toUpperCase()} · {t(`level.${v}_short`)}</th>
                   {bands.map((b) => { const c = cell(g, v, b)!; return (
-                    <td key={b} className="p-1"><div className="grid h-10 place-items-center rounded-lg text-xs font-bold tabular-nums" style={{ background: tone(c.pass_rate), color: c.pass_rate > 78 ? "rgb(var(--onbrand))" : "rgb(var(--ink))" }} title={`n = ${c.n}`} dir="ltr">{Math.round(c.pass_rate)}%</div></td>
+                    <td key={b} className="p-1"><div className="grid h-10 place-items-center rounded-lg text-xs font-bold tabular-nums" style={{ background: tone(c.pass_rate), color: "rgb(var(--ink))" }} title={`n = ${c.n}`} dir="ltr">{Math.round(c.pass_rate)}%</div></td>
                   ); })}
                 </tr>
               ))}

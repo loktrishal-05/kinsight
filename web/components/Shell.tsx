@@ -2,7 +2,7 @@
 import { Info, Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { HOME, PERSONAS, useSession, type Persona } from "@/lib/session";
 import { AssistantLauncher } from "./Assistant";
@@ -15,6 +15,13 @@ export default function Shell({ children }: { children: ReactNode }) {
   const { t, lang, setLang, level, setLevel } = useI18n();
   const { persona, choose } = useSession();
   const path = usePathname();
+  const main = useRef<HTMLElement>(null);
+  const first = useRef(true);
+  // After a client-side navigation, move focus to the new page so screen-reader and keyboard users start at its content.
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    main.current?.focus();
+  }, [path]);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [palette, setPalette] = useState(false);
@@ -70,6 +77,7 @@ export default function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      <a href="#main" className="sr-only z-50 rounded-lg bg-surface px-3 py-2 font-semibold focus:not-sr-only focus:fixed focus:start-3 focus:top-3">{t("a11y.skip")}</a>
       <div role="status" data-testid="fictional-banner" className="flex items-center justify-center gap-2 bg-deep px-4 py-1.5 text-center text-xs font-medium text-deepfg">
         <Info aria-hidden className="h-3.5 w-3.5 shrink-0" />{t("banner")}
       </div>
@@ -81,9 +89,9 @@ export default function Shell({ children }: { children: ReactNode }) {
           </button>
           <Link href="/home" className="flex items-center gap-2 text-lg font-bold tracking-tight text-brand-700">
             <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-sm font-bold text-onbrand">K</span>
-            <span className="hidden sm:inline">{t("app")}</span>
+            <span className="sr-only sm:not-sr-only">{t("app")}</span>
           </Link>
-          <button onClick={() => setPalette(true)} className="btn-quiet ms-2 hidden h-9 w-64 justify-between whitespace-nowrap px-3 font-normal text-muted md:flex" aria-label={t("palette.title")}>
+          <button onClick={() => setPalette(true)} className="btn-quiet ms-2 hidden h-9 w-64 justify-between whitespace-nowrap px-3 font-normal text-muted md:flex">
             <span className="flex items-center gap-2"><Search aria-hidden className="h-4 w-4" />{t("palette.open")}</span>
             <kbd className="whitespace-nowrap rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
           </button>
@@ -111,7 +119,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
           {nav}
         </aside>
-        <main className="mx-auto w-full min-w-0 max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+        <main id="main" ref={main} tabIndex={-1} className="mx-auto w-full min-w-0 max-w-5xl px-4 py-6 outline-none sm:px-8 sm:py-8">
           <div className="space-y-6">{children}</div>
           <footer className="mt-12 border-t border-line pt-4 text-xs text-muted">{t("limits")}</footer>
         </main>
