@@ -1,7 +1,7 @@
 "use client";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { PageHeader } from "@/components/ui";
+import { ABOUT_ESTIMATES, Estimate, hasFigure, PageHeader } from "@/components/ui";
 import { IconArray, Punnett } from "@/components/visuals";
 import { useI18n } from "@/lib/i18n";
 import { GLOSSARY, MYTHS } from "@/lib/learn";
@@ -31,7 +31,7 @@ export default function Learn() {
             {[0.25, 0.5, 0.01].map((r) => <button key={r} data-demo={r === 0.01 ? "chance-small" : r === 0.5 ? "chance-half" : "chance-quarter"} aria-pressed={risk === r} onClick={() => setRisk(r)}>{r === 0.01 ? "1 / 100" : r === 0.25 ? "1 / 4" : "1 / 2"}</button>)}
           </div>
           <IconArray risk={risk} />
-          <p className="text-xs text-muted">{t("learn.chance.note")}</p>
+          <p className="text-xs text-muted"><Estimate est={ABOUT_ESTIMATES} block>{t("learn.chance.note")}</Estimate></p>
         </div>
       </div>
 
@@ -41,7 +41,7 @@ export default function Learn() {
           {MYTHS.map((m, i) => (
             <li key={i} className="grid gap-1 px-5 py-4 md:grid-cols-2 md:gap-6">
               <p className="text-muted line-through decoration-muted/40">{m.myth[l]}</p>
-              <p className="font-medium">{m.fact[l]}</p>
+              <p className="font-medium">{hasFigure(m.fact[l]) ? <Estimate est={ABOUT_ESTIMATES} block>{m.fact[l]}</Estimate> : m.fact[l]}</p>
             </li>
           ))}
         </ul>

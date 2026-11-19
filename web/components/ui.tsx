@@ -1,6 +1,8 @@
 "use client";
 import { Check, CircleDashed, HelpCircle, Minus } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
+import type { EstimateInfo } from "@/lib/estimate";
 import { useI18n } from "@/lib/i18n";
 
 export function PageHeader({ title, lead, action }: { title: string; lead?: string; action?: ReactNode }) {
@@ -41,4 +43,27 @@ export function Steps({ labels, current }: { labels: string[]; current: number }
       ))}
     </ol>
   );
+}
+
+// Every risk number is wrapped here so the label sits next to it, not only in the footer. The API sends the envelope;
+// text that came from a verified template (explanations, Kin replies) has no envelope, so it points at /methods.
+type EstimateRef = Pick<EstimateInfo, "basis" | "method_url">;
+export const ABOUT_ESTIMATES: EstimateRef = { basis: "estimates", method_url: "/methods" };
+export const hasFigure = (text: string) => /\d\s?%|%\s?\d|\d+ (?:in|of|من|में|ல்|இல்|లో|ರಲ್ಲಿ|ರ|ൽ) \d+/i.test(text);
+
+export function Estimate({ est, children, block = false }: { est: EstimateRef; children: ReactNode; block?: boolean }) {
+  const { t } = useI18n();
+  return (
+    <span data-estimate className={block ? "block" : "inline-flex flex-col"}>
+      {children}
+      <span className={`${block ? "block " : ""}text-xs font-normal text-muted`}>
+        {t("estimate.label")} · <Link className="underline" href={`${est.method_url}#${est.basis}`}>{t("estimate.how")}</Link>
+      </span>
+    </span>
+  );
+}
+
+// Explanation paragraphs: any paragraph carrying a figure gets the label right under it.
+export function Paragraphs({ blocks }: { blocks: string[] }) {
+  return <>{blocks.map((b, i) => hasFigure(b) ? <p key={i}><Estimate est={ABOUT_ESTIMATES} block>{b}</Estimate></p> : <p key={i}>{b}</p>)}</>;
 }

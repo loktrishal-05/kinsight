@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { EstimateS } from "./estimate";
 
 export const GeneCallS = z.object({ gene: z.string().trim().min(1), inheritance: z.enum(["AR", "XLR"]), zygosity: z.enum(["HET", "HOM", "HEMI"]), acmg_class: z.number().int().min(1).max(5), requires_orthogonal: z.boolean(), orthogonal_verified: z.boolean(), allele: z.string() });
 export type GeneCall = z.infer<typeof GeneCallS>;
 export const TriageRequestS = z.object({ a: z.array(GeneCallS), b: z.array(GeneCallS), phi: z.number().min(0).max(0.5), pregnant_days: z.number().int().nonnegative().nullable(), dcs: z.number().min(0).max(100).nullable(), teach_back_failures: z.number().int().nonnegative() });
 export type TriageRequest = z.infer<typeof TriageRequestS>;
-export const TriageS = z.object({ tier: z.number().int().min(1).max(3), rules: z.array(z.string()), shared_genes: z.array(z.string()), combined_risk_pct: z.number().min(0).max(100), hold_release: z.boolean(), private_counts: z.object({ a: z.number().int().nonnegative(), b: z.number().int().nonnegative() }), sla_hours: z.number().nonnegative().nullable() });
+export const TriageS = z.object({ tier: z.number().int().min(1).max(3), rules: z.array(z.string()), shared_genes: z.array(z.string()), combined_risk: EstimateS, hold_release: z.boolean(), private_counts: z.object({ a: z.number().int().nonnegative(), b: z.number().int().nonnegative() }), sla_hours: z.number().nonnegative().nullable() });
 export const CheckinRequestS = z.object({ instrument: z.enum(["dcs", "low_literacy_dcs", "pagis"]), answers: z.array(z.union([z.number(), z.string()])).nullable(), total: z.number().nonnegative().nullable() }).superRefine((v, ctx) => {
   const valid = v.instrument === "pagis" ? v.answers === null && v.total !== null : v.total === null && v.answers?.length === (v.instrument === "dcs" ? 16 : 10) && v.answers.every((a) => v.instrument === "dcs" ? typeof a === "number" && Number.isInteger(a) && a >= 0 && a <= 4 : ["yes", "unsure", "no"].includes(String(a)));
   if (!valid) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Complete the selected instrument" });

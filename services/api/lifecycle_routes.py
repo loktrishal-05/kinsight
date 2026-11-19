@@ -34,6 +34,7 @@ from services.lifecycle.cascade import CascadeTokens
 
 from .auth import secret
 from .interfaces import Unavailable
+from .schemas import TriageView, estimate
 
 PERSON = ("person", "demo_operator")
 
@@ -276,14 +277,15 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
         audit(db, identity, "reengagement", "reengagement_checked")
         return {"due_month": due}
 
-    @app.post("/api/lifecycle/triage")
+    @app.post("/api/lifecycle/triage", response_model=TriageView)
     async def triage_evaluate(body: Triage, identity=Depends(roles("counsellor")), db: Session = Depends(db_session)):
         out = triage.evaluate([triage.GeneCall(**c.model_dump()) for c in body.a],
                               [triage.GeneCall(**c.model_dump()) for c in body.b], body.phi,
                               pregnant_days=body.pregnant_days, dcs=body.dcs,
                               teach_back_failures=body.teach_back_failures)
         audit(db, identity, "triage", "triage_evaluated")
-        return {**out, "is_synthetic": True}
+        pct = out.pop("combined_risk_pct")
+        return {**out, "combined_risk": estimate(pct / 100, "independent_loci_union"), "is_synthetic": True}
 
     @app.post("/api/lifecycle/whisper")
     async def whisper(body: Whisper, identity=Depends(roles("person")), db: Session = Depends(db_session)):

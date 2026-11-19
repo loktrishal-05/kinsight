@@ -96,7 +96,7 @@ export const mock = {
     const compound = v.a.some((a) => v.b.some((b) => a.gene === b.gene && a.allele !== b.allele));
     const counts = { a: v.a.filter((g) => !shared.includes(g.gene)).length, b: v.b.filter((g) => !shared.includes(g.gene)).length };
     const rules = [shared.length === 1 && "RULE-01_SINGLE_GENE", shared.length > 1 && "RULE-02_MULTI_GENE", hold && "RULE-03_ORTHOGONAL_HOLD", (counts.a + counts.b > 0) && "RULE-04_PRIVATE_FINDING", compound && "RULE-05_COMPOUND_HET", v.phi > 0 && "RULE-06_CONSANGUINITY_REFLEX", v.pregnant_days !== null && v.pregnant_days < 120 && "RULE-07_PREGNANCY_WINDOW", ((v.dcs ?? 0) > 37.5 || v.teach_back_failures > 0) && "RULE-08_DECISIONAL_SUPPORT"].filter((r): r is string => !!r);
-    return { tier: shared.length ? 3 : rules.length ? 2 : 1, rules, shared_genes: shared, combined_risk_pct: shared.length > 1 ? 43.75 : shared.length ? 25 : 0, hold_release: hold, private_counts: counts, sla_hours: v.pregnant_days !== null && v.pregnant_days < 120 ? 24 : shared.length ? 72 : null };
+    return { tier: shared.length ? 3 : rules.length ? 2 : 1, rules, shared_genes: shared, combined_risk: { value: (shared.length > 1 ? 43.75 : shared.length ? 25 : 0) / 100, kind: "educational_estimate" as const, basis: "independent_loci_union", method_url: "/methods" }, hold_release: hold, private_counts: counts, sla_hours: v.pregnant_days !== null && v.pregnant_days < 120 ? 24 : shared.length ? 72 : null };
   },
   async checkin(body: z.infer<typeof safety.CheckinRequestS>) {
     const v = safety.CheckinRequestS.parse(body);
@@ -175,7 +175,7 @@ export const mock = {
     ensureReleased();
     if (!S.released) return { tier: s.tier, awaiting_counsellor: true, findings: null };
     return { tier: s.tier, awaiting_counsellor: false, related: s.related,
-      findings: shown(s).map((f) => ({ ...f, ...label(f.condition_id), risk_affected: f.risk_affected })) };
+      findings: shown(s).map((f) => ({ ...f, ...label(f.condition_id), risk_affected: { value: f.risk_affected, kind: "educational_estimate" as const, basis: f.formula_id, method_url: "/methods" } })) };
   },
   async grantPooling() {
     if (S.persona === "person_b") S.pooled.b = true; else S.pooled.a = true;

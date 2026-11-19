@@ -2,7 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Heart } from "lucide-react";
 import { useState } from "react";
-import { Notice, PageHeader } from "@/components/ui";
+import { ABOUT_ESTIMATES, Estimate, hasFigure, Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
@@ -40,15 +40,16 @@ export default function Understand() {
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-bold text-brand-700">{qi + 1}</span>
                 {q.text}
               </p>
-              <div className="space-y-2">
-                {opts.map((o) => (
+              {(() => {
+                const list = <div className="space-y-2">{opts.map((o) => (
                   <label key={o.id} className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3.5 py-2.5 text-sm transition-colors hover:bg-brand-50 ${answers[q.id] === o.id ? "border-brand-600 bg-brand-50" : "border-line"}`}>
                     <input type="radio" data-opt={o.id} className="h-4 w-4 accent-[#106b68]" name={q.id} checked={answers[q.id] === o.id}
                       onChange={() => setAnswers({ ...answers, [q.id]: o.id })} />
                     {o.text}
                   </label>
-                ))}
-              </div>
+                ))}</div>;
+                return opts.some((o) => hasFigure(o.text)) ? <Estimate est={ABOUT_ESTIMATES} block>{list}</Estimate> : list;
+              })()}
             </div>
           );
         })}

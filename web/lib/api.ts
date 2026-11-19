@@ -1,5 +1,6 @@
 // Typed API client. NEXT_PUBLIC_MOCK=1 (default) serves fixtures so the UI runs without the backend.
 // The front end never computes a risk figure: every number below comes from the API or a labelled fixture.
+import { EstimateS } from "./estimate";
 import { z } from "zod";
 import { mock } from "./mock";
 import { real } from "./real";
@@ -18,7 +19,7 @@ export const CoupleS = Fictional.extend({
   tier: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullish(),
   awaiting_counsellor: z.boolean().optional(),
   related: z.boolean().optional(),
-  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: z.number().nullable(),
+  findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: EstimateS,
     note_codes: z.array(z.string()), formula_id: z.string().optional(), inheritance: z.string().optional(), inputs: z.record(z.string(), z.number()).optional() })).nullish(),
 });
 export const ConsentS = Fictional.extend({ id: z.string(), grantee_id: z.string(), scope: z.string(), purpose: z.string(), expires_at: z.number(), revoked_at: z.number().nullable() });

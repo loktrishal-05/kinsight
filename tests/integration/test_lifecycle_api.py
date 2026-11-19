@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from services.api.main import create_app
+from services.api.schemas import estimate
 from services.consent.audit import verify_chain
 from services.consent.models import AuditEvent, RateWindow
 from services.consent.policy import reference
@@ -126,7 +127,9 @@ def test_new_routes_happy_path_and_audit(api, method, path, persona, body):
     assert response.status_code == 200, response.text
     out = response.json()
     if path == "triage":
-        assert out == {**triage.evaluate([], [], 0.0), "is_synthetic": True}
+        want = triage.evaluate([], [], 0.0)
+        pct = want.pop("combined_risk_pct")
+        assert out == {**want, "combined_risk": estimate(pct / 100, "independent_loci_union"), "is_synthetic": True}
     elif path == "whisper":
         assert out == {"status": "queued"}
     elif path == "whisper/dispatch":

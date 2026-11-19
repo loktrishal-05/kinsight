@@ -3,7 +3,7 @@ import { exploreGene } from "@/lib/clinvar";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Notice, PageHeader } from "@/components/ui";
+import { Estimate, Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { TRIAGE_PRESETS, geneCall, triagePreset, type TriageRequest } from "@/lib/safety";
 import { useI18n } from "@/lib/i18n";
@@ -66,7 +66,7 @@ function ClinicCards() {
         <p>{t("safety.tier")}: {triage.data.tier}</p>
         <p>{t("safety.rules")}</p><ul>{triage.data.rules.map((r) => <li key={r}>{td(`safety.rule.${r}`)}</li>)}</ul>
         <p>{t("safety.sharedGenes")}: <bdi>{triage.data.shared_genes.join(", ") || t("safety.none")}</bdi></p>
-        <p>{t("safety.chance")}: {t("safety.frequency").replace("{x}", String(triage.data.combined_risk_pct))}</p>
+        <p>{t("safety.chance")}: <Estimate est={triage.data.combined_risk}>{t("safety.frequency").replace("{x}", String(Number(((triage.data.combined_risk.value ?? 0) * 100).toFixed(2))))}</Estimate></p>
         <p>{t(triage.data.hold_release ? "safety.hold" : "safety.noHold")}</p>
         <p>{t("safety.hours")}: {triage.data.sla_hours ?? t("safety.none")}</p>
         <p>{t("safety.privateCounts")}: {triage.data.private_counts.a} / {triage.data.private_counts.b}</p>

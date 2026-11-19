@@ -944,5 +944,8 @@
   "plan.relation.uncle_niece_or_aunt_nephew": "Uncle-niece or aunt-nephew",
   "plan.locked": "Locked",
   "plan.unlockNote": "Finish the short understanding check to open this",
-  "plan.understand": "Open understanding check"
+  "plan.understand": "Open understanding check",
+  "estimate.label": "Educational estimate, not a diagnosis",
+  "estimate.how": "How we calculated this",
+  "methods.formula.independent_loci_union": "Chance that at least one of the genes both partners carry affects a pregnancy, treating genes as independent: 1 − 0.75^m."
 }

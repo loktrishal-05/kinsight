@@ -43,10 +43,10 @@ export default function Analyst() {
         <div className="flex h-4 overflow-hidden rounded-full bg-sunk" role="img" aria-label={tiers.map(([k, n]) => `${t(`tier.${k}`)}: ${n}`).join(", ")}>
           {tiers.map(([k, n]) => <span key={k} style={{ width: `${(100 * n) / total}%`, background: `rgb(var(--b${k === 1 ? 200 : k === 2 ? 500 : 700}))` }} />)}
         </div>
-        <ul className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+        <ul data-not-risk className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
           {tiers.map(([k, n]) => <li key={k} className="flex items-center gap-2"><span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: `rgb(var(--b${k === 1 ? 200 : k === 2 ? 500 : 700}))` }} />{t(`tier.${k}`)} <b className="tabular-nums" dir="ltr">{n} ({Math.round((100 * n) / total)}%)</b></li>)}
         </ul>
-        <p className="text-xs text-muted">{t("analyst.cohortNote").replace("{n}", String(d.cohort.couples)).replace("{r}", String(Math.round(d.cohort.related_share * 100)))}</p>
+        <p data-not-risk className="text-xs text-muted">{t("analyst.cohortNote").replace("{n}", String(d.cohort.couples)).replace("{r}", String(Math.round(d.cohort.related_share * 100)))}</p>
       </div>
 
       <div className="card" data-demo="burden">
@@ -116,7 +116,7 @@ export default function Analyst() {
               <span className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
                 <span>{t("cap.median")} <b className="tabular-nums" dir="ltr">{g.median_days}</b> {t("cap.days")}</span>
                 <span>{t("cap.p95")} <b className="tabular-nums" dir="ltr">{g.p95_days}</b> {t("cap.days")}</span>
-                <span>{t("cap.tier3")} <b className="tabular-nums" dir="ltr">{Math.round(g.tier3_within_window * 100)}%</b></span>
+                <span data-not-risk>{t("cap.tier3")} <b className="tabular-nums" dir="ltr">{Math.round(g.tier3_within_window * 100)}%</b></span>
               </span>
             </li>
           ))}

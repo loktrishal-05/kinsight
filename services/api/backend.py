@@ -31,6 +31,7 @@ from services.genetics import CoupleAssessment, assess_couple
 
 from . import demo_cases
 from .interfaces import Unavailable
+from .schemas import estimate
 
 A, B = "synthetic-a", "synthetic-b"
 CASE, COUPLE = "demo-case", "demo-couple"
@@ -125,7 +126,7 @@ class DemoBackend:
     def op_assessment(self, subject, payload, session):
         a: CoupleAssessment = self.assessment
         return {"tier": a.tier, "engine_version": a.engine_version, "shared_conditions": [f.condition_id for f in a.findings],
-                "findings": [{"condition_id": f.condition_id, "risk_affected": f.risk_affected,
+                "findings": [{"condition_id": f.condition_id, "risk_affected": estimate(f.risk_affected, f.formula_id),
                               "note_codes": f.note_codes} for f in a.findings]}
 
     def op_pedigree(self, subject, payload, session):

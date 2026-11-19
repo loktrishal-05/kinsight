@@ -13,7 +13,7 @@ afterEach(() => vi.restoreAllMocks());
 test("all triage presets return fixed demo chances and applicable rules", async () => {
   for (const preset of TRIAGE_PRESETS) {
     const result = await api.triage(triagePreset(preset));
-    expect(result.combined_risk_pct).toBe(preset === "none" ? 0 : preset === "multi" ? 43.75 : 25);
+    expect(Number(((result.combined_risk.value ?? 0) * 100).toFixed(2))).toBe(preset === "none" ? 0 : preset === "multi" ? 43.75 : 25);
     expect(result.tier).toBe(preset === "none" ? 1 : 3);
     expect(result.hold_release).toBe(preset === "pending");
     expect(result.private_counts).toEqual({ a: 0, b: 0 });
