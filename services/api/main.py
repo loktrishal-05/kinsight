@@ -13,6 +13,7 @@ from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import create_engine, delete, or_, select, update
@@ -94,6 +95,9 @@ def database_kind(url) -> dict:
     else:
         provider = "external"
     return {"dialect": url.get_backend_name(), "provider": provider}
+
+
+MAX_BODY_BYTES = 1_048_576  # the largest legitimate body is a 256 KiB FHIR snapshot; streamed feeds enforce their own caps
 
 
 def create_app(database_url: str | None = None, backend: Backend | None = None) -> FastAPI:
@@ -272,10 +276,24 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             status_code=409, content={"detail": "Concurrent change; retry", "is_synthetic": True}
         )
 
+    origins = [o for o in os.environ.get("KINSIGHT_CORS_ORIGINS", "").split(",") if o]  # none by default: the web app proxies /api
+    app.add_middleware(
+        CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["authorization", "content-type"], max_age=600,
+    )
+
     @app.middleware("http")
     async def no_cache(request: Request, call_next):
+        length = request.headers.get("content-length", "")
+        if length.isdigit() and int(length) > MAX_BODY_BYTES:
+            return JSONResponse(status_code=413, content={"detail": "Body too large", "is_synthetic": True})
         response = await call_next(request)
         response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        if request.url.path.startswith("/api/"):  # the interactive docs need their own scripts, so they are left out
+            response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
         return response
 
     @app.get("/api/health")

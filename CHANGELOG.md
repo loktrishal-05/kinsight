@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added security headers (CSP, HSTS, Permissions-Policy, COOP/CORP), an API CORS allow-list and body cap, and docs/THREAT_MODEL.md.
+
 - Added the what-if scenario explorer at /plan/scenarios: chance per pregnancy, at least one of N, untested partner by relationship, and neutral descriptions of each route, all from the existing engine formulas.
 
 - Added the pre-counselling preparation sheet at /prepare: reviewed neutral question bank (English and Arabic), editable questions, printable sheet and per-section sharing with the counsellor, off by default.
