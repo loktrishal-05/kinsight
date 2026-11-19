@@ -19,7 +19,7 @@ test("the counsellor console shows the FHIR referral and syncs a completed Task"
     await reviewer.getByTestId("signin-submit").click();
     await reviewer.getByRole("button", { name: /^Counsellor/ }).click();
     const approval = reviewer.waitForResponse((r) => r.url().endsWith("/api/counsellor/cases/demo-case/decision"));
-    await reviewer.getByRole("button", { name: "Approve", exact: true }).click();
+    await reviewer.locator('[data-demo="approve"]').click();
     expect((await (await approval).json()).status).toBe("released");
 
     // Answer the stable synthetic quiz via its regular endpoint to reach referral tracking.
