@@ -74,6 +74,8 @@ This profile is for the two KinSight demo participants. Hosted lab credentials, 
 
 Use the following settings on an isolated synthetic deployment before enabling the demo. The lab sender talks directly to Render over HTTPS. The Vercel browser polls through its existing API rewrite and never holds the signing key.
 
+On 2026-11-20 IST, the hosted synthetic lab feed advanced Person A from stage 1 to stage 8 through signed HL7 deliveries. Person B stayed at stage 1. The service rejected an unsigned delivery and a replay. A browser check on the public Journey page showed stage 8, and the result remained pending for review. The Lab report sandbox navigation flag was saved for the next Vercel production build.
+
 | Where | Variable | Value |
 | --- | --- | --- |
 | Render API `kinsight-api-va` | `KINSIGHT_DEMO`, `KINSIGHT_DEMO_AUTH`, `KINSIGHT_LAB_SANDBOX` | `1` on the synthetic demo |
