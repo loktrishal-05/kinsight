@@ -31,6 +31,20 @@ const send = async (panel: ReturnType<Page["getByRole"]>, text: string) => {
 
 test.beforeEach(async ({ page }) => { await page.addInitScript(STUB); });
 
+test("Kin restores only the active persona's history in a shared tab", async ({ page }) => {
+  let panel = await open(page);
+  await send(panel, "Explain my result history marker");
+  await expect(panel.getByText("Explain my result history marker")).toBeVisible();
+  await page.getByRole("button", { name: "Close assistant" }).click();
+  await page.getByRole("button", { name: /^Person B/ }).click();
+  panel = await open(page);
+  await expect(panel.getByText("Explain my result history marker")).toHaveCount(0);
+  await page.getByRole("button", { name: "Close assistant" }).click();
+  await page.getByRole("button", { name: /^Person A/ }).click();
+  panel = await open(page);
+  await expect(panel.getByText("Explain my result history marker")).toBeVisible();
+});
+
 test("the generated logo loads and opens the assistant", async ({ page }) => {
   await page.goto("/home");
   const logo = page.getByRole("button", { name: "Ask Kin" }).locator("img");

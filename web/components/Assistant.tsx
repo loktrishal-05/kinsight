@@ -8,7 +8,7 @@ import { api, KIN_TOOLS, MOCK } from "@/lib/api";
 import { answer, detectLang, suggestions, type Lang, type Link as L } from "@/lib/assistant";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { real } from "@/lib/real";
-import { useSession } from "@/lib/session";
+import { useSession, type Persona } from "@/lib/session";
 import { BCP47, canListen, canSpeak, listen, speak, stopSpeaking } from "@/lib/voice";
 
 type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean };
@@ -28,12 +28,19 @@ export function KinLogo({ size = 40, className = "" }: { size?: number; classNam
   );
 }
 
-export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "page"; onClose?: () => void }) {
-  const { t, lang: uiLang, level } = useI18n();
+type PanelProps = { mode: "float" | "page"; onClose?: () => void };
+
+export function AssistantPanel(props: PanelProps) {
   const { persona } = useSession();
+  return persona && <Conversation key={persona} {...props} persona={persona} />;
+}
+
+function Conversation({ mode: layout, onClose, persona }: PanelProps & { persona: Persona }) {
+  const { t, lang: uiLang, level } = useI18n();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("auto");
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [restored, setRestored] = useState(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
@@ -52,14 +59,21 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
   });
   const fallback: Lang = mode === "auto" ? uiLang : mode;
   const micLang: Lang = mode === "auto" ? fallback : mode;
+  const historyKey = `ks_chat:${persona}`;
 
   useEffect(() => {
-    try { const raw = sessionStorage.getItem("ks_chat"); if (raw) setMsgs(JSON.parse(raw)); } catch { /* private mode */ }
-  }, []);
+    try {
+      sessionStorage.removeItem("ks_chat");
+      const raw = sessionStorage.getItem(historyKey);
+      if (raw) setMsgs(JSON.parse(raw));
+    } catch { /* private mode */ }
+    setRestored(true);
+  }, [historyKey]);
   useEffect(() => {
-    try { sessionStorage.setItem("ks_chat", JSON.stringify(msgs.slice(-30))); } catch { /* private mode */ }
+    if (!restored) return;
+    try { sessionStorage.setItem(historyKey, JSON.stringify(msgs.slice(-30))); } catch { /* private mode */ }
     end.current?.scrollIntoView({ block: "end" });
-  }, [msgs]);
+  }, [historyKey, msgs, restored]);
   useEffect(() => () => { stopRef.current(); stopSpeaking(); }, []);
 
   const say = async (m: Msg) => {
