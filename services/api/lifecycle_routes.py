@@ -4,7 +4,6 @@ State is stored through services/lifecycle/store.py (Postgres via DATABASE_URL, 
 """
 
 # FastAPI evaluates dependency declarations when registering routes.
-# ruff: noqa: B008
 
 import json
 import time
@@ -442,7 +441,7 @@ def register(app, roles, db_session, limit, *, own, check, signed_feed=False) ->
         ledger.settle(led, "DEMO-" + identity.actor.id, lines)
         share = sum((ln["copay"] for ln in lines), ledger.money(0))
         labels = ["Carrier screening package", "Counselling session"]
-        return {"lines": [{"label": lab, **{k: str(v) for k, v in ln.items()}} for lab, ln in zip(labels, lines)],
+        return {"lines": [{"label": lab, **{k: str(v) for k, v in ln.items()}} for lab, ln in zip(labels, lines, strict=False)],
                 "total": str(sum((ln["gross"] for ln in lines), ledger.money(0))), "your_share": str(share),
                 "balanced": led.balanced(), "is_synthetic": True}
 

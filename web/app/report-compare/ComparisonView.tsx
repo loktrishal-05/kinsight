@@ -55,7 +55,9 @@ export default function ComparisonView({ rows }: { rows: [string, ComparisonRow]
       </label>
       {filter !== "all" && <button type="button" className="btn-quiet" onClick={() => setFilter("all")}>{t("reportCompare.allRows")}</button>}
     </div>
-    {shown.length ? <div className="card-flush overflow-x-auto" tabIndex={0} role="region" aria-labelledby="report-comparison">
+    {shown.length ?
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a horizontally scrolling region must be focusable so keyboard users can scroll it (WCAG 2.1.1)
+      <div className="card-flush overflow-x-auto" tabIndex={0} role="region" aria-labelledby="report-comparison">
       <table className="w-full min-w-[36rem] table-fixed divide-y divide-line text-start text-sm">
         <thead className="bg-sunk"><tr>
           <th scope="col" className="p-3 text-start">{t("reportCompare.condition")}</th>

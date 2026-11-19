@@ -4,8 +4,9 @@ import hashlib
 import json
 import math
 import secrets
+from typing import Any, cast
 
-from sqlalchemy import select, update
+from sqlalchemy import CursorResult, select, update
 from sqlalchemy.orm import Session
 
 from .models import AggregateRelease, PrivacyBudget
@@ -27,7 +28,7 @@ def laplace(epsilon: float) -> float:
     return -math.copysign(1.0, u) * math.log1p(-2 * abs(u)) / epsilon
 
 
-def release(db: Session, dataset_id: str, counts: dict[str, int], config: PrivacySettings) -> dict:
+def release(db: Session, dataset_id: str, counts: dict[str, int], config: PrivacySettings) -> dict[str, Any]:
     """dataset_id is a server-owned immutable partition, never a client query.
 
     All releases share one durable budget. Callers commit before returning data.
@@ -50,7 +51,7 @@ def release(db: Session, dataset_id: str, counts: dict[str, int], config: Privac
             "is_synthetic": True,
         }
     epsilon = config.epsilon_per_release
-    charged = db.execute(
+    charged = cast(CursorResult[Any], db.execute(
         update(PrivacyBudget)
         .where(
             PrivacyBudget.id == "global",
@@ -58,7 +59,7 @@ def release(db: Session, dataset_id: str, counts: dict[str, int], config: Privac
             PrivacyBudget.spent + epsilon <= config.epsilon_total,
         )
         .values(spent=PrivacyBudget.spent + epsilon)
-    )
+    ))
     if charged.rowcount != 1:
         raise PermissionError("Privacy budget exhausted")
     noisy = {

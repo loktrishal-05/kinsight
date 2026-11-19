@@ -49,5 +49,5 @@ def test_no_banned_or_stigmatising_phrases_in_any_user_text():
 
 
 def test_carrier_status_never_called_positive_or_negative():
-    for lang, t in texts():
+    for _lang, t in texts():
         assert not re.search(r"\b(positive|negative)\b", t.lower()), t

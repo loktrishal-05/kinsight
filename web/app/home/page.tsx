@@ -39,9 +39,9 @@ export default function Home() {
             {MOCK && (
               <div>
                 <p className="eyebrow-free mb-2">{t("welcome.cases")}</p>
-                <ul data-demo="cases" className="card-flush divide-y divide-line" role="radiogroup" aria-label={t("welcome.cases")}>
+                <div data-demo="cases" className="card-flush divide-y divide-line" role="radiogroup" aria-label={t("welcome.cases")}>
                   {api.scenarios().map((s) => (
-                    <li key={s.id}>
+                    <div key={s.id}>
                       <button role="radio" aria-checked={scenario === s.id} onClick={() => { api.setScenario(s.id); setScenario(s.id); }}
                         className={`flex w-full items-start gap-3 px-4 py-3.5 text-start transition-colors hover:bg-brand-50 ${scenario === s.id ? "bg-brand-50" : ""}`}>
                         <span aria-hidden className={`mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border-2 ${scenario === s.id ? "border-brand-600 bg-brand-600" : "border-line"}`}>
@@ -52,9 +52,9 @@ export default function Home() {
                           <span className="mt-0.5 block text-sm text-muted">{t(`scen.${s.id}.blurb`)}</span>
                         </span>
                       </button>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
             <div className={MOCK ? "" : "lg:col-span-2"} data-demo="personas">

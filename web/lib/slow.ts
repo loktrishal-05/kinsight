@@ -1,6 +1,6 @@
 // Free hosting sleeps when idle, so the first API call after a quiet period can take up to a minute.
 // trackSlow() tells the UI when any call has been pending longer than SLOW_MS, so it can explain the wait.
-export const SLOW_MS = 4000;
+const SLOW_MS = 4000;
 export const SLOW_EVENT = "kin:api-slow";
 
 let slowInFlight = 0;

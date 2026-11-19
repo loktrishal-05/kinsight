@@ -30,6 +30,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
   const list = all.filter((e) => e.label.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 9);
   if (!open) return null;
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: clicking the backdrop is a mouse shortcut; Escape closes it from the keyboard
     <div className="fixed inset-0 z-50 grid place-items-start bg-ink/40 p-4 pt-[12vh] backdrop-blur-sm" onMouseDown={onClose} data-noprint>
       <div role="dialog" aria-modal="true" aria-label={t("palette.title")} data-demo="palette-dialog" className="mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-surface shadow-lift"
         onMouseDown={(e) => e.stopPropagation()}
@@ -45,10 +46,10 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
             className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted/70" />
           <kbd className="rounded border border-line px-1.5 text-[10px] text-muted">Esc</kbd>
         </div>
-        <ul role="listbox" className="max-h-80 overflow-y-auto p-2">
+        <ul className="max-h-80 overflow-y-auto p-2">
           {list.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{t("palette.none")}</li>}
           {list.map((e, n) => (
-            <li key={e.id} role="option" aria-selected={n === i}>
+            <li key={e.id}>
               <button onClick={e.run} onMouseEnter={() => setI(n)}
                 className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-start text-sm ${n === i ? "bg-brand-50 text-brand-800" : ""}`}>
                 <span>{e.label}</span>

@@ -31,7 +31,7 @@ class PersonaRequest(StrictModel):
 
 class TokenResponse(Fictional):
     access_token: str
-    token_type: Literal["bearer"] = "bearer"
+    token_type: Literal["bearer"] = "bearer"  # noqa: S105  OAuth token type, not a secret
     expires_in: int
 
 

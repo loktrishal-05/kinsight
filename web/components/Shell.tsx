@@ -34,8 +34,8 @@ export default function Shell({ children }: { children: ReactNode }) {
   // The public landing page and sign-in stand outside the app chrome; the guided demo overlay still works on them.
   const bare = path === "/" || path === "/signin" || path === "/report-compare" || path.startsWith("/study");
 
-  const personaSelect = (cls: string) => (
-    <select className={`field ${cls}`} value={persona ?? ""} aria-label={t("welcome.persona")}
+  const personaSelect = (cls: string, id: string) => (
+    <select id={id} className={`field ${cls}`} value={persona ?? ""} aria-label={t("welcome.persona")}
       onChange={async (e) => { const p = e.target.value as Persona; await choose(p); router.push(HOME[p]); }}>
       <option value="" disabled>{t("top.choose")}</option>
       {PERSONAS.map((p) => <option key={p} value={p}>{t(`persona.${p}`)}</option>)}
@@ -88,7 +88,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <kbd className="whitespace-nowrap rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
           </button>
           <div className="ms-auto flex items-center gap-2 sm:gap-3" data-demo="topbar">
-            <label className="hidden items-center gap-2 text-xs font-medium text-muted xl:flex">{t("top.viewing")}{personaSelect("h-9 w-44 py-0")}</label>
+            <label htmlFor="persona-top" className="hidden items-center gap-2 text-xs font-medium text-muted xl:flex">{t("top.viewing")}{personaSelect("h-9 w-44 py-0", "persona-top")}</label>
             <LanguageSelect />
             <div role="group" aria-label={t("welcome.level")} className="seg hidden sm:flex">
               {(["basic", "standard"] as const).map((l) => <button key={l} aria-pressed={level === l} onClick={() => setLevel(l)}>{t(`level.${l}`)}</button>)}
@@ -104,7 +104,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </div>
         <aside className={`${open ? "block" : "hidden"} fixed inset-x-0 bottom-0 top-[calc(2rem+3.5rem)] z-20 overflow-y-auto bg-surface lg:hidden`}>
           <div className="space-y-3 border-b border-line p-4">
-            <label className="block text-xs font-medium text-muted">{t("top.viewing")}{personaSelect("mt-1")}</label>
+            <label htmlFor="persona-menu" className="block text-xs font-medium text-muted">{t("top.viewing")}{personaSelect("mt-1", "persona-menu")}</label>
             <div role="group" aria-label={t("welcome.level")} className="seg sm:hidden">
               {(["basic", "standard"] as const).map((l) => <button key={l} aria-pressed={level === l} onClick={() => setLevel(l)} className="flex-1">{t(`level.${l}`)}</button>)}
             </div>

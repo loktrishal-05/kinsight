@@ -38,6 +38,7 @@ REVIEWED = {
     "psycopg": "LGPL-3.0 permits use as a library from a differently licensed program. Installed unmodified from PyPI, dynamically imported, replaceable by the user (pip install), so the LGPL linking conditions are met. No LGPL code is copied into this repository.",
     "psycopg-binary": "Same as psycopg: the prebuilt libpq wheel, unmodified and replaceable. If the Docker image is ever redistributed, ship the LGPL text and offer the source of this package.",
     "hypothesis": "MPL-2.0, dev and test only. Not installed in the API image and not shipped.",
+    "pathspec": "MPL-2.0, pulled in by mypy for type checking in development and CI only. Not installed in the API image and not shipped.",
 }
 
 
@@ -122,7 +123,7 @@ def section(title: str, rows: list[tuple[str, str, str]]) -> list[str]:
     for lic, items in sorted(by.items(), key=lambda kv: (-len(kv[1]), kv[0])):
         mark = {"copyleft": " **(copyleft)**", "unknown": " **(unknown: verify)**"}.get(flag(lic), "")
         out.append(f"| {lic}{mark} | {len(items)} | {', '.join(items)} |")
-    return out + [""]
+    return [*out, ""]
 
 
 def main() -> int:

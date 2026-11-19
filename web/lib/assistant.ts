@@ -14,7 +14,7 @@ export type Ctx = { uiLang: Lang; ownBlocks: string[]; consents: string[] };
 
 const MAX_LEN = 2000;
 const BIDI = /[‎‏]/g;
-export const normalise = (s: string) => s.normalize("NFKC").slice(0, MAX_LEN).replace(BIDI, "");
+const normalise = (s: string) => s.normalize("NFKC").slice(0, MAX_LEN).replace(BIDI, "");
 
 // Script ranges for the languages Kin speaks; Latin letters mean English.
 const SCRIPTS: [Lang, RegExp][] = [["ar", /[؀-ۿ]/g], ["hi", /[ऀ-ॿ]/g], ["ta", /[஀-௿]/g], ["te", /[ఀ-౿]/g], ["kn", /[ಀ-೿]/g], ["ml", /[ഀ-ൿ]/g], ["en", /[A-Za-z]/g]];

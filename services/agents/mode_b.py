@@ -5,7 +5,7 @@ uses a banned phrase, or is not judged entailed is discarded and the original ap
 """
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 from .flags import enabled
 from .verify import load_wording, verify_mode_b

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Linting: ruff with the full rule set (bugbear, bandit, pyupgrade, naming, complexity), mypy --strict on genetics and consent, Biome lint with accessibility rules, knip, and `npm run check`; fixed the accessibility issues they found.
 - Fixed a race: two requests at once could claim the same link in the hash-chained audit log, and the loser got 409. The API now retries a rolled-back transaction itself, and counsellor panels poll less often.
 
 - Added outcome measures for the analyst (results opened, understanding check, preparation, bookings, counsellor requests, cascade reach and testing, imports, overdue reviews) with small-cell suppression, an equity-gap alert and docs/METRICS.md. No marriage or pregnancy outcome is measured.

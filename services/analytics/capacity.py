@@ -25,7 +25,7 @@ def simulate(policy: str, *, seed: int, weeks: int, arrivals_per_week: float, ti
     if policy not in POLICIES:
         raise ValueError(policy)
     rng = random.Random(seed)
-    tiers, weights = zip(*sorted(tier_mix.items()))
+    tiers, weights = zip(*sorted(tier_mix.items()), strict=True)
     cases = []  # (arrival_day, tier)
     for w in range(weeks):
         for _ in range(_poisson(rng, arrivals_per_week)):

@@ -73,5 +73,5 @@ def test_privacy_deny_list_and_labelling(built):
 def test_invalid_config_fails_clearly(tmp_path):
     bad = tmp_path / "panel.yaml"
     bad.write_text("panel_version: x\nconditions:\n  - id: C\n")
-    with pytest.raises(ConfigError, match="panel.yaml"):
+    with pytest.raises(ConfigError, match=r"panel\.yaml"):
         load_panel(bad)

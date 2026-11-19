@@ -2,7 +2,7 @@ import { z } from "zod";
 import { EstimateS } from "./estimate";
 import fixture from "./fixtures/cascade.json";
 
-export const STATUSES = ["not_contacted", "invited", "opened", "tested", "declined", "told", "notified"] as const;
+const STATUSES = ["not_contacted", "invited", "opened", "tested", "declined", "told", "notified"] as const;
 export const METHODS = ["invite", "whisper", "in_person", "none"] as const;
 export type Method = typeof METHODS[number];
 const RelS = z.object({ id: z.string(), relation: z.string(), degree: z.number().int(), chance: EstimateS, status: z.enum(STATUSES), method: z.string().nullable() });

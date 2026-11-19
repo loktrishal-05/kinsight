@@ -45,7 +45,7 @@ def load_bank(root: Path = TEMPLATES) -> list[dict]:
         for q in bank:
             if q["id"] in tr:
                 q["text"][lang] = tr[q["id"]]["text"]
-                for o, t in zip(q.get("options", []), tr[q["id"]].get("options", [])):
+                for o, t in zip(q.get("options", []), tr[q["id"]].get("options", []), strict=False):
                     o[lang] = t
     return bank
 
@@ -60,12 +60,12 @@ def build_quiz(assessment: CoupleAssessment, lang: str, bank: list[dict] | None 
                 continue
             right = fmt_percent(figure, lang)
             others = [fmt_percent(d, lang) for d in DISTRACTORS]
-            texts = [right] + [t for t in dict.fromkeys(others) if t != right][:2]
+            texts = [right, *[t for t in dict.fromkeys(others) if t != right][:2]]
         else:
             texts = [o[lang] for o in q["options"]]  # bank lists the correct option first
         order = sorted(range(len(texts)), key=lambda i: (i * 7 + len(q["id"])) % len(texts) * 10 + i)
         opts = [Option(id="abc"[n], text=texts[i]) for n, i in enumerate(order)]
-        key[q["id"]] = next(o.id for o, i in zip(opts, order) if i == 0)
+        key[q["id"]] = next(o.id for o, i in zip(opts, order, strict=True) if i == 0)
         qs.append(Question(id=q["id"], text=q["text"][lang], options=opts))
     derived = [q for q in qs if q.id == "q_chance_value"]  # keep the engine-derived question when present
     qs = [q for q in qs if q not in derived][:N_QUESTIONS - len(derived)] + derived

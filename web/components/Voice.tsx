@@ -24,7 +24,7 @@ export function ReadAloud({ text }: { text: string }) {
   );
 }
 
-export function Speak({ onText }: { onText: (s: string) => void }) {
+function Speak({ onText }: { onText: (s: string) => void }) {
   const { t, lang } = useI18n();
   const [msg, setMsg] = useState("");
   if (!on) return null;

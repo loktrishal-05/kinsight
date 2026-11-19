@@ -52,15 +52,17 @@ class Pedigree:
 
     def parents(self, pid: str, use_uncertain: bool = False) -> tuple[str | None, str | None]:
         s = self._parents.get(pid, {})
-        ok = lambda r: s[r][0] if r in s and (use_uncertain or s[r][1] != "uncertain") else None
+        def ok(role: str) -> str | None:
+            return s[role][0] if role in s and (use_uncertain or s[role][1] != "uncertain") else None
+
         return ok("father"), ok("mother")
 
     def has_uncertain_edges(self) -> bool:
         return any(c == "uncertain" for s in self._parents.values() for _, c in s.values())
 
-    def depth(self, pid: str, use_uncertain: bool = False, _memo: dict | None = None) -> int:
+    def depth(self, pid: str, use_uncertain: bool = False, _memo: dict[str, int] | None = None) -> int:
         """Longest path from a founder; ancestors always have strictly smaller depth."""
-        memo = {} if _memo is None else _memo
+        memo: dict[str, int] = {} if _memo is None else _memo
         if pid not in memo:
             ps = [p for p in self.parents(pid, use_uncertain) if p]
             memo[pid] = 1 + max(self.depth(p, use_uncertain, memo) for p in ps) if ps else 0

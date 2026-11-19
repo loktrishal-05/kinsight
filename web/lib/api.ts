@@ -20,21 +20,21 @@ export const FHIR_REFERRAL = !MOCK && process.env.NEXT_PUBLIC_FHIR_REFERRAL === 
 export const KIN_TOOLS = !MOCK && process.env.NEXT_PUBLIC_KIN_TOOLS === "1";
 
 const Fictional = z.object({ is_synthetic: z.literal(true).optional() });
-export const ResultS = Fictional.extend({ condition_id: z.string(), status: z.enum(["carrier", "not_detected", "uncertain"]), label: z.string().optional(), label_ar: z.string().optional() });
-export const ExplanationS = Fictional.extend({ blocks: z.array(z.string()), released: z.boolean().default(true) });
-export const CoupleS = Fictional.extend({
+const ResultS = Fictional.extend({ condition_id: z.string(), status: z.enum(["carrier", "not_detected", "uncertain"]), label: z.string().optional(), label_ar: z.string().optional() });
+const ExplanationS = Fictional.extend({ blocks: z.array(z.string()), released: z.boolean().default(true) });
+const CoupleS = Fictional.extend({
   tier: z.union([z.literal(1), z.literal(2), z.literal(3)]).nullish(),
   awaiting_counsellor: z.boolean().optional(),
   related: z.boolean().optional(),
   findings: z.array(z.object({ condition_id: z.string(), label: z.string().optional(), label_ar: z.string().optional(), risk_affected: EstimateS,
     note_codes: z.array(z.string()), formula_id: z.string().optional(), inheritance: z.string().optional(), inputs: z.record(z.string(), z.number()).optional() })).nullish(),
 });
-export const ConsentS = Fictional.extend({ id: z.string(), grantee_id: z.string(), scope: z.string(), purpose: z.string(), expires_at: z.number(), revoked_at: z.number().nullable() });
-export const StepS = z.object({ state: z.string(), owner_id: z.string(), due_at: z.number(), overdue: z.boolean().optional() });
-export const QuizS = z.object({ questions: z.array(z.object({ id: z.string(), text: z.string(), options: z.array(z.object({ id: z.string(), text: z.string() })) })) });
+const ConsentS = Fictional.extend({ id: z.string(), grantee_id: z.string(), scope: z.string(), purpose: z.string(), expires_at: z.number(), revoked_at: z.number().nullable() });
+const StepS = z.object({ state: z.string(), owner_id: z.string(), due_at: z.number(), overdue: z.boolean().optional() });
+const QuizS = z.object({ questions: z.array(z.object({ id: z.string(), text: z.string(), options: z.array(z.object({ id: z.string(), text: z.string() })) })) });
 export const QuizResultS = z.object({ passed: z.boolean(), reexplain: z.boolean().optional(), counsellor_offered: z.boolean().optional() });
-export const RelS = z.object({ a_id: z.string(), b_id: z.string(), type: z.enum(["parent_of", "partner_of"]), confidence: z.enum(["known", "reported", "uncertain"]), confirmed: z.boolean().optional() });
-export const PedigreeS = z.object({
+const RelS = z.object({ a_id: z.string(), b_id: z.string(), type: z.enum(["parent_of", "partner_of"]), confidence: z.enum(["known", "reported", "uncertain"]), confirmed: z.boolean().optional() });
+const PedigreeS = z.object({
   people: z.array(z.object({ id: z.string(), label: z.string().optional(), sex: z.enum(["male", "female"]), gen: z.number(), col: z.number(), confirmed: z.boolean(), parents: z.tuple([z.string(), z.string()]).optional() })),
   related: z.array(z.tuple([z.string(), z.string()])).optional(),
   relationships: z.array(RelS), warnings: z.array(z.string()),
@@ -42,12 +42,12 @@ export const PedigreeS = z.object({
 
 export const TrackerS = z.object({ stages: z.array(z.string()).length(8), stage: z.number().int().min(1).max(8), qc_failure: z.string().nullable(), times: z.record(z.string(), z.number()), source: z.literal("signed_lab").optional() });
 export const CertificateS = z.object({ days_left: z.number().min(0).max(90), expired: z.boolean(), alert_at: z.union([z.literal(60), z.literal(30), z.literal(14), z.literal(7)]).nullable(), genetic_compatibility: z.literal("permanent"), locked: z.boolean().optional(), locked_reason: z.literal("teach_back").optional() });
-export const PairingS = z.object({ id: z.string(), pin: z.string().regex(/^\d{9}$/), expires_in: z.number().nonnegative() });
-export const PairingStatusS = z.object({ status: z.enum(["pending", "active", "revoked", "expired"]) });
+const PairingS = z.object({ id: z.string(), pin: z.string().regex(/^\d{9}$/), expires_in: z.number().nonnegative() });
+const PairingStatusS = z.object({ status: z.enum(["pending", "active", "revoked", "expired"]) });
 const MoneyS = z.string().regex(/^\d+\.\d{2}$/);
 export const ReceiptS = z.object({ lines: z.array(z.object({ label: z.string(), gross: MoneyS, insurer: MoneyS, grant: MoneyS, copay: MoneyS })), total: MoneyS, your_share: MoneyS });
-export const CascadeS = z.object({ token: z.string().min(1) });
-export const RedeemedS = z.object({ condition_id: z.string().min(1), follow_up: z.string().optional() });
+const CascadeS = z.object({ token: z.string().min(1) });
+const RedeemedS = z.object({ condition_id: z.string().min(1), follow_up: z.string().optional() });
 export type PairingStatus = z.infer<typeof PairingStatusS>;
 
 export type Result = z.infer<typeof ResultS>;
@@ -59,7 +59,7 @@ export type Pedigree = z.infer<typeof PedigreeS>;
 
 export type QueueItem = { id: string; tier: number; status: string; due_at?: number; due_days?: number; language?: string; reading_level?: string;
   age_band?: string; related?: boolean; conditions?: number; step?: string };
-export const setToken = (_t: string) => {};
+const setToken = (_t: string) => {};
 
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;

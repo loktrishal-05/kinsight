@@ -28,7 +28,7 @@ export default function SettingsMenu() {
   const toggle = (label: string, on: boolean, f: (v: boolean) => void) => (
     <label className="flex cursor-pointer items-center justify-between gap-3 text-sm">
       {label}
-      <input type="checkbox" role="switch" className="h-4 w-4 accent-[rgb(var(--b600))]" checked={on} onChange={(e) => f(e.target.checked)} />
+      <input type="checkbox" role="switch" aria-checked={on} className="h-4 w-4 accent-[rgb(var(--b600))]" checked={on} onChange={(e) => f(e.target.checked)} />
     </label>
   );
   return (

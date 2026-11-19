@@ -1,7 +1,6 @@
 """Synthetic-only API. Inject a Backend to connect genetics and case workflows."""
 
 # FastAPI evaluates dependency declarations when registering routes.
-# ruff: noqa: B008
 
 import asyncio
 import hashlib
@@ -151,7 +150,7 @@ class RetryConcurrentChange:
                 delivered = True
                 return {"type": "http.request", "body": body, "more_body": False}
 
-            async def capture(message):
+            async def capture(message, sent=sent):  # bind this attempt's list
                 sent.append(message)
 
             await self.app(scope, replay, capture)
@@ -251,7 +250,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
             audit_salt=secret("KINSIGHT_AUDIT_SALT"),
         )
         db.commit()  # A refused HTTP request must not roll back its decision event.
-        if not decision.allowed or require_all and decision.allowed_fields != fields:
+        if not decision.allowed or (require_all and decision.allowed_fields != fields):
             raise HTTPException(403, "Access unavailable")
         return decision
 

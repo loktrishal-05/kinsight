@@ -60,9 +60,9 @@ def calls(function, target, visited=None):
         callee = node.func
         if isinstance(callee, ast.Name) and calls(names.get(callee.id), target, visited):
             return True
-        if isinstance(callee, ast.Attribute) and isinstance(callee.value, ast.Name):
-            if calls(getattr(names.get(callee.value.id), callee.attr, None), target, visited):
-                return True
+        if (isinstance(callee, ast.Attribute) and isinstance(callee.value, ast.Name)
+                and calls(getattr(names.get(callee.value.id), callee.attr, None), target, visited)):
+            return True
     return False
 
 

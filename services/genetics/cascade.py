@@ -7,6 +7,8 @@ form as the partner prior in assess._ar. The partner is screened as a couple, so
 from __future__ import annotations
 
 import math
+from collections.abc import Set as AbstractSet
+from typing import Any
 
 from .kinship import kinship
 from .pedigree import Pedigree
@@ -14,7 +16,9 @@ from .pedigree import Pedigree
 
 def relation(ped: Pedigree, proband: str, other: str) -> str:
     """A plain relation word from the parent links, for display only (the chance comes from kinship, not this)."""
-    parents = lambda p: {x for x in ped.parents(p) if x}  # noqa: E731
+    def parents(pid: str) -> set[str]:
+        return {x for x in ped.parents(pid) if x}
+
     mine = parents(proband)
     if other in mine:
         return "parent"
@@ -31,8 +35,8 @@ def relation(ped: Pedigree, proband: str, other: str) -> str:
     return "relative"
 
 
-def relatives(ped: Pedigree, proband: str, carrier_frequency: float, partners: set[str] = frozenset(),
-              min_r: float = 0.125) -> list[dict]:
+def relatives(ped: Pedigree, proband: str, carrier_frequency: float, partners: AbstractSet[str] = frozenset(),
+              min_r: float = 0.125) -> list[dict[str, Any]]:
     """Blood relatives with r >= min_r (third degree), closest first, ties by id."""
     out = []
     for other in sorted(ped.sex):

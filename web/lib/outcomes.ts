@@ -7,4 +7,4 @@ export const OutcomesS = z.object({
     groups: z.record(z.string(), z.number().nullable()), rates: z.record(z.string(), z.number().nullable()).optional(), equity_alert: z.boolean().optional() })),
   min_cell: z.number().int(), marriage_outcomes_measured: z.literal(false),
 });
-export type Outcomes = z.infer<typeof OutcomesS>;
+

@@ -70,4 +70,4 @@ export function toCSV(rows: StudyResponse[]) {
   return [COLS.join(","), ...rows.map((r) => COLS.map((c) => cell(r[c])).join(","))].join("\n") + "\n";
 }
 
-export const QUESTION_IDS = DATA.scenarios[2].quiz.en.map((q) => q.id);
+const QUESTION_IDS = DATA.scenarios[2].quiz.en.map((q) => q.id);

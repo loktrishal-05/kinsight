@@ -91,10 +91,10 @@ def verify(draft: DraftExplanation, assessment: CoupleAssessment, panel: Panel, 
         covered |= {i for i, f in enumerate(assessment.findings) if f.formula_id == "ar_both_not_detected"}
     errs += [f"coverage: finding {i} not explained" for i in range(len(assessment.findings)) if i not in covered]
     rendered = render_draft(draft, assessment, panel, templates)
-    for r, rb in zip(draft.blocks, rendered):
+    for r, rb in zip(draft.blocks, rendered, strict=True):
         b = tset[r.block_id]
         # 3. every rendered number equals the engine's value
-        for spec, shown in zip(b.slots.values(), rb.slot_values):
+        for spec, shown in zip(b.slots.values(), rb.slot_values, strict=True):
             if shown != slot_value(spec, assessment, panel, draft.language, r.finding_index):
                 errs.append(f"number: {r.block_id} slot differs from engine")
         if r.text_override is not None:
@@ -124,7 +124,9 @@ def verify(draft: DraftExplanation, assessment: CoupleAssessment, panel: Panel, 
 
 def verify_mode_b(original: str, rewritten: str, judge: Callable[[str, str], bool]) -> bool:
     """Mode B (flagged): fact-token preservation plus an entailment judge (a second model). False -> use original."""
-    tokens = lambda t: sorted(re.findall(r"\d+%?", t))
+    def tokens(t: str) -> list[str]:
+        return sorted(re.findall(r"\d+%?", t))
+
     return tokens(original) == tokens(rewritten) and judge(original, rewritten)
 
 

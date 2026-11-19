@@ -27,7 +27,7 @@ def first(view):
 def test_relatives_are_listed_with_labelled_estimates_and_without_the_partner(client):
     ha = _h(client, "person_a")
     view = client.get(TRACKER, headers=ha).json()
-    cond, rels = first(view)
+    _cond, rels = first(view)
     assert rels and all(r["chance"]["kind"] == "educational_estimate" for r in rels)
     assert "synthetic-b" not in {r["id"] for r in rels}
     assert rels[0]["degree"] == 1 and view["counts"]["not_contacted"] >= len(rels)

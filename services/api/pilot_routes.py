@@ -1,7 +1,6 @@
 """Opt-in lab intake and review for the two fictional demo participants."""
 
 # FastAPI evaluates dependency declarations when registering routes.
-# ruff: noqa: B008
 
 import time
 from typing import Annotated, Literal
@@ -43,7 +42,7 @@ class FhirCode(StrictModel):
 
 
 class SandboxDiagnosticReport(StrictModel):
-    resourceType: Literal["DiagnosticReport"]
+    resourceType: Literal["DiagnosticReport"]  # noqa: N815  FHIR field name
     id: Literal["synthetic-a-report", "synthetic-b-report"]
     subject: FhirSubject
     meta: FhirMeta

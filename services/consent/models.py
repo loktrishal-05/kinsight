@@ -2,6 +2,7 @@
 
 import time
 import uuid
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, CheckConstraint, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -106,7 +107,7 @@ class AggregateRelease(Synthetic, Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     dataset_id: Mapped[str] = mapped_column(String, unique=True)
     fingerprint: Mapped[str] = mapped_column(String)
-    cells: Mapped[dict] = mapped_column(JSON)
+    cells: Mapped[dict[str, Any]] = mapped_column(JSON)
     epsilon: Mapped[float] = mapped_column(Float)
 
 
