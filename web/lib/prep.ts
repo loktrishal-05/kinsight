@@ -9,7 +9,7 @@ export type Stage = typeof STAGES[number];
 export type Concern = typeof CONCERNS[number];
 export type Section = typeof SECTIONS[number];
 
-export const QuestionS = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]{1,100}$/), text: z.string().min(1).max(300) });
+const QuestionS = z.object({ id: z.string().regex(/^[A-Za-z0-9_-]{1,100}$/), text: z.string().min(1).max(300) });
 export const SheetS = z.object({
   stage: z.enum(STAGES), values: z.array(z.string()).max(10), concerns: z.array(z.enum(CONCERNS)).max(5), worries_text: z.string().max(1000),
   questions: z.array(QuestionS).max(30), bring: z.array(z.enum(BRING)).max(4), share: z.array(z.enum(SECTIONS)).max(4),

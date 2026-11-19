@@ -1,7 +1,7 @@
 // Typed access to the generated fixtures (scripts/export_web_fixtures.py). Fictional data only.
 import raw from "./data.json";
 
-export type Finding = { condition_id: string; formula_id: string; risk_affected: number | null; note_codes: string[];
+type Finding = { condition_id: string; formula_id: string; risk_affected: number | null; note_codes: string[];
   inputs: Record<string, number>; inheritance: "AR" | "XLR"; status_a: string; status_b: string };
 export type QuizQ = { id: string; text: string; options: { id: string; text: string }[]; answer: string };
 export type Scenario = {

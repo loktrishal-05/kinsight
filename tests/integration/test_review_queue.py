@@ -74,7 +74,7 @@ def test_lab_report_share_creates_one_item_and_approval_resolves_it(client):
     assert client.post(INTAKE, json=report(), headers=hd).status_code in (200, 201)
     for _ in range(2):
         client.post("/api/me/sandbox-report/share", headers=ha)
-    [item] = items(client, "lab_report")
+    [_item] = items(client, "lab_report")
     hc = _h(client, "counsellor")
     revision = client.get("/api/counsellor/sandbox-reports/synthetic-a", headers=hc).json()["report"]["revision"]
     assert client.post("/api/counsellor/sandbox-reports/synthetic-a/approve", headers=hc,

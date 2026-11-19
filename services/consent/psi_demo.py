@@ -41,4 +41,4 @@ def shared_conditions(items_a: list[str], items_b: list[str]) -> list[str]:
     to_a = blind(items_b, kb)             # B -> server -> A
     a_items_double = reblind(to_b, kb)    # B -> server -> A: H(x)^(ab), same order as A's list
     b_items_double = set(reblind(to_a, ka))  # A computes H(y)^(ba) for B's items
-    return sorted(x for x, z in zip(items_a, a_items_double) if z in b_items_double)
+    return sorted(x for x, z in zip(items_a, a_items_double, strict=True) if z in b_items_double)

@@ -195,7 +195,7 @@ def register(app, *, base_url, db_session, roles, own, check, limit):
         if not report.get("version") or snapshot_id(subject, report) != body.snapshot_id:
             raise HTTPException(409, "Source changed. Load the latest version before confirming.")
         row = db.get(FhirImport, subject, populate_existing=True)
-        if row is not None:
+        if row is not None:  # noqa: SIM102  the inner branch revokes after its own early return
             if db.scalar(active_consent(row.consent_id)):
                 if row.snapshot_id == body.snapshot_id:
                     return

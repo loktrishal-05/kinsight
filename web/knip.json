@@ -1,0 +1,5 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["playwright.live.config.ts", "e2e-live/**/*.spec.ts"],
+  "ignoreDependencies": ["@biomejs/biome"]
+}

@@ -84,18 +84,18 @@ def test_ledger_split_refund_and_idempotency():
     thiqa = ledger.line(2650, 100, 0)
     daman = ledger.line(2650, 80, 265)
     assert (daman["insurer"], daman["grant"], daman["copay"]) == (Decimal("2120.00"), Decimal("265.00"), Decimal("265.00"))
-    L = ledger.Ledger()
-    ledger.settle(L, "INV1", [thiqa, daman])
-    n = len(L.entries)
-    ledger.settle(L, "INV1", [thiqa, daman])
-    assert len(L.entries) == n and L.balanced()          # replay posts nothing
-    assert L.balance("ASSET:PATIENT") == Decimal("265.00")
-    assert not ledger.refund(L, "INV1", 0, 3 * 3600)     # outside 2 h
-    assert ledger.refund(L, "INV1", 0, 3600)
-    assert L.balance("ASSET:PATIENT") == 0 and L.balanced()
+    led = ledger.Ledger()
+    ledger.settle(led, "INV1", [thiqa, daman])
+    n = len(led.entries)
+    ledger.settle(led, "INV1", [thiqa, daman])
+    assert len(led.entries) == n and led.balanced()          # replay posts nothing
+    assert led.balance("ASSET:PATIENT") == Decimal("265.00")
+    assert not ledger.refund(led, "INV1", 0, 3 * 3600)     # outside 2 h
+    assert ledger.refund(led, "INV1", 0, 3600)
+    assert led.balance("ASSET:PATIENT") == 0 and led.balanced()
     assert ledger.blinded_receipt([thiqa, daman], 265) == {"total": Decimal("5300.00"), "your_share": Decimal("265.00")}
     with pytest.raises(ValueError):
-        L.post("x", "a", "b", 0)
+        led.post("x", "a", "b", 0)
 
 
 G = triage.GeneCall

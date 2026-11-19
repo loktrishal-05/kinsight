@@ -64,7 +64,7 @@ def run_demo_path(client, log=print) -> dict:
     from services.agents.quiz import build_quiz  # the test side may read the key; clients never can
     key_quiz = build_quiz(client.app.state.backend.assessment, "en")
     right = [ "abc".index(key_quiz.key[q.id]) for q in key_quiz.questions]
-    wrong_one = [(right[0] + 1) % len(key_quiz.questions[0].options)] + right[1:]
+    wrong_one = [(right[0] + 1) % len(key_quiz.questions[0].options), *right[1:]]
     first = client.post(f"/api/cases/{CASE}/quiz/answers", headers=ha, json={"answers": wrong_one}).json()
     assert first["status"] == "reexplain", first  # gentle re-explanation, not a failure
     result = client.post(f"/api/cases/{CASE}/quiz/answers", headers=ha, json={"answers": right}).json()["status"]

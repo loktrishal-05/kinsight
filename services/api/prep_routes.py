@@ -35,12 +35,12 @@ class Question(StrictModel):
 
 class SheetIn(StrictModel):
     stage: Literal["premarital", "preconception", "pregnant"]
-    values: Annotated[list[Alias], Field(max_length=10)] = []
-    concerns: Annotated[list[Literal["family_reaction", "future_children", "cost", "religion", "privacy"]], Field(max_length=5)] = []
+    values: Annotated[list[Alias], Field(max_length=10)] = []  # noqa: RUF012  pydantic copies defaults per instance
+    concerns: Annotated[list[Literal["family_reaction", "future_children", "cost", "religion", "privacy"]], Field(max_length=5)] = []  # noqa: RUF012  pydantic copies defaults per instance
     worries_text: Annotated[str, Field(max_length=1000)] = ""
-    questions: Annotated[list[Question], Field(max_length=30)] = []
-    bring: Annotated[list[Literal["report", "id", "partner", "family_history"]], Field(max_length=4)] = []
-    share: Annotated[list[Literal["values", "concerns", "questions", "bring"]], Field(max_length=4)] = []
+    questions: Annotated[list[Question], Field(max_length=30)] = []  # noqa: RUF012  pydantic copies defaults per instance
+    bring: Annotated[list[Literal["report", "id", "partner", "family_history"]], Field(max_length=4)] = []  # noqa: RUF012  pydantic copies defaults per instance
+    share: Annotated[list[Literal["values", "concerns", "questions", "bring"]], Field(max_length=4)] = []  # noqa: RUF012  pydantic copies defaults per instance
 
 
 def project(sheet: dict, sections) -> dict:
@@ -60,12 +60,12 @@ def register(app, *, db_session, roles, own, check, limit):
     def suggestions(
         stage: Literal["premarital", "preconception", "pregnant"],
         lang: Annotated[str, Query(pattern=r"^[a-z]{2}$")] = "en",
-        concerns: Annotated[list[Literal["family_reaction", "future_children", "cost", "religion", "privacy"]], Query()] = [],
+        concerns: Annotated[list[Literal["family_reaction", "future_children", "cost", "religion", "privacy"]] | None, Query()] = None,
         tier: Annotated[int | None, Query(ge=1, le=3)] = None,
         identity=Depends(roles("person")), db: Session = Depends(db_session),
     ):
         own(db, identity, RESOURCE, {"sections"})
-        return {**suggest(lang, stage, concerns, tier), "is_synthetic": True}
+        return {**suggest(lang, stage, concerns or [], tier), "is_synthetic": True}
 
     @app.get("/api/lifecycle/prep")
     def mine(identity=Depends(roles("person")), db: Session = Depends(db_session)):

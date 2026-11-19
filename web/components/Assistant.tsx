@@ -14,7 +14,7 @@ import { BCP47, canListen, canSpeak, listen, speak, stopSpeaking } from "@/lib/v
 type Msg = { id: number; role: "you" | "kin"; text: string; lang: Lang; links?: L[]; refused?: boolean; voice?: boolean };
 type Mode = "auto" | Lang;
 
-export function KinLogo({ size = 40, className = "" }: { size?: number; className?: string }) {
+function KinLogo({ size = 40, className = "" }: { size?: number; className?: string }) {
   // Generated logo (Canva) with an inline vector fallback if the file is missing.
   const [bad, setBad] = useState(false);
   return bad ? (

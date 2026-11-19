@@ -122,7 +122,7 @@ def section(title: str, rows: list[tuple[str, str, str]]) -> list[str]:
     for lic, items in sorted(by.items(), key=lambda kv: (-len(kv[1]), kv[0])):
         mark = {"copyleft": " **(copyleft)**", "unknown": " **(unknown: verify)**"}.get(flag(lic), "")
         out.append(f"| {lic}{mark} | {len(items)} | {', '.join(items)} |")
-    return out + [""]
+    return [*out, ""]
 
 
 def main() -> int:

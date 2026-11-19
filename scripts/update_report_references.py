@@ -12,7 +12,7 @@ DESTINATION = Path(__file__).resolve().parents[1] / "web/lib/fixtures/medlineplu
 
 def main():
     with urlopen(SOURCE, timeout=30) as response:
-        catalogue = ElementTree.fromstring(response.read())
+        catalogue = ElementTree.fromstring(response.read())  # noqa: S314  fixed NLM catalogue URL, maintainer-run
     links = {"gene": set(), "condition": set()}
     for node in catalogue.findall("topic/topics/topic/url"):
         match = re.fullmatch(r"https://medlineplus\.gov/genetics/(gene|condition)/([a-z0-9-]+)", node.text or "")

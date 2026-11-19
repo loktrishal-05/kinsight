@@ -5,7 +5,7 @@ requires-python = ">=3.10"
 dependencies = ["pydantic>=2.5", "pyyaml>=6.0.3"]
 
 [project.optional-dependencies]
-dev = ["pytest>=9.2.0", "pytest-cov>=6", "hypothesis>=6", "ruff>=0.5", "httpx>=0.28.1", "fhir.resources>=8.3,<9"]
+dev = ["pytest>=9.2.0", "pytest-cov>=6", "hypothesis>=6", "ruff>=0.5", "httpx>=0.28.1", "fhir.resources>=8.3,<9", "mypy>=1.10", "types-PyYAML"]
 api = ["fastapi>=0.110", "uvicorn>=0.54.0", "sqlalchemy>=2", "alembic>=1.13", "langgraph>=1.2.22", "langgraph-checkpoint-sqlite>=3.0", "psycopg[binary]>=3.1", "httpx>=0.28.1", "hl7>=0.4.5,<0.5", "fhir.resources>=8.3,<9"]
 
 [tool.pytest.ini_options]
@@ -16,7 +16,34 @@ pythonpath = ["."]
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E9", "F", "I"]
+select = ["E", "W", "F", "I", "B", "UP", "S", "SIM", "C90", "N", "RUF"]
+# E501: line length is the formatter's job (120). E701/E702: compact one-line guards are the house style.
+# N818: exception names read as states (Unavailable, SourceUnavailable) and are part of the module APIs.
+ignore = ["E501", "E701", "E702", "N818"]
+
+[tool.ruff.lint.mccabe]
+# Ratchet: the rule checkers (verify, case graph, consent decide, HL7 decode) sit at 16-21 today; lower as they are split.
+max-complexity = 21
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Header", "fastapi.Body"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311", "RUF001"]  # asserts, synthetic secrets, and non-Latin digits under test
+# FastAPI dependency factories (`Depends(roles("person"))`) are evaluated once per route by design.
+"services/api/**" = ["B008"]
+# Route registries: complexity comes from the nested route definitions, each of which is simple on its own.
+"services/api/{main,lifecycle_routes,fhir_preview,referral_delivery}.py" = ["C901"]
+# The demo path and scripts are executable checks: assert is the point.
+"services/api/demo_path.py" = ["S101"]
+"scripts/**" = ["S101", "S311", "S603", "S607"]
+# Seeded pseudo-random numbers for synthetic cohorts and simulations, never for secrets.
+"services/{cohort/generate,api/demo_cases,analytics/capacity}.py" = ["S311"]
 
 [tool.setuptools.packages.find]
 include = ["services*"]
+
+[tool.mypy]
+# Strict where the numbers and the consent decisions live; the rest of the codebase follows as it is typed.
+strict = true
+files = ["services/genetics", "services/consent"]

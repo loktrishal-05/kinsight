@@ -28,7 +28,7 @@ def _pedigree(loops: list[str]) -> Pedigree:
     for i, relation in enumerate(sorted(loops, key=lambda r: sum(DEPTHS[r]))):
         for sex in ("male", "female"):
             ped.add_person(f"g{i}{sex}", sex)
-        for partner, depth in zip(("a", "b"), DEPTHS[relation]):
+        for partner, depth in zip(("a", "b"), DEPTHS[relation], strict=True):
             # Prefix-free paths reserve both parents of a shared-ancestor branch.
             path = next(("".join(bits) for bits in product("01", repeat=depth - 1)
                          if not any("".join(bits).startswith(p) or p.startswith("".join(bits))

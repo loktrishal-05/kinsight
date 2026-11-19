@@ -1,6 +1,5 @@
 """Signed synthetic laboratory events and atomic delivery bookkeeping."""
 
-# ruff: noqa: B008
 
 import hmac
 import json
@@ -27,7 +26,7 @@ from .schemas import StrictModel
 
 PATH = "/api/integrations/lab/events"
 HL7_PATH = "/api/integrations/lab/hl7"
-SIGNING_SECRET = "KINSIGHT_LAB_SIGNING_SECRET"
+SIGNING_SECRET = "KINSIGHT_LAB_SIGNING_SECRET"  # noqa: S105  the environment variable name, not its value
 LAB = Actor("synthetic-lab", "lab")
 MAX_BODY_SIZE = 16_384
 WINDOW = 300

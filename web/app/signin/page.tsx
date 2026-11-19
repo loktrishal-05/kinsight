@@ -18,7 +18,7 @@ export default function SignIn() {
     <div className="theme-light relative min-h-[100svh] overflow-hidden bg-canvas text-ink">
       {/* Background: the still lattice is always underneath; the video covers it once it plays. */}
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,#fffaf0,#d6ebe7_75%)]">
-        <svg className="h-full w-full text-brand-600/[.12]">
+        <svg aria-hidden="true" className="h-full w-full text-brand-600/[.12]">
           <defs>
             <pattern id="signin-lattice" width="56" height="56" patternUnits="userSpaceOnUse">
               <path fill="currentColor" d="M28 8.3l5.5 6 8.1-.4-.4 8.1 6 5.5-6 5.5.4 8.1-8.1-.4L28 47.7l-5.5-5.7-8.1.4.4-8.1-6-5.5 6-5.5-.4-8.1 8.1.4z" />

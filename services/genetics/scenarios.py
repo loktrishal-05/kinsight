@@ -5,6 +5,8 @@ A partner who has not been tested is the one-carrier formula with sensitivity 0,
 r + (1 - r)c with r = 2 phi, exactly the engine's prior. The only arithmetic added here is repetition over N pregnancies."""
 from __future__ import annotations
 
+from typing import Any
+
 from .assess import _ar, _xlr
 from .models import Condition
 
@@ -18,7 +20,7 @@ def at_least_one(p: float, n: int) -> float:
     return 1 - (1 - p) ** n
 
 
-def scenario(cond: Condition, status_a: str, status_b: str, phi: float, children: int) -> dict:
+def scenario(cond: Condition, status_a: str, status_b: str, phi: float, children: int) -> dict[str, Any]:
     """status_a is a tested result; status_b is a tested result or 'untested'. XLR assumes partner A is the mother."""
     if status_a not in KNOWN or status_b not in (*KNOWN, "untested"):
         raise ValueError("unsupported statuses")
@@ -35,5 +37,6 @@ def scenario(cond: Condition, status_a: str, status_b: str, phi: float, children
     else:
         fid, inputs, risk, _ = _ar(cond, status_a, status_b, phi)
         partner = inputs.get("post_other")
-    assert risk is not None
+    if risk is None:  # only uncertain results give no figure, and those are refused above
+        raise ValueError("no figure for these statuses")
     return {"formula_id": fid, "per_pregnancy": risk, "at_least_one": at_least_one(risk, children), "partner_carrier": partner}

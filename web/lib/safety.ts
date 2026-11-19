@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { EstimateS } from "./estimate";
 
-export const GeneCallS = z.object({ gene: z.string().trim().min(1), inheritance: z.enum(["AR", "XLR"]), zygosity: z.enum(["HET", "HOM", "HEMI"]), acmg_class: z.number().int().min(1).max(5), requires_orthogonal: z.boolean(), orthogonal_verified: z.boolean(), allele: z.string() });
+const GeneCallS = z.object({ gene: z.string().trim().min(1), inheritance: z.enum(["AR", "XLR"]), zygosity: z.enum(["HET", "HOM", "HEMI"]), acmg_class: z.number().int().min(1).max(5), requires_orthogonal: z.boolean(), orthogonal_verified: z.boolean(), allele: z.string() });
 export type GeneCall = z.infer<typeof GeneCallS>;
 export const TriageRequestS = z.object({ a: z.array(GeneCallS), b: z.array(GeneCallS), phi: z.number().min(0).max(0.5), pregnant_days: z.number().int().nonnegative().nullable(), dcs: z.number().min(0).max(100).nullable(), teach_back_failures: z.number().int().nonnegative() });
 export type TriageRequest = z.infer<typeof TriageRequestS>;

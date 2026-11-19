@@ -47,10 +47,10 @@ def test_role_resource_matrix_default_denies_personal_data(role, resource_type):
             audit_salt=SALT,
         )
         assert decision.allowed == (
-            resource_type == "aggregate"
-            and role == "analyst"
-            or resource_type == "audit"
-            and role == "auditor"
+            (resource_type == "aggregate"
+            and role == "analyst")
+            or (resource_type == "audit"
+            and role == "auditor")
         )
     engine.dispose()
 

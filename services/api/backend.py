@@ -151,7 +151,7 @@ class DemoBackend:
         lang = self.values()["template_set"].split("/")[0]
         quiz = build_quiz(self.assessment, lang)
         picks = payload["answers"]
-        answers = {q.id: "abc"[i] for q, i in zip(quiz.questions, picks) if i < len(q.options)}
+        answers = {q.id: "abc"[i] for q, i in zip(quiz.questions, picks, strict=False) if i < len(q.options)}
         if waiting:
             resume_case(self.graph, CASE, answers)
         else:

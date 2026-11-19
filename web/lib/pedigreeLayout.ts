@@ -1,11 +1,11 @@
 // Turns the API's relationships into positions for the pedigree drawing. Layout only: no genetics is computed here.
 export type Edge = { a_id: string; b_id: string; type: "parent_of" | "partner_of"; confirmed?: boolean };
 export type PersonIn = { id: string; sex: "male" | "female" };
-export type Placed = { id: string; label: string; sex: "male" | "female"; gen: number; col: number; confirmed: boolean; parents?: [string, string] };
+type Placed = { id: string; label: string; sex: "male" | "female"; gen: number; col: number; confirmed: boolean; parents?: [string, string] };
 
 // Short names for the demo family; any other id shows its first letters.
 const LABELS: Record<string, string> = { "synthetic-a": "A", "synthetic-b": "B", "synthetic-relative": "R", gf: "GF", gm: "GM", x: "P1", xs: "S1", y: "P2", ys: "S2" };
-export const labelOf = (id: string) => LABELS[id] ?? id.replace(/^synthetic-/, "").slice(0, 4).toUpperCase();
+const labelOf = (id: string) => LABELS[id] ?? id.replace(/^synthetic-/, "").slice(0, 4).toUpperCase();
 
 export function layoutPedigree(edges: Edge[], people: PersonIn[] = []) {
   const ids = [...new Set([...people.map((p) => p.id), ...edges.flatMap((e) => [e.a_id, e.b_id])])];
