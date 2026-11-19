@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
-import { Notice, PageHeader, Steps } from "@/components/ui";
+import { Estimate, Notice, Paragraphs, PageHeader, Steps } from "@/components/ui";
 import { IconArray, Punnett, TierChip } from "@/components/visuals";
 import { ReadAloud } from "@/components/Voice";
 import { api, MOCK } from "@/lib/api";
@@ -36,16 +36,16 @@ export default function CoupleView() {
         <article key={f.condition_id} data-demo="finding" className="card grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
           <div className="space-y-3">
             <h2 className="text-lg font-semibold">{rowLabel(f, lang)}</h2>
-            {f.risk_affected !== null ? (
-              <p className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold tabular-nums text-brand-700" dir={f.risk_affected > 0 && f.risk_affected < 0.01 ? undefined : "ltr"}>{pct(f.risk_affected)}</span>
-                <span className="text-sm text-muted">{f.inheritance === "XLR" ? t("couple.chanceSon") : t("couple.chance")}</span>
+            {f.risk_affected.value !== null ? (
+              <p className="flex items-start gap-3">
+                <Estimate est={f.risk_affected}><span className="text-5xl font-bold tabular-nums text-brand-700" dir={f.risk_affected.value > 0 && f.risk_affected.value < 0.01 ? undefined : "ltr"}>{pct(f.risk_affected.value)}</span></Estimate>
+                <span className="mt-3 text-sm text-muted">{f.inheritance === "XLR" ? t("couple.chanceSon") : t("couple.chance")}</span>
               </p>
             ) : <p className="text-muted">{t("result.unclear")}</p>}
-            {f.formula_id === "ar_both_carrier" && f.risk_affected !== null && <Punnett affected={f.risk_affected} carrier={f.inputs?.carrier_child ?? 0.5} />}
+            {f.formula_id === "ar_both_carrier" && f.risk_affected.value !== null && <Punnett affected={f.risk_affected.value} carrier={f.inputs?.carrier_child ?? 0.5} />}
             {c.related && f.note_codes.includes("related_partners") && <p className="text-sm text-muted">{t("couple.relatedNote")}</p>}
           </div>
-          {f.risk_affected !== null && <IconArray risk={f.risk_affected} />}
+          {f.risk_affected.value !== null && <IconArray risk={f.risk_affected.value} />}
         </article>
       ))}
       {released && !!expl.data && (
@@ -54,7 +54,7 @@ export default function CoupleView() {
             <h2 className="text-lg font-semibold">{t("result.explanation")}</h2>
             <ReadAloud text={expl.data.blocks.join(" ")} />
           </div>
-          <div className="max-w-read space-y-3">{expl.data.blocks.map((b, i) => <p key={i}>{b}</p>)}</div>
+          <div className="max-w-read space-y-3"><Paragraphs blocks={expl.data.blocks} /></div>
         </div>
       )}
       {c?.tier && <p className="max-w-read text-sm text-muted">{t("couple.uncertainty")}</p>}

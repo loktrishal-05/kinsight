@@ -827,5 +827,8 @@
   "plan.relation.uncle_niece_or_aunt_nephew": "चाचा-भतीजी या बुआ-भतीजा",
   "plan.locked": "बंद",
   "plan.unlockNote": "इसे खोलने के लिए छोटी समझ जाँच पूरी करें",
-  "plan.understand": "समझ जाँच खोलें"
+  "plan.understand": "समझ जाँच खोलें",
+  "estimate.label": "शैक्षिक अनुमान, निदान नहीं",
+  "estimate.how": "हमने इसकी गणना कैसे की",
+  "methods.formula.independent_loci_union": "दोनों साथियों में मिले साझा जीनों में से कम से कम एक के गर्भावस्था को प्रभावित करने की संभावना, जीनों को स्वतंत्र मानकर: 1 − 0.75^m।"
 }

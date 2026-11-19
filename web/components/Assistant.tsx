@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Mic, MicOff, SendHorizontal, Square, Volume2, VolumeX, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ABOUT_ESTIMATES, Estimate, hasFigure } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { answer, detectLang, suggestions, type Lang, type Link as L } from "@/lib/assistant";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
@@ -128,7 +129,7 @@ export function AssistantPanel({ mode: layout, onClose }: { mode: "float" | "pag
           <div key={m.id} className={`flex flex-col gap-1.5 ${m.role === "you" ? "items-end" : "items-start"}`}>
             <p dir={m.lang === "ar" ? "rtl" : "ltr"} data-lang={m.lang} data-role={m.role}
               className={`max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2 text-sm ${m.role === "you" ? "rounded-ee-md bg-brand-600 text-onbrand" : m.refused ? "rounded-es-md bg-note-bg text-note-fg" : "rounded-es-md bg-sunk"}`}>
-              {m.voice && <Mic aria-hidden className="me-1.5 inline h-3 w-3 opacity-70" />}{m.text}
+              {m.voice && <Mic aria-hidden className="me-1.5 inline h-3 w-3 opacity-70" />}{m.role === "kin" && hasFigure(m.text) ? <Estimate est={ABOUT_ESTIMATES} block>{m.text}</Estimate> : m.text}
             </p>
             {m.links?.map((l) => (
               <button key={l.href} className="btn-quiet btn-sm" onClick={() => { router.push(l.href); onClose?.(); }}>{l.label}</button>

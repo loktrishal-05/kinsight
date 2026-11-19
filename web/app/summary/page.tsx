@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
-import { PageHeader, StatusChip } from "@/components/ui";
+import { PageHeader, Paragraphs, StatusChip } from "@/components/ui";
 import { TierChip } from "@/components/visuals";
 import { api } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
@@ -29,7 +29,7 @@ export default function Summary() {
       </div>
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("result.explanation")}</h2>
-        <div className="max-w-read space-y-2">{expl.data?.blocks.map((b, i) => <p key={i}>{b}</p>)}</div>
+        <div className="max-w-read space-y-2"><Paragraphs blocks={expl.data?.blocks ?? []} /></div>
       </div>
       <div className="card">
         <h2 className="mb-3 text-lg font-semibold">{t("summary.ask")}</h2>

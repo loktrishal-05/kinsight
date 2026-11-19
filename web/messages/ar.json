@@ -828,5 +828,8 @@
   "plan.relation.uncle_niece_or_aunt_nephew": "عم أو خال وابنة أخ أو أخت، أو عمة أو خالة وابن أخ أو أخت",
   "plan.locked": "مغلق",
   "plan.unlockNote": "أكمل اختبار الفهم القصير لفتح هذا",
-  "plan.understand": "افتح اختبار الفهم"
+  "plan.understand": "افتح اختبار الفهم",
+  "estimate.label": "تقدير تعليمي وليس تشخيصا",
+  "estimate.how": "كيف حسبنا هذا",
+  "methods.formula.independent_loci_union": "فرصة أن يؤثر جين واحد على الأقل من الجينات التي يحملها الشريكان في الحمل، مع اعتبار الجينات مستقلة: 1 − 0.75^m."
 }

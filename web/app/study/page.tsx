@@ -4,6 +4,7 @@
 // it on their own device; ?level=basic|standard fixes the reading level and ?case=s1..s7 the case.
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Paragraphs } from "@/components/ui";
 import { Brand, LangSwitch } from "@/components/PublicChrome";
 import { useI18n } from "@/lib/i18n";
 import { assignLevel, grade, newStudyId, saveResponse, studyCase, type Level } from "@/lib/study";
@@ -71,7 +72,7 @@ export default function Study() {
             <h1 id="sr" className="mt-1 font-display text-2xl font-bold tracking-[-0.02em]">{t("study.readTitle")}</h1>
             <p className="mt-2 text-sm text-ink/70">{t("study.readLead")}</p>
             <div className="mt-6 space-y-3 rounded-2xl bg-sunk p-5 leading-relaxed" data-testid="study-text">
-              {c.blocks.map((b, i) => <p key={i}>{b}</p>)}
+              <Paragraphs blocks={c.blocks} />
             </div>
             <div className="mt-6"><button className={primary} onClick={() => setStep("quiz")} data-testid="study-read">{t("study.readDone")}<ArrowRight aria-hidden className="h-4 w-4 rtl:rotate-180" /></button></div>
           </section>

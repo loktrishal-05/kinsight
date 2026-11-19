@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, MessageSquareText } from "lucide-react";
 import Link from "next/link";
 import FhirFindings from "@/components/FhirFindings";
-import { Notice, PageHeader, StatusChip } from "@/components/ui";
+import { Notice, PageHeader, Paragraphs, StatusChip } from "@/components/ui";
 import { ReadAloud } from "@/components/Voice";
 import { api, FHIR_SANDBOX } from "@/lib/api";
 import { rowLabel } from "@/lib/fixtures";
@@ -41,7 +41,7 @@ export default function MyResult() {
           <ReadAloud text={expl.data?.blocks.join(" ") ?? ""} />
         </div>
         <div className="max-w-read space-y-3" data-testid="explanation">
-          {expl.data?.blocks.map((b, i) => <p key={i}>{b}</p>)}
+          <Paragraphs blocks={expl.data?.blocks ?? []} />
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-3">

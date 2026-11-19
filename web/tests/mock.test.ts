@@ -21,7 +21,7 @@ test("couple figure waits for both partners, then (tier 3) for the counsellor, t
   expect((await mock.couple()).awaiting_counsellor).toBe(true);
   await mock.decide("demo-case", "approve");
   const c = await mock.couple();
-  expect(c.findings?.[0].risk_affected).toBe(0.25);
+  expect(c.findings?.[0].risk_affected.value).toBe(0.25);
 });
 
 test("lower tiers are released as soon as both agree (no counsellor gate)", async () => {
@@ -38,7 +38,7 @@ test("a result that is not clear gives no figure", async () => {
   await mock.login("person_a"); await mock.grantPooling();
   await mock.login("person_b"); await mock.grantPooling();
   await mock.decide("demo-case", "approve");
-  expect((await mock.couple()).findings?.[0].risk_affected).toBeNull();
+  expect((await mock.couple()).findings?.[0].risk_affected.value).toBeNull();
 });
 
 test("one wrong answer re-explains, a second failure offers a counsellor, never a third loop", async () => {

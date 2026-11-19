@@ -1,5 +1,6 @@
 "use client";
 import { Check, Circle, Clock3 } from "lucide-react";
+import { ABOUT_ESTIMATES, Estimate } from "@/components/ui";
 import { useI18n } from "@/lib/i18n";
 
 export function TierChip({ tier }: { tier: number }) {
@@ -26,7 +27,7 @@ export function IconArray({ risk }: { risk: number }) {
           );
         })}
       </svg>
-      <figcaption className="text-sm text-muted">{n === 0 ? t("viz.lessThanOne") : t("viz.outOf").replace("{n}", String(n))}</figcaption>
+      <figcaption className="text-sm text-muted"><Estimate est={ABOUT_ESTIMATES} block>{n === 0 ? t("viz.lessThanOne") : t("viz.outOf").replace("{n}", String(n))}</Estimate></figcaption>
     </figure>
   );
 }
@@ -50,7 +51,7 @@ export function Punnett({ affected, carrier }: { affected: number; carrier: numb
         <span className="grid place-items-center px-1">c</span>{cell("carrier", "cN")}{cell("affected", "cc")}
       </div>
       <figcaption className="max-w-xs text-sm text-muted">
-        {t("punnett.axes")} {t("punnett.caption").replace("{aff}", pct(affected)).replace("{car}", pct(carrier))}
+        <Estimate est={ABOUT_ESTIMATES} block>{t("punnett.axes")} {t("punnett.caption").replace("{aff}", pct(affected)).replace("{car}", pct(carrier))}</Estimate>
       </figcaption>
     </figure>
   );

@@ -11,6 +11,7 @@ const FORMULAS: { id: string; en: string }[] = [
   { id: "ar_one_carrier_residual", en: "prior = r + (1 − r)·c;  post = prior(1−s) / (prior(1−s) + (1−prior));  risk = ¼ · post" },
   { id: "ar_both_not_detected", en: "p = c(1−s) / (c(1−s) + (1−c));  risk = ¼ · p²" },
   { id: "xlr_mother_carrier", en: "each son affected = 1/2 · each daughter carrier = 1/2" },
+  { id: "independent_loci_union", en: "risk = 1 − 0.75^m   (m = genes both partners carry)" },
   { id: "kinship", en: "k(i,j) = ½ · (k(father_i, j) + k(mother_i, j));  F_child = k(father, mother)" },
 ];
 const KIN: [string, string][] = [["First cousins", "1/16"], ["Double first cousins", "1/8"], ["Full siblings", "1/4"], ["Half-siblings", "1/8"], ["Uncle and niece", "1/8"], ["Second cousins", "1/64"], ["Unrelated", "0"]];
@@ -38,7 +39,7 @@ export default function Methods() {
         <h2 className="border-b border-line px-5 py-3 text-lg font-semibold">{t("methods.formulas")}</h2>
         <ul className="divide-y divide-line">
           {FORMULAS.map((f) => (
-            <li key={f.id} className="px-5 py-4">
+            <li key={f.id} id={f.id} className="px-5 py-4 target:bg-brand-50">
               <p className="text-sm font-semibold">{f.id.replaceAll("_", " ")}</p>
               <p className="my-1.5 overflow-x-auto rounded-lg bg-sunk px-3 py-2 font-mono text-[0.8rem]" dir="ltr">{f.en}</p>
               <p className="max-w-read text-sm text-muted">{t(`methods.formula.${f.id}`)}</p>

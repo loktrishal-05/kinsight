@@ -151,9 +151,22 @@ class Chat(StrictModel):
     text: Annotated[str, Field(min_length=1, max_length=2000)]
 
 
+class Estimate(StrictModel):
+    """Every risk figure leaves the API as an educational estimate, never as a bare number."""
+
+    value: Annotated[float, Field(ge=0, le=1)] | None  # a chance between 0 and 1; None = needs counsellor review
+    kind: Literal["educational_estimate"] = "educational_estimate"
+    basis: Alias  # id of the published formula in /methods that produced the value
+    method_url: Literal["/methods"] = "/methods"
+
+
+def estimate(value: float | None, basis: str) -> dict:
+    return Estimate(value=value, basis=basis).model_dump()
+
+
 class CoupleFinding(StrictModel):
     condition_id: Alias
-    risk_affected: Annotated[float, Field(ge=0, le=1)] | None
+    risk_affected: Estimate
     note_codes: list[Alias]
 
 
@@ -183,6 +196,16 @@ class CaseView(Fictional):
 class AggregateView(Fictional):
     cells: dict[str, float | None]
     budget_remaining: float
+
+
+class TriageView(Fictional):
+    tier: Literal[1, 2, 3]
+    rules: list[str]
+    shared_genes: list[str]
+    combined_risk: Estimate
+    hold_release: bool
+    private_counts: dict[str, int]
+    sla_hours: float | None
 
 
 class Evaluation(Fictional):
