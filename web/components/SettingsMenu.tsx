@@ -9,6 +9,13 @@ export default function SettingsMenu() {
   const { t, lang } = useI18n();
   const { prefs, set } = usePrefs();
   const [open, setOpen] = useState(false);
+  // The browser offers installation once it decides the app qualifies; keep that offer for an explicit button.
+  const [install, setInstall] = useState<{ prompt: () => Promise<void> } | null>(null);
+  useEffect(() => {
+    const keep = (e: Event) => { e.preventDefault(); setInstall(e as unknown as { prompt: () => Promise<void> }); };
+    window.addEventListener("beforeinstallprompt", keep);
+    return () => window.removeEventListener("beforeinstallprompt", keep);
+  }, []);
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const close = (e: MouseEvent) => { if (box.current && !box.current.contains(e.target as Node)) setOpen(false); };
@@ -43,6 +50,12 @@ export default function SettingsMenu() {
           {seg(t("settings.text"), prefs.text, [[0, "A"], [1, "A+"], [2, "A++"]], (v) => set({ text: v as 0 | 1 | 2 }))}
           {toggle(t("settings.contrast"), prefs.contrast, (v) => set({ contrast: v }))}
           {toggle(t("settings.motion"), prefs.reduceMotion, (v) => set({ reduceMotion: v }))}
+          {install && (
+            <div className="space-y-1" data-demo="install">
+              <button type="button" className="btn-quiet btn-sm w-full" onClick={() => { void install.prompt(); setInstall(null); }}>{t("settings.install")}</button>
+              <p className="text-xs text-muted">{t("settings.installNote")}</p>
+            </div>
+          )}
           {MOCK && (
             <label className="block text-xs font-semibold text-muted">
               {t("settings.case")}

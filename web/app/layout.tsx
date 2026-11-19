@@ -5,6 +5,8 @@ import ServiceWorker from "@/components/ServiceWorker";
 import Shell from "@/components/Shell";
 
 export const metadata = { title: "KinSight", description: "Fictional demo: inherited-risk navigator", manifest: "/manifest.webmanifest" };
+// Draw under notches and home indicators; safe-area insets in globals.css keep content clear of them.
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

@@ -1,4 +1,23 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>KinSight - Offline</title>
 <style>body{font:1.1rem system-ui,sans-serif;max-width:36rem;margin:12vh auto;padding:1.5rem;color:#253b40;background:#faf9f6}a{color:#285d66}</style></head>
-<body><main><h1>KinSight</h1><h2>You are offline</h2><p>This page is not available offline. Previously opened pages may be available. Booking and other clinic requests need a connection.</p><p><a href="/">Try opening KinSight again</a></p></main></body></html>
+<body><main><h1>KinSight</h1><h2 id="t">You are offline</h2><p id="d">This page is not available offline. Previously opened pages may be available. Booking and other clinic requests need a connection.</p><p><a id="a" href="/">Try opening KinSight again</a></p></main>
+<script>
+// The offline page speaks the language the person chose in the app (stored on this device as ks_lang).
+(function () {
+  var T = {
+    ar: ["أنت غير متصل", "هذه الصفحة غير متاحة دون اتصال. قد تكون الصفحات التي فتحتها سابقا متاحة. يحتاج الحجز والطلبات الأخرى إلى اتصال.", "حاول فتح KinSight مرة أخرى", "rtl"],
+    hi: ["आप ऑफ़लाइन हैं", "यह पेज ऑफ़लाइन उपलब्ध नहीं है। पहले खोले गए पेज उपलब्ध हो सकते हैं। बुकिंग और अन्य अनुरोधों के लिए कनेक्शन चाहिए।", "KinSight फिर से खोलें", "ltr"],
+    ta: ["நீங்கள் இணைப்பில் இல்லை", "இந்தப் பக்கம் இணைப்பின்றி கிடைக்காது. முன்பு திறந்த பக்கங்கள் கிடைக்கலாம். முன்பதிவு மற்றும் பிற கோரிக்கைகளுக்கு இணைப்பு தேவை.", "KinSight ஐ மீண்டும் திறக்கவும்", "ltr"],
+    te: ["మీరు ఆఫ్‌లైన్‌లో ఉన్నారు", "ఈ పేజీ ఆఫ్‌లైన్‌లో అందుబాటులో లేదు. ఇంతకు ముందు తెరిచిన పేజీలు అందుబాటులో ఉండవచ్చు. బుకింగ్ మరియు ఇతర అభ్యర్థనలకు కనెక్షన్ అవసరం.", "KinSight ను మళ్లీ తెరవండి", "ltr"],
+    kn: ["ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದ್ದೀರಿ", "ಈ ಪುಟ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ. ಹಿಂದೆ ತೆರೆದ ಪುಟಗಳು ಲಭ್ಯವಿರಬಹುದು. ಬುಕಿಂಗ್ ಮತ್ತು ಇತರ ವಿನಂತಿಗಳಿಗೆ ಸಂಪರ್ಕ ಬೇಕು.", "KinSight ಅನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ", "ltr"],
+    ml: ["നിങ്ങൾ ഓഫ്‌ലൈനിലാണ്", "ഈ പേജ് ഓഫ്‌ലൈനിൽ ലഭ്യമല്ല. മുമ്പ് തുറന്ന പേജുകൾ ലഭ്യമായേക്കാം. ബുക്കിംഗിനും മറ്റ് അഭ്യർത്ഥനകൾക്കും കണക്ഷൻ വേണം.", "KinSight വീണ്ടും തുറക്കുക", "ltr"]
+  };
+  var lang; try { lang = localStorage.getItem("ks_lang"); } catch (e) { lang = null; }
+  var t = lang && T[lang]; if (!t) return;
+  document.documentElement.lang = lang; document.documentElement.dir = t[3];
+  document.getElementById("t").textContent = t[0];
+  document.getElementById("d").textContent = t[1];
+  document.getElementById("a").textContent = t[2];
+})();
+</script></body></html>
