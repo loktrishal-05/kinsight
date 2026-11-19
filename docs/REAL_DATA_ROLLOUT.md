@@ -115,6 +115,27 @@ Set `KINSIGHT_FHIR_SANDBOX_URL=http://127.0.0.1:8088/fhir` on the demo API and `
 
 The confirmed synthetic import is separate from the illustrative couple assessment. SMART authorization, approved patient identity mapping and hosted acceptance remain part of [#28](https://github.com/loktrishal-05/kinsight/issues/28). [SMART App Launch](https://hl7.org/fhir/smart-app-launch/app-launch.html)
 
+### Hosted FHIR R4 rollout checklist
+
+This checklist prepares the fictional HAPI path for the hosted demo. An operator with deployment access applies the settings and records the checks. Both the FHIR source and application database must contain only synthetic demo data.
+
+| Where | Variable | Value |
+| --- | --- | --- |
+| Render API `kinsight-api-va` | `KINSIGHT_DEMO`, `KINSIGHT_DEMO_AUTH` | `1` on the synthetic demo |
+| Render API `kinsight-api-va` | `KINSIGHT_FHIR_SANDBOX_URL` | HTTPS base for a dedicated HAPI R4 sandbox, for example `https://<sandbox-host>/fhir` |
+| Vercel web project `kinsight` | `KINSIGHT_API_URL` | Render service origin, without `/api` |
+| Vercel web project `kinsight` | `NEXT_PUBLIC_MOCK`, `NEXT_PUBLIC_FHIR_SANDBOX` | `0` and `1`, respectively |
+
+- [ ] Choose a disposable HAPI R4 server reachable from Render. Verify `<FHIR base>/metadata` reports FHIR R4. Use `python -m scripts.export_fhir_bundles --upload "$FHIR_URL"` from the repository root to load the fictional fixtures. Keep this write target separate from any EHR or clinic system.
+- [ ] Verify the existing Render database, token secret and audit salt are configured. Use the Render service's Environment page to stage only the listed values, then deploy the API. Keep the existing database connection and signing settings in Render. [Render environment settings](https://render.com/docs/configure-environment-variables)
+- [ ] Deploy a Vercel build with the listed variables in the intended environment. Public flags and the API rewrite are read when building the web app. Keep the sandbox flag disabled in previews that point to a shared production API. [Vercel environments](https://vercel.com/docs/environment-variables)
+- [ ] Compare `/api/health` on Render and Vercel. Check that the hosted Render OpenAPI includes `POST /api/me/imports/fhir`. A missing route points to an older API build or an unset FHIR base. A report marked unavailable points to the source connection or fixture response.
+- [ ] On the hosted site, sign in as the two fictional people in separate browser profiles. Check that each person sees only the assigned fixture. Confirm Person A’s report and check that its findings wait for counsellor approval. Check approval for the current revision and verify Person B cannot see Person A’s import.
+- [ ] Send a correction to the disposable HAPI sandbox with `python -m scripts.export_fhir_bundles --upload "$FHIR_URL" --correction`. Verify stale findings disappear and require renewed review. Restore the initial fixture. Record the web/API revisions, result and time without including report content or credentials.
+- [ ] If the hosted check fails, rebuild with `NEXT_PUBLIC_FHIR_SANDBOX=0` to hide the entry point. Remove `KINSIGHT_FHIR_SANDBOX_URL` from the Render demo service and redeploy to disable the API routes.
+
+The current HAPI import uses fixed synthetic account bindings. SMART requires a separate client registration, trusted issuer discovery, a registered redirect URI and an authorization-code flow with PKCE. The current build exposes no SMART settings that an operator can enable. Track SMART launch and the hosted acceptance result on the issue. [HL7 SMART App Launch](https://hl7.org/fhir/smart-app-launch/) · [Issue #28](https://github.com/loktrishal-05/kinsight/issues/28)
+
 ### Send a synthetic referral to HAPI
 
 Set `KINSIGHT_FHIR_REFERRAL_URL` to a private disposable HAPI R4 base on the demo API and `NEXT_PUBLIC_FHIR_REFERRAL=1` on the HTTP-backed web build. Person A opens their result and explicitly allows the sandbox referral. After release and teach-back, the assigned counsellor records a requested service stage and selects **Approve and send sandbox referral**. KinSight creates a ServiceRequest and Task in one transaction. Retries use conditional creates with the same identifiers.
