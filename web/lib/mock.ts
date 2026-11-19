@@ -5,6 +5,7 @@ import * as safety from "./safety";
 import * as plan from "./plan";
 import * as prepLib from "./prep";
 import * as scen from "./scenario";
+import * as cas from "./cascadeTracker";
 import type { PairingStatus } from "./api";
 import { liveReclassify } from "./clinvar";
 import { liveFrequency } from "./gnomad";
@@ -24,15 +25,15 @@ const DEMO_CERTIFICATES = Array.from({ length: 121 }, (_, elapsed) => {
   return { days_left, expired: elapsed >= 90, alert_at: [7, 14, 30, 60].find((n) => days_left <= n) ?? null, genetic_compatibility: "permanent" as const };
 });
 type Pair = { id: string; pin: string; expires_at: number; status: PairingStatus["status"] };
-type Link = { condition_id: string; expires_at: number; used: boolean };
+type Link = { condition_id: string; expires_at: number; used: boolean; contact?: string };
 type Consent = { id: string; grantee_id: string; scope: string; purpose: string; expires_at: number; revoked_at: number | null };
 type Step = { state: string; owner_id: string; due_at: number; overdue?: boolean };
 type State = { persona: string; scenario: string; pooled: { a: boolean; b: boolean }; released: boolean; attempts: number; passed: boolean;
-  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>; reviews: Record<string, string>;
+  bookings: Record<string, plan.Booking>; bookingSequence: number; prep: Record<string, prepLib.Sheet>; reviews: Record<string, string>; cascade: Record<string, { status: string; method: string }>;
   vaults: Record<string, { pin: string; decoy_pin: string }>; labStage: number; pairs: Pair[]; links: Record<string, Link>; consents: Consent[]; invited: boolean; accepted: boolean; steps: Step[]; offset: number; counselling: boolean };
 
 const FRESH = (): State => ({ persona: "", scenario: "s3", pooled: { a: false, b: false }, released: false, attempts: 0, passed: false,
-  bookings: {}, bookingSequence: 0, prep: {}, reviews: {}, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
+  bookings: {}, bookingSequence: 0, prep: {}, reviews: {}, cascade: {}, vaults: {}, labStage: 1, pairs: [], links: {}, consents: [], invited: false, accepted: false, steps: [], offset: 0, counselling: false });
 const load = (): State => {
   try { const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem("ks_mock"); if (raw) return { ...FRESH(), ...JSON.parse(raw) }; } catch { /* private mode */ }
   return FRESH();
@@ -57,6 +58,21 @@ const getPair = (id: string) => {
 const DEMO_NASAB = { none: 0, second_cousins: 0.015625, first_cousins_once_removed: 0.03125, first_cousins: 0.0625, double_first_cousins: 0.125, uncle_niece_or_aunt_nephew: 0.125 };
 const DEMO_SLOTS = { 120: [1793923200, 1793930400], 48: [1793750400, 1793757600], 12: [1793664000, 1793671200] };
 export const mock = {
+  async cascadeTracker() { return cas.mockTracker(S.persona || "person_a", S.cascade); },
+  async cascadeContact(relative_id: string, condition_id: string, method: cas.Method) {
+    const persona = S.persona || "person_a", key = `${persona}|${relative_id}|${condition_id}`;
+    if (!cas.mockTracker(persona, {}).conditions.some((c) => c.condition_id === condition_id && c.relatives.some((r) => r.id === relative_id))) throw new Error("404");
+    const status = { invite: "invited", whisper: "notified", in_person: "told", none: "not_contacted" }[method];
+    S.cascade[key] = { status, method };
+    let token: string | undefined;
+    if (method === "invite") { token = `demo-link-${Object.keys(S.links).length + 1}`; S.links[token] = { condition_id, expires_at: now() + day, used: false, contact: key }; }
+    save(); return { status, ...(token ? { token } : {}) };
+  },
+  async cascadeOutcome(code: string, outcome: "tested" | "declined") {
+    const key = code.startsWith("mock-") ? code.slice(5) : "";
+    if (!S.cascade[key]) throw new Error("403");
+    S.cascade[key].status = outcome; save(); return { status: "recorded" };
+  },
   // Review queue in mock mode mirrors the API producers: a pooled couple waiting for review, and a request to talk.
   reviewItems() {
     const due = (h: number) => now() + h * 3600;
@@ -188,7 +204,9 @@ export const mock = {
   async redeemCascade(token: string) {
     const link = Object.prototype.hasOwnProperty.call(S.links, token) ? S.links[token] : undefined;
     if (!link || link.used || link.expires_at <= now()) throw new Error("403");
-    link.used = true; save(); return { condition_id: link.condition_id };
+    link.used = true;
+    if (link.contact && S.cascade[link.contact]?.status === "invited") S.cascade[link.contact].status = "opened";
+    save(); return { condition_id: link.condition_id, ...(link.contact ? { follow_up: `mock-${link.contact}` } : {}) };
   },
   scenarios: () => DATA.scenarios.map((s) => ({ id: s.id, title: s.title, blurb: s.blurb, tier: s.tier, related: s.related })),
   scenario: () => S.scenario,

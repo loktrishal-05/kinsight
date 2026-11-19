@@ -5,7 +5,7 @@ import languages from "../messages/languages.json";
 // language. Cohort statistics that are not a chance for a person are marked data-not-risk.
 const FIGURE = /\d\s?%|%\s?\d|\d+ (?:in|of|من|में|ல்|இல்|లో|ರಲ್ಲಿ|ರ|ൽ) \d+/;
 const PAGES = ["home", "learn", "result", "couple", "understand", "consents", "family", "next", "summary", "privacy", "ask",
-  "counsellor", "analyst", "governance", "methods", "plan", "plan/scenarios", "prepare", "clinic", "report-compare", "nasab"];
+  "counsellor", "analyst", "governance", "methods", "plan", "plan/scenarios", "prepare", "cascade", "clinic", "report-compare", "nasab"];
 
 const unlabelled = (page: Page) => page.evaluate((src) => {
   const re = new RegExp(src);

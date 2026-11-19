@@ -63,6 +63,9 @@ async function grant(grantee: string, rtype: string, rid: string, scope: string,
 }
 
 export const real = {
+  cascadeTracker: () => json("/api/lifecycle/cascade-tracker"),
+  cascadeContact: (relative_id: string, condition_id: string, method: string) => json("/api/lifecycle/cascade-tracker/contact", post({ relative_id, condition_id, method })),
+  cascadeOutcome: (code: string, outcome: string) => json("/api/lifecycle/cascade/outcome", post({ code, outcome })),
   reviewQueue: () => json("/api/lifecycle/review-queue"),
   decideReview: (id: string, decision: string, reason_code: string) => json(`/api/lifecycle/review-queue/${encodeURIComponent(id)}/decision`, post({ decision, reason_code })),
   myReviews: () => json("/api/lifecycle/review-items"),

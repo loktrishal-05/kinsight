@@ -9,6 +9,7 @@ import * as plan from "./plan";
 import * as prep from "./prep";
 import * as scen from "./scenario";
 import * as rv from "./review";
+import * as cas from "./cascadeTracker";
 import type { z as Zod } from "zod";
 
 export const MOCK = process.env.NEXT_PUBLIC_MOCK !== "0";
@@ -45,7 +46,7 @@ export const PairingStatusS = z.object({ status: z.enum(["pending", "active", "r
 const MoneyS = z.string().regex(/^\d+\.\d{2}$/);
 export const ReceiptS = z.object({ lines: z.array(z.object({ label: z.string(), gross: MoneyS, insurer: MoneyS, grant: MoneyS, copay: MoneyS })), total: MoneyS, your_share: MoneyS });
 export const CascadeS = z.object({ token: z.string().min(1) });
-export const RedeemedS = z.object({ condition_id: z.string().min(1) });
+export const RedeemedS = z.object({ condition_id: z.string().min(1), follow_up: z.string().optional() });
 export type PairingStatus = z.infer<typeof PairingStatusS>;
 
 export type Result = z.infer<typeof ResultS>;
@@ -62,6 +63,9 @@ export const setToken = (_t: string) => {};
 // One table: mock fixtures or the real API, chosen by NEXT_PUBLIC_MOCK (default mock).
 const impl = (MOCK ? mock : real) as any;
 export const api = {
+  cascadeTracker: async () => cas.TrackerS.parse(await impl.cascadeTracker()),
+  cascadeContact: async (relative_id: string, condition_id: string, method: cas.Method) => cas.ContactS.parse(await impl.cascadeContact(relative_id, condition_id, method)),
+  cascadeOutcome: async (code: string, outcome: "tested" | "declined") => z.object({ status: z.literal("recorded") }).parse(await impl.cascadeOutcome(code, outcome)),
   reviewQueue: async () => rv.QueueS.parse(await impl.reviewQueue()).items,
   decideReview: async (id: string, decision: "approve" | "edit" | "hold" | "more_info", reason = "reviewed") => rv.DecisionS.parse(await impl.decideReview(id, decision, reason)),
   myReviews: async () => rv.MineS.parse(await impl.myReviews()).items,

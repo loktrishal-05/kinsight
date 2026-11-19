@@ -11,6 +11,7 @@ const FORMULAS: { id: string; en: string }[] = [
   { id: "ar_one_carrier_residual", en: "prior = r + (1 − r)·c;  post = prior(1−s) / (prior(1−s) + (1−prior));  risk = ¼ · post" },
   { id: "ar_both_not_detected", en: "p = c(1−s) / (c(1−s) + (1−c));  risk = ¼ · p²" },
   { id: "xlr_mother_carrier", en: "each son affected = 1/2 · each daughter carrier = 1/2" },
+  { id: "cascade_relative", en: "chance = r + (1 − r)·c,  r = 2·k(person, relative)" },
   { id: "independent_loci_union", en: "risk = 1 − 0.75^m   (m = genes both partners carry)" },
   { id: "kinship", en: "k(i,j) = ½ · (k(father_i, j) + k(mother_i, j));  F_child = k(father, mother)" },
 ];

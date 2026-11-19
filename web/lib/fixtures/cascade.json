@@ -1,0 +1,117 @@
+{
+ "person_a": [
+  {
+   "condition_id": "COND_001",
+   "inheritance": "AR",
+   "needs_counsellor": false,
+   "relatives": [
+    {
+     "id": "x",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.52
+    },
+    {
+     "id": "xs",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.52
+    },
+    {
+     "id": "gf",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.28
+    },
+    {
+     "id": "gm",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.28
+    },
+    {
+     "id": "y",
+     "relation": "aunt_uncle",
+     "degree": 2,
+     "chance": 0.28
+    }
+   ]
+  },
+  {
+   "condition_id": "COND_004",
+   "inheritance": "AR",
+   "needs_counsellor": false,
+   "relatives": [
+    {
+     "id": "x",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.51
+    },
+    {
+     "id": "xs",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.51
+    },
+    {
+     "id": "gf",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.265
+    },
+    {
+     "id": "gm",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.265
+    },
+    {
+     "id": "y",
+     "relation": "aunt_uncle",
+     "degree": 2,
+     "chance": 0.265
+    }
+   ]
+  }
+ ],
+ "person_b": [
+  {
+   "condition_id": "COND_001",
+   "inheritance": "AR",
+   "needs_counsellor": false,
+   "relatives": [
+    {
+     "id": "y",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.52
+    },
+    {
+     "id": "ys",
+     "relation": "parent",
+     "degree": 1,
+     "chance": 0.52
+    },
+    {
+     "id": "gf",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.28
+    },
+    {
+     "id": "gm",
+     "relation": "grandparent",
+     "degree": 2,
+     "chance": 0.28
+    },
+    {
+     "id": "x",
+     "relation": "aunt_uncle",
+     "degree": 2,
+     "chance": 0.28
+    }
+   ]
+  }
+ ]
+}

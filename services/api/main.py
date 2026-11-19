@@ -52,6 +52,7 @@ from services.lifecycle import review
 from services.lifecycle.store import FhirImport, LcSample, LifecycleBase, SandboxReport
 
 from . import (
+    cascade_routes,
     fhir_preview,
     kin_tools,
     lab_feed,
@@ -813,6 +814,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         scenario_routes.register(app, db_session=db_session, roles=roles, limit=limit)
         kin_tools.register(app, db_session=db_session, roles=roles, own=own, limit=limit)
         review_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
+        cascade_routes.register(app, adapter=adapter, db_session=db_session, roles=roles, own=own, limit=limit)
 
     if sandbox:
         pilot_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit, signed_feed=signed_feed)
