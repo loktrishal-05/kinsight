@@ -2,7 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { conditionLabel } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
@@ -21,7 +21,7 @@ export default function Invite() {
           <input id="family-token" className="field mt-1" required value={token} onChange={(e) => { setToken(e.target.value); redeem.reset(); outcome.reset(); }} /></label>
         <button className="btn-quiet" disabled={redeem.isPending}>{t("lifecycle.redeem")}</button>
       </form>
-      {redeem.isError && <p role="alert" className="note">{t("invite.unavailable")}</p>}
+      {redeem.isError && <ErrorState>{t("invite.unavailable")}</ErrorState>}
       {redeem.isSuccess && <div role="status" className="card space-y-3" data-demo="invite-opened">
         <h2 className="text-lg font-semibold">{conditionLabel(redeem.data.condition_id.toUpperCase(), lang)}</h2>
         <Notice>{t("cascade.relativeNote")}</Notice>

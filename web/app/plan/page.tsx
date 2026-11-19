@@ -3,7 +3,7 @@ import Link from "next/link";
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader, Skeleton } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { googleUrl, ics, outlookUrl, videoRoom } from "@/lib/calendar";
 import type { Booking } from "@/lib/plan";
@@ -39,13 +39,13 @@ function PlanCards({ persona }: { persona: string }) {
   return <section className="space-y-6">
     <PageHeader title={t("plan.title")} />
     {MOCK && <Notice>{t("plan.demo")}</Notice>}
-    {[slots, book, cancel, gestation, reengagement, mmic, gcos].some((m) => m.isError) && <p role="alert" className="note">{t("plan.error")}</p>}
+    {[slots, book, cancel, gestation, reengagement, mmic, gcos].some((m) => m.isError) && <ErrorState>{t("plan.error")}</ErrorState>}
     <section className="card space-y-4" aria-labelledby="booking-title">
       <h2 id="booking-title" className="text-lg font-semibold">{t("plan.booking")}</h2>
       <label className="block" htmlFor="urgency">{t("plan.urgency")}<select id="urgency" className="field mt-1" value={sla} onChange={(e) => setSla(Number(e.target.value))}>
         {[[120, "usual"], [48, "soon"], [12, "urgent"]].map(([hours, key]) => <option key={key} value={hours}>{t(`plan.${key}`)}</option>)}
       </select></label>
-      {slots.isPending && <p role="status">{t("plan.loading")}</p>}
+      {slots.isPending && <Skeleton lines={2} />}
       {slots.data?.slots.length === 0 && <p>{t("plan.noSlots")}</p>}
       <ul className="space-y-3">{slots.data?.slots.map((slot) => <li key={slot} className="flex flex-wrap items-center gap-3">
         <time dateTime={new Date(slot * 1000).toISOString()}>{date(slot)}</time>

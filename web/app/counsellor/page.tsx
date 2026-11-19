@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Keyboard, Pause, Pencil, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import FhirFindings from "@/components/FhirFindings";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { Journey, TierChip } from "@/components/visuals";
 import { api, FHIR_REFERRAL, FHIR_SANDBOX } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -215,7 +215,7 @@ function FhirReferral() {
         sync.refetch();
       }}>{t("referralDelivery.sync")}</button>
     </div>
-    {(send.isError || sync.isError) && <p role="alert">{t("referralDelivery.error")}</p>}
+    {(send.isError || sync.isError) && <ErrorState>{t("referralDelivery.error")}</ErrorState>}
     {record && record.task_id && record.synced_at && <dl aria-live="polite">
       <dt>{t("referralDelivery.request")}</dt><dd>{record.request_id}</dd>
       <dt>{t("referralDelivery.task")}</dt><dd>{record.task_id}</dd>
@@ -261,7 +261,7 @@ function FhirReview() {
       </label>
       <button className="btn-quiet" disabled={approve.isPending}>{t("fhirImport.open")}</button>
     </form>
-    {(review.isError || approve.isError) && <p role="alert">{t("fhirPreview.error")}</p>}
+    {(review.isError || approve.isError) && <ErrorState>{t("fhirPreview.error")}</ErrorState>}
     {review.isSuccess && review.data === null && <p role="status">{t("labSandbox.noConsent")}</p>}
     {record && <>
       <p role="status">{t(`fhirImport.${record.state}`)}</p>
@@ -286,7 +286,7 @@ function PrepReview() {
         <option value="synthetic-a">{t("persona.person_a")}</option><option value="synthetic-b">{t("persona.person_b")}</option>
       </select>
     </label>
-    {review.isError && <p role="alert">{t("fhirPreview.error")}</p>}
+    {review.isError && <ErrorState>{t("fhirPreview.error")}</ErrorState>}
     {review.isSuccess && !s && <p role="status">{t("prep.counsellor.none")}</p>}
     {s && <div className="space-y-2 text-sm">
       {s.questions && <div><h3 className="font-semibold">{t("prep.step.questions")}</h3><ol className="list-decimal ps-5">{s.questions.map((q) => <li key={q.id}>{q.text}</li>)}</ol></div>}
@@ -309,7 +309,7 @@ function ReviewQueue() {
   const days = (at: number) => Math.round((at - Date.now() / 1000) / 86400);
   return <section className="card space-y-3" aria-labelledby="review-queue-heading" data-demo="review-queue">
     <h2 id="review-queue-heading" className="text-lg font-semibold">{t("review.title")}</h2>
-    {queue.isError && <p role="alert">{t("fhirPreview.error")}</p>}
+    {queue.isError && <ErrorState>{t("fhirPreview.error")}</ErrorState>}
     {queue.isSuccess && !rows.length && <p role="status" className="text-sm text-muted">{t("review.empty")}</p>}
     <ul className="divide-y divide-line">{rows.map((r) => (
       <li key={r.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">

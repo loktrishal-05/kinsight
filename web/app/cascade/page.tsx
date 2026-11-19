@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Estimate, Notice, PageHeader } from "@/components/ui";
+import { EmptyState, ErrorState, Estimate, Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { METHODS, type Method } from "@/lib/cascadeTracker";
 import { conditionLabel } from "@/lib/fixtures";
@@ -29,8 +29,8 @@ export default function Cascade() {
     <section className="space-y-6">
       <PageHeader title={t("cascade.title")} lead={t("cascade.lead")} />
       <Notice>{t("cascade.private")}</Notice>
-      {view.isError && <p role="alert" className="note">{t("lifecycle.error")}</p>}
-      {view.isSuccess && !all.length && !view.data.conditions.some((c) => c.needs_counsellor) && <p role="status">{t("cascade.none")}</p>}
+      {view.isError && <ErrorState onRetry={() => view.refetch()}>{t("lifecycle.error")}</ErrorState>}
+      {view.isSuccess && !all.length && !view.data.conditions.some((c) => c.needs_counsellor) && <EmptyState title={t("cascade.none")}>{t("cascade.noneHint")}</EmptyState>}
       {all.length > 0 && <div className="card flex items-center gap-5" data-demo="cascade-progress">
         <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90" aria-hidden>
           <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgb(var(--line))" strokeWidth="3.5" />

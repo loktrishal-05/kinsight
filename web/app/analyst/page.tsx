@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { EyeOff } from "lucide-react";
 import { useState } from "react";
 import { ChartCard } from "@/components/ChartCard";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
@@ -59,7 +59,7 @@ export default function Analyst() {
       {out.data && <section className="card space-y-3" aria-labelledby="outcomes-title" data-demo="outcomes" data-not-risk>
         <h2 id="outcomes-title" className="text-lg font-semibold">{t("outcome.title")}</h2>
         <p className="text-sm text-muted">{t("outcome.lead").replace("{n}", String(out.data.min_cell))}</p>
-        {out.data.metrics.some((m) => m.equity_alert) && <p role="alert" className="note">{t("outcome.equity")}: {out.data.metrics.filter((m) => m.equity_alert).map((m) => t(`outcome.${m.name}`)).join(", ")}</p>}
+        {out.data.metrics.some((m) => m.equity_alert) && <ErrorState>{t("outcome.equity")}: {out.data.metrics.filter((m) => m.equity_alert).map((m) => t(`outcome.${m.name}`)).join(", ")}</ErrorState>}
         <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{out.data.metrics.map((m) => (
           <div key={m.name} className="rounded-lg border border-line p-3">
             <dt className="text-sm text-muted">{t(`outcome.${m.name}`)}</dt>

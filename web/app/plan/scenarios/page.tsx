@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Estimate, Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Estimate, Notice, PageHeader } from "@/components/ui";
 import { IconArray } from "@/components/visuals";
 import { api } from "@/lib/api";
 import { DATA, conditionLabel } from "@/lib/fixtures";
@@ -65,7 +65,7 @@ function Card({ index, draft, lang, onChange }: { index: number; draft: Draft; l
         <input id={`${id}-n`} type="range" min={1} max={6} step={1} className="mt-1 w-full" value={draft.children} aria-valuetext={String(draft.children)}
           onChange={(e) => set({ children: Number(e.target.value) })} /></label>
 
-      {run.isError && <p role="alert" className="note">{t("scen.unsupported")}</p>}
+      {run.isError && <ErrorState>{t("scen.unsupported")}</ErrorState>}
       {d && <div className="space-y-4" aria-live="polite">
         <dl className="grid gap-3 sm:grid-cols-2">
           <div><dt className="text-sm text-muted">{d.inheritance === "XLR" ? t("couple.chanceSon") : t("couple.chance")}</dt>

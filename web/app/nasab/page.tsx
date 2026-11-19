@@ -2,7 +2,7 @@
 import Restricted from "@/components/Restricted";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
 import { RELATIONS, type Relation } from "@/lib/plan";
 import { useI18n } from "@/lib/i18n";
@@ -22,7 +22,7 @@ function Questions() {
   return <section className="space-y-6">
     <PageHeader title={t("plan.nasab")} />
     {MOCK && <Notice>{t("plan.demo")}</Notice>}
-    {nasab.isError && <p role="alert" className="note">{t("plan.error")}</p>}
+    {nasab.isError && <ErrorState>{t("plan.error")}</ErrorState>}
     <section className="card space-y-4" aria-labelledby="questions-title">
       <h2 id="questions-title" className="text-lg font-semibold">{t("plan.relatedQuestion")}</h2>
       <p>{t("plan.loopsHelp")}</p>

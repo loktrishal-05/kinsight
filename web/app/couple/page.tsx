@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
-import { Estimate, Notice, Paragraphs, PageHeader, Steps } from "@/components/ui";
+import { ErrorState, Estimate, Notice, PageHeader, Paragraphs, Skeleton, Steps } from "@/components/ui";
 import { IconArray, Punnett, TierChip } from "@/components/visuals";
 import { ReadAloud } from "@/components/Voice";
 import { ReviewStatus } from "@/components/ReviewStatus";
@@ -23,8 +23,8 @@ export default function CoupleView() {
     <section className="space-y-6">
       <PageHeader title={t("couple.title")} lead={t("couple.lead")} action={c?.tier ? <TierChip tier={c.tier} /> : undefined} />
       <div data-demo="steps"><Steps labels={[t("couple.s1"), t("couple.s2"), t("couple.s3")]} current={step} /></div>
-      {couple.isPending && <p role="status">{t("loading")}</p>}
-      {couple.isError && <p role="alert">{t("couple.loadError")}</p>}
+      {couple.isPending && <Skeleton lines={4} />}
+      {couple.isError && <ErrorState onRetry={() => couple.refetch()}>{t("couple.loadError")}</ErrorState>}
       {c && !c.tier && (
         <div className="card flex flex-wrap items-center justify-between gap-4">
           <p className="max-w-read">{t(MOCK ? "couple.waiting" : "couple.unavailable")}</p>
