@@ -1,0 +1,79 @@
+{
+ "services": [
+  {
+   "id": "svc_counselling_online",
+   "type": "counselling",
+   "languages": [
+    "en",
+    "ar",
+    "hi"
+   ],
+   "cost_band": "free",
+   "booking_route": "online",
+   "source": null,
+   "last_verified": null,
+   "sample": true
+  },
+  {
+   "id": "svc_counselling_clinic",
+   "type": "counselling",
+   "languages": [
+    "en",
+    "ta",
+    "te",
+    "kn",
+    "ml"
+   ],
+   "cost_band": "standard",
+   "booking_route": "phone",
+   "source": null,
+   "last_verified": null,
+   "sample": true
+  },
+  {
+   "id": "svc_confirmatory_lab",
+   "type": "confirmatory",
+   "languages": [
+    "en",
+    "ar"
+   ],
+   "cost_band": "standard",
+   "booking_route": "referral",
+   "source": null,
+   "last_verified": null,
+   "sample": true
+  },
+  {
+   "id": "svc_reproductive_genomics",
+   "type": "specialist",
+   "languages": [
+    "en",
+    "ar",
+    "hi"
+   ],
+   "cost_band": "high",
+   "booking_route": "referral",
+   "source": null,
+   "last_verified": null,
+   "sample": true
+  },
+  {
+   "id": "svc_family_support",
+   "type": "support",
+   "languages": [
+    "en",
+    "ar",
+    "hi",
+    "ta",
+    "te",
+    "kn",
+    "ml"
+   ],
+   "cost_band": "free",
+   "booking_route": "online",
+   "source": null,
+   "last_verified": null,
+   "sample": true
+  }
+ ]
+}
