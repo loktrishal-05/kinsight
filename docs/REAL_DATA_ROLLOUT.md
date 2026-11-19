@@ -70,6 +70,30 @@ Journey polls every five seconds. The first command sends collection through qua
 
 This profile is for the two KinSight demo participants. Hosted lab credentials, provider-specific fields and hosted acceptance remain open.
 
+### Hosted signed lab feed checklist
+
+Use the following settings on an isolated synthetic deployment before enabling the demo. The lab sender talks directly to Render over HTTPS. The Vercel browser polls through its existing API rewrite and never holds the signing key.
+
+| Where | Variable | Value |
+| --- | --- | --- |
+| Render API `kinsight-api-va` | `KINSIGHT_DEMO`, `KINSIGHT_DEMO_AUTH`, `KINSIGHT_LAB_SANDBOX` | `1` on the synthetic demo |
+| Render API and mock-lab process | `KINSIGHT_LAB_SIGNING_SECRET` | Same secret of at least 32 bytes, distinct from the token secret and audit salt |
+| Vercel web project `kinsight` | `KINSIGHT_API_URL` | Render service origin, without `/api` |
+| Vercel web project `kinsight` | `NEXT_PUBLIC_MOCK`, `NEXT_PUBLIC_LAB_SANDBOX` | `0` and `1`, respectively |
+
+- [ ] Check that the test database and tracker are isolated from other users. Start with the fictional Person A tracker at stage 1 so the strict sequence can accept stage 2. For a repeat run, use a fresh demo database or an unused synthetic subject. Keep the signing secret in Render and the sender's secret store. [Render environment settings](https://render.com/docs/configure-environment-variables)
+- [ ] Deploy the API and check Render OpenAPI for `POST /api/integrations/lab/hl7` and `POST /api/integrations/lab/events`. Both routes require signed mode. Rebuild Vercel with the listed public flag and confirm `/api/health` through the rewrite. [Vercel environments](https://vercel.com/docs/environment-variables)
+- [ ] Open **Journey** as Person A. In the sender shell, with the signing secret loaded without printing it, run the following command. Watch the tracker advance as the messages arrive. The delay allows the five-second polling view to show each stage.
+
+  ```sh
+  python -m scripts.mock_lab --api "$RENDER_API_URL" --format hl7 --subject synthetic-a --delay 6
+  ```
+
+- [ ] From **Lab report sandbox**, verify intake did not release the findings. Share for review as Person A, approve the current revision as the demo counsellor, and verify that Person B’s tracker and results are unchanged.
+- [ ] Submit revision 2 using the same command with `--start-stage 8 --revision 2`. Check that the corrected report waits for review and the old findings are withheld. Record timestamps, revisions and outcomes without storing report content or signatures.
+- [ ] Run `python -m pytest -q tests/unit/test_hl7_lab.py tests/integration/test_lab_feed.py` for malformed inputs, unsigned requests, duplicate delivery IDs, subject validation and FHIR bundle intake. Use the documented fixture profile before testing a different sending system.
+- [ ] To roll back, stop the sender, set `NEXT_PUBLIC_LAB_SANDBOX=0` and rebuild Vercel, then set `KINSIGHT_LAB_SANDBOX=0` and redeploy Render. Disabling the sandbox flag closes both intake modes.
+
 ## Seed the FHIR R4 sandbox
 
 Install the development dependencies with `pip install -e ".[dev]"`. Start the loopback-only HAPI server with `docker compose up -d fhir`. Once `http://127.0.0.1:8088/fhir/metadata` responds, run `make fhir-seed`. On a machine without Make, run `python -m scripts.export_fhir_bundles --upload http://127.0.0.1:8088/fhir`. Set `FHIR_URL` when invoking Make to select another disposable sandbox.
