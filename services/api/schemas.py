@@ -109,13 +109,17 @@ class Relationship(RelationshipInput):
     confirmed: bool = False
 
 
-class PedigreeInput(StrictModel):
-    relationships: Annotated[list[RelationshipInput], Field(max_length=200)]
-
-
 class PedigreePerson(StrictModel):
     id: Alias
     sex: Literal["male", "female"]
+    label: Annotated[str, Field(max_length=40)] = ""  # what the person calls this relative; never sent anywhere else
+    living: bool = True
+    tested: Literal["unknown", "tested", "not_tested"] = "unknown"  # whether they were tested, never their result
+
+
+class PedigreeInput(StrictModel):
+    relationships: Annotated[list[RelationshipInput], Field(max_length=200)]
+    people: Annotated[list[PedigreePerson], Field(max_length=200)] = []
 
 
 class PedigreeView(Fictional):

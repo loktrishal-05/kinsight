@@ -136,6 +136,8 @@ class DemoBackend:
 
     def op_edit_pedigree(self, subject, payload, session):
         self.edges = payload["relationships"]
+        if payload.get("people"):
+            self.people = payload["people"]
         warn = ["uncertain_edges_present"] if any(e["confidence"] == "uncertain" for e in self.edges) else []
         return {"relationships": self.edges, "warnings": warn, "people": self.people, "related": self.related}
 

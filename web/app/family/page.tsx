@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, Copy, Printer, UserPlus, UserX } from "lucide-react";
 import { useState } from "react";
 import Pedigree from "@/components/Pedigree";
+import PedigreeBuilder, { toDraft } from "@/components/PedigreeBuilder";
 import { Notice, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
@@ -13,6 +14,7 @@ export default function Family() {
   const l = lang;
   const qc = useQueryClient();
   const [copied, setCopied] = useState("");
+  const [editing, setEditing] = useState(false);
   const ped = useQuery({ queryKey: ["pedigree"], queryFn: api.pedigree });
   const invite = useMutation({ mutationFn: api.invite, onSuccess: () => qc.invalidateQueries() });
   const copy = async (id: string, text: string) => {
@@ -23,6 +25,8 @@ export default function Family() {
       <PageHeader title={t("family.title")} lead={t("family.lead")} />
       <Notice>{t("family.hint")}</Notice>
       <div className="card overflow-x-auto" data-demo="pedigree">{ped.data && <Pedigree data={ped.data} />}</div>
+      <button type="button" className="btn-quiet w-fit" aria-expanded={editing} onClick={() => setEditing(!editing)} data-demo="edit-tree">{t(editing ? "builder.close" : "builder.open")}</button>
+      {editing && ped.data && <PedigreeBuilder initial={toDraft(ped.data)} onSaved={() => qc.invalidateQueries({ queryKey: ["pedigree"] })} />}
       <div className="card flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="font-semibold">{t("family.invite")}</h2>
