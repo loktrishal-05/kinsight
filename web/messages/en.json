@@ -1160,5 +1160,9 @@
   "group.plan": "Plan and prepare",
   "group.family": "Family",
   "group.privacy": "Privacy",
-  "group.help": "Help"
+  "group.help": "Help",
+  "shell.collapse": "Collapse menu",
+  "shell.expand": "Expand menu",
+  "shell.toReview": "waiting for review",
+  "shell.tabs": "Main pages"
 }

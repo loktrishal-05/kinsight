@@ -1030,5 +1030,9 @@
   "group.plan": "التخطيط والتحضير",
   "group.family": "العائلة",
   "group.privacy": "الخصوصية",
-  "group.help": "المساعدة"
+  "group.help": "المساعدة",
+  "shell.collapse": "طي القائمة",
+  "shell.expand": "توسيع القائمة",
+  "shell.toReview": "بانتظار المراجعة",
+  "shell.tabs": "الصفحات الرئيسية"
 }
