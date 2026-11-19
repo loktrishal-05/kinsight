@@ -2,7 +2,8 @@
 import { Check, HandHelping } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Notice, PageHeader } from "@/components/ui";
-import { useI18n } from "@/lib/i18n";
+import directory from "@/lib/fixtures/services.json";
+import { LANGUAGES, useI18n } from "@/lib/i18n";
 
 // Access navigation (challenge requirement 2): generic service TYPES only, equal prominence, in id order.
 // "Request a hand-off" is a stub: it records an intention in this browser session. It never names a facility,
@@ -37,6 +38,17 @@ export default function Access() {
         ))}
       </ul>
       {asked.length > 0 && <Notice>{t("access.after")}</Notice>}
+      <section aria-labelledby="directory-title" className="space-y-3" data-demo="directory">
+        <h2 id="directory-title" className="text-lg font-semibold">{t("dir.title")}</h2>
+        <Notice>{t("dir.sample")}</Notice>
+        <ul className="grid gap-3 sm:grid-cols-2">{directory.services.map((s) => (
+          <li key={s.id} className="card space-y-1 text-sm">
+            <p className="flex flex-wrap items-center gap-2 font-semibold">{t(`access.${s.type}.t`)}{s.sample && <span className="chip bg-sunk">{t("dir.sampleChip")}</span>}</p>
+            <p><span className="text-muted">{t("dir.languages")}:</span> {s.languages.map((c) => LANGUAGES.find((l) => l.code === c)?.name ?? c).join(", ")}</p>
+            <p><span className="text-muted">{t("dir.cost")}:</span> {t(`dir.cost.${s.cost_band}`)} · <span className="text-muted">{t("dir.route")}:</span> {t(`dir.route.${s.booking_route}`)}</p>
+            <p className="text-xs text-muted">{s.last_verified ? `${t("dir.verified")}: ${s.last_verified}` : t("dir.unverified")}</p>
+          </li>))}</ul>
+      </section>
     </section>
   );
 }

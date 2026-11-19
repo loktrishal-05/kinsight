@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Notice, PageHeader } from "@/components/ui";
 import { api, MOCK } from "@/lib/api";
+import { googleUrl, ics, outlookUrl, videoRoom } from "@/lib/calendar";
 import type { Booking } from "@/lib/plan";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
@@ -51,6 +52,7 @@ function PlanCards({ persona }: { persona: string }) {
         <button className="btn-quiet" disabled={book.isPending || cancel.isPending || booking?.status === "booked"} onClick={() => book.mutate(slot)}>{t("plan.book")}</button>
       </li>)}</ul>
       {booking && <div role="status" className="space-y-3"><p>{t("plan.currentBooking")}: {date(booking.slot_at)} &middot; {t(`plan.status.${booking.status}`)}</p>
+        {booking.status === "booked" && <BookedLinks booking={booking} />}
         {booking.status === "booked" && <button className="btn-quiet" disabled={cancel.isPending} onClick={() => cancel.mutate()}>{t("plan.cancel")}</button>}
       </div>}
       <div className="flex flex-wrap gap-2"><Link className="btn-quiet w-fit" href="/prepare">{t("prep.link")}</Link><Link className="btn-quiet w-fit" href="/plan/scenarios">{t("scen.link")}</Link></div>
@@ -97,4 +99,23 @@ function PlanCards({ persona }: { persona: string }) {
       {gcos.data && <p role="status">{t("plan.totalScore")}: {gcos.data.total}</p>}
     </section>
   </section>;
+}
+
+// Calendar and video links for a booked session. The event text is generic by design (see lib/calendar.ts).
+function BookedLinks({ booking }: { booking: Booking }) {
+  const { t } = useI18n();
+  const [video, setVideo] = useState<string | undefined>();
+  const file = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics({ id: booking.id, start: booking.slot_at, video }))}`;
+  return (
+    <div className="space-y-2" data-demo="booking-links">
+      <div className="flex flex-wrap gap-2">
+        <a className="btn-quiet btn-sm" href={file} download="kinsight-appointment.ics">{t("plan.ics")}</a>
+        <a className="btn-quiet btn-sm" href={googleUrl(booking.slot_at, 45, video)} target="_blank" rel="noopener noreferrer">Google Calendar</a>
+        <a className="btn-quiet btn-sm" href={outlookUrl(booking.slot_at, 45, video)} target="_blank" rel="noopener noreferrer">Outlook</a>
+      </div>
+      {video ? <p className="text-sm">{t("plan.videoReady")} <a className="break-all underline" href={video} target="_blank" rel="noopener noreferrer">{video}</a></p>
+        : <button className="btn-quiet btn-sm" type="button" onClick={() => setVideo(videoRoom(booking.id))}>{t("plan.videoAdd")}</button>}
+      <p className="text-xs text-muted">{t("plan.calendarPrivacy")}</p>
+    </div>
+  );
 }
