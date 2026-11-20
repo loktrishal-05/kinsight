@@ -352,9 +352,9 @@ A team of four from **RMK College of Engineering and Technology (RMKCET), Tamil 
 
 | Member | Role |
 | --- | --- |
-| **Loktrishal K** ([loktrishal-05](https://github.com/loktrishal-05)) | Team lead: architecture, genetics logic, privacy design, full stack |
+| **Harshavardhan K** ([Harsha-code-per](https://github.com/Harsha-code-per)) | Team lead: web app, accessibility and documentation |
+| **Loktrishal K** ([loktrishal-05](https://github.com/loktrishal-05)) | Architecture, genetics logic, privacy design, full stack |
 | **Sanjjith B** ([Sanjjith27](https://github.com/Sanjjith27)) | Genetics engine and consent model |
-| **Harshavardhan K** ([Harsha-code-per](https://github.com/Harsha-code-per)) | Web app, accessibility and documentation |
 | **Cholan** | Research, user testing, demo and submission |
 
 Contributions follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
