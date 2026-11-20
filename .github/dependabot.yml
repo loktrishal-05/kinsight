@@ -4,9 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # one grouped PR a week for every Python floor bump, instead of one PR per package
     groups:
-      python-compatible:
-        update-types: [minor, patch]
+      python:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /web
     schedule:
