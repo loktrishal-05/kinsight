@@ -1,8 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { Estimate } from "@/components/ui";
+import { DATA } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
 import { referenceLinks, reportedTerm, type ComparisonRow, type Finding } from "@/lib/report-compare";
+import { recessiveCarrierCouple } from "@/lib/scenario";
 
 const PARTNERS = ["first", "second"] as const;
 const FILTERS = ["both", "first", "second"] as const;
@@ -111,5 +115,49 @@ function Guide({ row }: { row: ComparisonRow }) {
     </div>
     <a className="text-sm text-brand-700 underline" href="https://medlineplus.gov/genetics/understanding/testing/interpretingresults/"
       referrerPolicy="no-referrer" rel="noreferrer" target="_blank">{t("reportCompare.readingSource")}</a>
+    {bothCarriers(row) && <WhatIf />}
   </>;
+}
+
+const bothCarriers = (row: ComparisonRow) =>
+  row.first.some((f) => reportedTerm(f.result) === "carrier") && row.second.some((f) => reportedTerm(f.result) === "carrier");
+const RECESSIVE = DATA.cohort.carriers.find((c) => c.inheritance === "AR")?.condition_id ?? "";
+const pct = (x: number | null) => `${Math.round((x ?? 0) * 100)}%`;
+
+// Both reports list a carrier result for the same condition. Figures appear only after the person confirms the
+// inheritance their report states; X-linked or unsure gets no figure, only the counsellor route. Nothing leaves the device.
+function WhatIf() {
+  const { t, lang } = useI18n();
+  const [kind, setKind] = useState<"" | "recessive" | "xlinked" | "unsure">("");
+  const [children, setChildren] = useState(1);
+  const s = kind === "recessive" ? recessiveCarrierCouple(children, lang, RECESSIVE) : undefined;
+  return <section className="space-y-3 rounded-lg border border-line p-4" aria-labelledby="report-whatif" data-demo="report-whatif">
+    <h4 id="report-whatif" className="font-semibold">{t("reportCompare.whatif.title")}</h4>
+    <p className="text-sm">{t("reportCompare.whatif.lead")}</p>
+    <fieldset>
+      <legend className="text-sm font-semibold">{t("reportCompare.whatif.inheritance")}</legend>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {(["recessive", "xlinked", "unsure"] as const).map((k) => <button key={k} type="button" aria-pressed={kind === k}
+          className={kind === k ? "btn" : "btn-quiet"} onClick={() => setKind(k)}>{t(`reportCompare.whatif.${k}`)}</button>)}
+      </div>
+    </fieldset>
+    {s && <>
+      <label className="block text-sm font-semibold">{t("reportCompare.whatif.children")}
+        <select className="field mt-1 w-24" value={children} onChange={(e) => setChildren(Number(e.target.value))}>
+          {[1, 2, 3, 4, 5, 6].map((n) => <option key={n} value={n}>{n}</option>)}
+        </select>
+      </label>
+      <dl className="grid gap-3 sm:grid-cols-2">
+        <div><dt className="text-sm text-muted">{t("reportCompare.whatif.per")}</dt>
+          <dd><Estimate est={s.chance_per_pregnancy}><span className="text-2xl font-bold tabular-nums text-brand-700" dir="ltr">{pct(s.chance_per_pregnancy.value)}</span></Estimate></dd></div>
+        <div><dt className="text-sm text-muted">{t("reportCompare.whatif.atLeast").replace("{n}", String(children))}</dt>
+          <dd><Estimate est={s.chance_at_least_one}><span className="text-2xl font-bold tabular-nums text-brand-700" dir="ltr">{pct(s.chance_at_least_one.value)}</span></Estimate></dd></div>
+      </dl>
+      <p className="text-sm text-muted">{t("reportCompare.whatif.same")}</p>
+    </>}
+    {(kind === "xlinked" || kind === "unsure") && <p className="note">{t("reportCompare.whatif.noFigure")}</p>}
+    {kind && <p className="text-sm">{t("reportCompare.whatif.counsellor")}{" "}
+      <Link className="text-brand-700 underline" href="/plan">{t("reportCompare.whatif.book")}</Link>{" · "}
+      <Link className="text-brand-700 underline" href="/prepare">{t("reportCompare.whatif.prepare")}</Link></p>}
+  </section>;
 }
