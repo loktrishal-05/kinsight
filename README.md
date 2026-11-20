@@ -17,7 +17,7 @@ A web application that turns premarital carrier-screening results into plain lan
 ![WCAG 2.2 AA](https://img.shields.io/badge/WCAG-2.2%20AA-0f766e)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1d7f7a)](LICENSE)
 
-[Live demo](https://kinsight-five.vercel.app/) · [Architecture](docs/architecture/overview.md) · [Review feedback, traced](docs/submission/judge-feedback.md) · [Documentation](docs/README.md)
+[Live demo](https://kinsight-five.vercel.app/) · [Video (EN)](https://kinsight-five.vercel.app/media/kinsight-explainer-en.mp4) · [Video (AR)](https://kinsight-five.vercel.app/media/kinsight-explainer-ar.mp4) · [Architecture](docs/architecture/overview.md) · [Review feedback, traced](docs/submission/judge-feedback.md) · [Documentation](docs/README.md)
 
 <sub>Built for Challenge 03 of the Future Health Digital Innovation Challenge. All people and results in the demo are fictional.</sub>
 
@@ -27,7 +27,7 @@ A web application that turns premarital carrier-screening results into plain lan
 
 ## Contents
 
-[Overview](#overview) · [Screenshots](#screenshots) · [Features](#features) · [System design](#system-design) · [Architecture](#architecture) · [Workflows](#workflows) · [Tech stack](#tech-stack) · [Repository layout](#repository-layout) · [Getting started](#getting-started) · [Quality](#testing-and-quality) · [Deployment](#deployment) · [Security and privacy](#security-and-privacy) · [Status](#status-and-limitations) · [Team](#team) · [License](#license)
+[Overview](#overview) · [Video](#video-explanation) · [Screenshots](#screenshots) · [Features](#features) · [System design](#system-design) · [Architecture](#architecture) · [Workflows](#workflows) · [Tech stack](#tech-stack) · [Repository layout](#repository-layout) · [Getting started](#getting-started) · [Quality](#testing-and-quality) · [Deployment](#deployment) · [Security and privacy](#security-and-privacy) · [Status](#status-and-limitations) · [Team](#team) · [License](#license)
 
 ## Overview
 
@@ -43,6 +43,17 @@ KinSight sits between the screening result and the counselling session:
 | **Programmes** | Outcome measures (understanding, preparation, uptake, cascade reach) with small cells suppressed |
 
 Three guardrails hold on every screen: **default-deny consent** with a tamper-evident audit, every figure labelled an **educational estimate, not a diagnosis**, and **counsellor approval** before any complex or high-risk result is shown.
+
+## Video explanation
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://kinsight-five.vercel.app/media/kinsight-explainer-en.mp4"><img src="docs/screenshots/video-poster-en.jpg" alt="Watch the English video explanation" /></a><br /><b><a href="https://kinsight-five.vercel.app/media/kinsight-explainer-en.mp4">▶ Watch in English</a></b> · 77 s</td>
+    <td width="50%" align="center"><a href="https://kinsight-five.vercel.app/media/kinsight-explainer-ar.mp4"><img src="docs/screenshots/video-poster-ar.jpg" alt="شاهد الشرح بالعربية" /></a><br /><b><a href="https://kinsight-five.vercel.app/media/kinsight-explainer-ar.mp4">▶ شاهد بالعربية</a></b> · 83 s</td>
+  </tr>
+</table>
+
+Narrated walkthrough of the problem, the product and the architecture. The files are also in [`web/public/media/`](web/public/media/).
 
 ## Screenshots
 
