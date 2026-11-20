@@ -88,17 +88,40 @@ Narrated walkthrough of the problem, the product and the architecture. The files
 ## System design
 
 ```mermaid
-flowchart LR
-    Person(["Person and partner"]) --> KS
-    Relative(["Invited relative"]) --> KS
-    Counsellor(["Genetic counsellor"]) --> KS
-    Analyst(["Analyst and auditor"]) --> KS
-    KS["<b>KinSight</b><br/>web app + API"]
-    KS <-->|"FHIR R4: import, referral write-back"| EHR[("EHR<br/>HAPI R4 sandbox")]
-    Lab[("Laboratory<br/>synthetic feed")] -->|"signed HL7 v2 / FHIR"| KS
-    KS -->|"gene symbols and variant ids only"| Ref[("MedlinePlus · ClinGen<br/>Ensembl VEP · ClinVar")]
-    KS -.->|"optional: tool selection only"| LLM[("Claude")]
+flowchart TB
+    subgraph Actors["People"]
+        direction LR
+        P(["Person and partner"]) ~~~ R(["Invited relative"]) ~~~ C(["Genetic counsellor"]) ~~~ A(["Analyst and auditor"])
+    end
+
+    subgraph Device["Browser · trust boundary 1"]
+        direction LR
+        UI["Next.js 16 app<br/>7 languages · RTL · PWA"] ~~~ OCR["Report reader<br/>PDF text + Tesseract OCR"] ~~~ SW["Service worker<br/>offline shell"] ~~~ ZOD["API contract<br/>zod-validated"]
+    end
+
+    subgraph Server["FastAPI on Render · trust boundary 2"]
+        direction LR
+        MW["Middleware<br/>CSP · CORS · body caps<br/>rate limits"] --> AUTH["Auth<br/>signed tokens · roles"] --> ROUTES["routes/<br/>12 feature modules"] --> POLICY{"Consent<br/>policy"}
+        POLICY -->|"allow"| ENGINE["Genetics engine<br/>pure · deterministic"]
+        POLICY -->|"every decision"| AUDIT[("Hash-chained<br/>audit log")]
+        ROUTES --> QUEUE["Counsellor review queue<br/>LangGraph case graph"]
+    end
+
+    subgraph External["Data and external systems"]
+        direction LR
+        DB[("Neon Postgres")] ~~~ LAB["Laboratory<br/>signed HL7 v2 / FHIR"] ~~~ EHR[("EHR<br/>HAPI FHIR R4")] ~~~ REF[("MedlinePlus · ClinGen<br/>Ensembl VEP · ClinVar")] ~~~ LLM["Claude<br/>optional, tools only"]
+    end
+
+    Actors --> Device
+    Device -->|"HTTPS · Vercel edge · same-origin /api"| Server
+    Server -->|"state and audit"| DB
+    LAB -->|"signature · time window · no replays"| Server
+    Server <-->|"import · ServiceRequest + Task"| EHR
+    Server -->|"gene symbols and variant ids only"| REF
+    Server -.->|"off by default"| LLM
 ```
+
+Two trust boundaries shape the design. Uploaded reports and study answers never leave the **browser**. On the **server**, nothing personal is read until the consent policy decides, and every decision, allowed or denied, is appended to a hash-chained audit log.
 
 | Design decision | Why | Record |
 | --- | --- | --- |
@@ -113,37 +136,34 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph Client["Browser"]
-        UI["Next.js app<br/>web/app · web/components"]
-        Contract["API contract (zod)<br/>web/lib/api.ts"]
-        Local["On-device paths<br/>report comparison · study"]
-        UI --> Contract
-        UI --> Local
+    subgraph WEB["web/ · Next.js"]
+        direction LR
+        PAGES["app/<br/>one folder per route"] --> COMP["components/<br/>shell · Kin · Estimate · states"] --> LIB["lib/api.ts<br/>real.ts ⇄ mock.ts"]
     end
-    Contract -->|"HTTPS, same-origin /api"| Routes
-    subgraph Server["FastAPI service"]
-        Routes["api<br/>auth · routes/ · rate limits"]
-        subgraph Workflow["Workflow"]
-            Agents["agents"]
-            Lifecycle["lifecycle"]
-            Analytics["analytics"]
-        end
-        subgraph Data["Data and adapters"]
-            Cohort["cohort"]
-            Integrations["integrations"]
-        end
-        subgraph Core["Core"]
-            Genetics["genetics<br/>pure engine"]
-            Consent["consent<br/>policy + audit"]
-        end
-        Routes --> Workflow
-        Routes --> Consent
-        Workflow --> Data
-        Workflow --> Genetics
-        Data --> Genetics
+    subgraph L1["Layer 1 · api"]
+        direction LR
+        MAIN["main.py<br/>app factory · middleware"] --> RT["routes/<br/>12 feature modules"]
+        DEMO["demo/<br/>fictional data"]
     end
-    Routes --> DB[("PostgreSQL")]
+    subgraph L2["Layer 2 · workflow"]
+        direction LR
+        AG["agents<br/>case graph · templates<br/>Kin tools · referrals"] ~~~ LC["lifecycle<br/>lab tracking · review queue<br/>booking · cascade · ref data"] ~~~ AN["analytics<br/>outcomes · small-cell<br/>suppression"]
+    end
+    subgraph L3["Layer 3 · data and adapters"]
+        direction LR
+        CO["cohort<br/>synthetic panel and people"] ~~~ IN["integrations<br/>FHIR R4 client · HL7 v2"]
+    end
+    subgraph L4["Layer 4 · core"]
+        direction LR
+        GE["genetics<br/>kinship · couple risk<br/>scenarios · cascade"] ~~~ CN["consent<br/>policy · grants<br/>projection · audit chain"]
+    end
+    WEB ==>|"HTTPS /api"| L1
+    L1 --> L2
+    L2 --> L3
+    L3 --> L4
+    L1 -.->|"consent checks"| L4
 ```
+
 
 - **Layered backend.** Imports only point down: api, then workflow, then data, then core. [`tests/unit/test_architecture.py`](tests/unit/test_architecture.py) fails the build if a layer is crossed or if the genetics engine imports a network, database or model library.
 - **One contract, two adapters.** The web app talks to `web/lib/api.ts`, which validates every response with zod. `real.ts` calls the API; `mock.ts` serves fixtures exported by the engine (`scripts/export_*.py`), so the offline demo shows the same numbers.
@@ -165,7 +185,7 @@ sequenceDiagram
     A->>K: open own result (plain language, own data only)
     A->>K: share for couple planning
     B->>K: share for couple planning
-    K->>K: engine assesses the couple; consent decisions audited
+    K->>K: engine assesses the couple, consent decisions audited
     alt complex or high-risk finding
         K-->>A: waiting notice (no figures)
         K->>C: item in the review queue with a case brief
@@ -304,6 +324,23 @@ CI also runs CodeQL, gitleaks, dependency audits and coverage floors on every pu
 | API | [Render](https://kinsight-api-va.onrender.com/api/health) (Docker, Virginia) | `/api/health` makes a real database round trip |
 | Database | Neon Postgres | Next to the API region |
 | Keep-alive and nightly jobs | GitHub Actions | Prevents cold starts; nightly ClinVar reclassification |
+
+```mermaid
+flowchart LR
+    DEV["Branch + pull request"] --> CI
+    subgraph CI["GitHub Actions · required before merge"]
+        direction TB
+        PY["Python: ruff · mypy · 850+ pytest<br/>architecture and consent-inventory tests"]
+        JS["Web: types · Biome · knip · 125 Vitest<br/>Playwright desktop + phone · axe WCAG 2.2 AA"]
+        SEC["Security: CodeQL · gitleaks<br/>pip-audit · npm audit · licences"]
+        LIVE["Integration: live HAPI FHIR R4"]
+    end
+    CI -->|"merge to main"| VER["Vercel<br/>web app"]
+    CI -->|"merge to main"| REN["Render<br/>API container"]
+    REN --> NEON[("Neon Postgres")]
+    CRON["Scheduled workflows"] -->|"every 10 min: keep warm"| REN
+    CRON -->|"nightly: ClinVar re-check"| REN
+```
 
 The landing page shows a live status line. Details: [hosting](docs/operations/hosting.md).
 
