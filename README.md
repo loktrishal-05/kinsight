@@ -90,7 +90,7 @@ Narrated walkthrough of the problem, the product and the architecture. The files
 ```mermaid
 flowchart TB
     U(["Couples · relatives · counsellors · analysts"])
-    subgraph B["Browser · data stays on device"]
+    subgraph B["Browser"]
         direction LR
         UI["Next.js app<br/>7 languages"] ~~~ OCR["On-device<br/>report OCR"] ~~~ PWA["Offline<br/>PWA"]
     end
