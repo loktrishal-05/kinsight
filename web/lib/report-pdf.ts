@@ -20,21 +20,23 @@ export async function readReportPdf(file: File, lang: string, signal: AbortSigna
   try {
     const pdf = await task.promise;
     if (pdf.numPages < 1 || pdf.numPages > MAX_PDF_PAGES) throw new Error("pdfLimit");
-    let text = "";
-    let firstPage = "";
+    const pages: string[] = [];
+    let length = 0;
     for (let index = 1; index <= pdf.numPages; index++) {
       signal.throwIfAborted();
       const page = await pdf.getPage(index);
       const content = await page.getTextContent();
       const extracted = content.items.map((item) => "str" in item ? item.str + (item.hasEOL ? "\n" : " ") : "").join("");
-      if (index === 1) firstPage = extracted;
-      text += extracted + "\n\n";
-      if (text.length > MAX_PDF_TEXT) throw new Error("pdfLimit");
+      pages.push(extracted);
+      length += extracted.length + 2;
+      if (length > MAX_PDF_TEXT) throw new Error("pdfLimit");
     }
-    if (text.trim()) return { text: text.trim(), firstPage, scanned: false };
+    const text = pages.join("\n\n").trim();
+    if (text) return { text, pages, scanned: false };
     if (pdf.numPages > MAX_SCAN_PAGES) throw new Error("pdfScanLimit");
-    text = await withReportOcr(lang, signal, async (recognize) => {
-      const pages = [];
+    const scans = await withReportOcr(lang, signal, async (recognize) => {
+      const pages: string[] = [];
+      let length = 0;
       for (let index = 1; index <= pdf.numPages; index++) {
         signal.throwIfAborted();
         const page = await pdf.getPage(index);
@@ -45,16 +47,20 @@ export async function readReportPdf(file: File, lang: string, signal: AbortSigna
         canvas.height = Math.ceil(viewport.height);
         try {
           await page.render({ canvas, viewport }).promise;
-          pages.push(await recognize(canvas));
+          const extracted = await recognize(canvas);
+          length += extracted.length + 2;
+          if (length > MAX_PDF_TEXT) throw new Error("pdfLimit");
+          pages.push(extracted);
         } finally {
           canvas.width = 0;
           page.cleanup();
         }
       }
-      return pages.join("\n\n").trim();
+      return pages;
     });
-    if (!text) throw new Error("pdfEmpty");
-    return { text, firstPage: "", scanned: true };
+    const scanText = scans.join("\n\n").trim();
+    if (!scanText) throw new Error("pdfEmpty");
+    return { text: scanText, pages: scans, scanned: true };
   } finally {
     signal.removeEventListener("abort", cancel);
     if (!signal.aborted) await task.destroy();

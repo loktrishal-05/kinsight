@@ -4,29 +4,20 @@ import { useMemo, useState } from "react";
 import { Brand, LangSwitch } from "@/components/PublicChrome";
 import { PageHeader } from "@/components/ui";
 import { useI18n } from "@/lib/i18n";
-import { compareReports, type Finding, parseReport } from "@/lib/report-compare";
+import { compareReports, findingSourceKey, indexReportSource, parseReport, type ReportSource } from "@/lib/report-compare";
 import ComparisonView from "./ComparisonView";
 import ReportAttachment from "./ReportAttachment";
 
 const PARTNERS = ["first", "second"] as const;
 type Partner = (typeof PARTNERS)[number];
 const FIELDS = ["genes", "condition", "result", "details"] as const;
-type Draft = { text: string; source?: string; confirmed: Set<string> };
+type Draft = { text: string; source?: ReturnType<typeof indexReportSource>; confirmed: Set<string> };
 const EMPTY_DRAFT: Draft = { text: "", confirmed: new Set() };
 const EMPTY_REPORTS = { first: EMPTY_DRAFT, second: EMPTY_DRAFT };
 const SAMPLE_REPORTS = {
   first: { ...EMPTY_DRAFT, text: "HBB | Beta thalassemia | Carrier finding" },
   second: { ...EMPTY_DRAFT, text: "HBB | Beta thalassemia | Not detected | Limited panel" },
 };
-
-function sourceSnippet(source: string, low: string, row: Finding) {
-  const offset = [row.condition, row.genes]
-    .filter((field) => field !== "-").map((field) => low.indexOf(field.toLowerCase())).find((index) => index >= 0);
-  if (offset === undefined) return "";
-  const start = Math.max(low.lastIndexOf("\n", offset) + 1, offset - 60);
-  const next = low.indexOf("\n", offset);
-  return source.slice(start, Math.min(next < 0 ? source.length : next, start + 240)).trim();
-}
 
 export default function ReportComparison() {
   const { t } = useI18n();
@@ -70,15 +61,15 @@ export default function ReportComparison() {
           const draft = drafts[side];
           const candidates = pending[side];
           const reviewing = draft.source !== undefined;
-          const lowerSource = draft.source?.toLowerCase() ?? "";
           const error = reviewing && draft.text.trim() ? candidates : parsed?.[side];
           return <div className="card space-y-3" key={side}>
             <label htmlFor={`report-${side}`} className="block font-semibold">{t(`reportCompare.${side}`)}</label>
             <ReportAttachment key={`${side}:${reset}`} label={t(`reportCompare.${side}`)} hasDraft={!!draft.text.trim()}
-              onUse={(text, source) => {
+              onUse={(text, source: ReportSource) => {
                 setParsed(undefined);
+                const indexed = indexReportSource(source);
                 setDrafts((previous) => ({
-                  ...previous, [side]: { text: text ?? previous[side].text, source, confirmed: new Set() },
+                  ...previous, [side]: { text: text ?? previous[side].text, source: indexed, confirmed: new Set() },
                 }));
               }} />
             <textarea id={`report-${side}`} className="field min-h-36 w-full" dir="auto" rows={7} spellCheck={false}
@@ -91,12 +82,13 @@ export default function ReportComparison() {
             {reviewing && <div className="space-y-3">
               <p className="text-sm">{t("reportCompare.reviewFields")}</p>
               {candidates.rows?.map((row, index) => {
-                const snippet = sourceSnippet(draft.source ?? "", lowerSource, row);
+                const snippet = draft.source?.get(findingSourceKey(row));
                 return <fieldset className="min-w-0 space-y-2 rounded-lg border border-line p-3" key={index}>
                   <legend className="px-1 text-sm font-semibold">{t("reportCompare.reviewRow").replace("{row}", String(index + 1))}</legend>
-                  <p className="break-words text-xs text-muted">
-                    {t("reportCompare.sourceSnippet")} <bdi>{snippet || t("reportCompare.sourceMissing")}</bdi>
-                  </p>
+                  <p className="break-words text-xs text-muted">{snippet ? <>
+                    {snippet.page === undefined ? t("reportCompare.sourceSnippet")
+                      : t("reportCompare.sourcePage").replace("{page}", String(snippet.page))} <bdi>{snippet.text}</bdi>
+                  </> : t("reportCompare.sourceMissing")}</p>
                   {FIELDS.filter((field) => row[field]).map((field) => {
                     const key = `${index}:${field}`;
                     return <label key={field} className="flex items-start gap-2 text-sm">

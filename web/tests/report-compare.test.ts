@@ -1,5 +1,14 @@
 import { expect, test } from "vitest";
-import { compareReports, MAX_REPORT_LENGTH, MAX_REPORT_ROWS, parseReport, referenceLinks, reportedTerm, suggestPdfRows } from "../lib/report-compare";
+import { compareReports, findingSourceKey, indexReportSource, MAX_REPORT_LENGTH, MAX_REPORT_ROWS, parseReport, referenceLinks, reportedTerm, suggestPdfRows } from "../lib/report-compare";
+
+test("links a unique structured finding to its page and withholds duplicate or partial evidence", () => {
+  const line = "CFTR | Cystic fibrosis | Not detected | Limited panel";
+  const row = { genes: "CFTR", condition: "Cystic fibrosis", result: "Not detected", details: "Limited panel" };
+  const pages = ["CFTR Cystic fibrosis panel overview", line];
+  expect(indexReportSource({ pages, paginated: true }).get(findingSourceKey(row))).toEqual({ text: line, page: 2 });
+  expect(indexReportSource({ pages: [...pages, line], paginated: true }).get(findingSourceKey(row))).toBeNull();
+  expect(indexReportSource({ pages, paginated: true }).get(findingSourceKey({ ...row, result: "Detected" }))).toBeUndefined();
+});
 
 const first = [
   "CFTR\tCystic fibrosis\tCarrier\tA heterozygous CFTR variant was reported",

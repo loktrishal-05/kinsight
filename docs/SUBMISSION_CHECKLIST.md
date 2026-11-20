@@ -2,7 +2,7 @@
 
 **Deadline: 20 Nov 2026, 23:59 IST** on the Hack2Skill dashboard (Submissions). The team lead submits. Evaluation runs 21-30 Nov.
 
-The code is finished: every feature issue from the early review is merged and tested (see [JUDGE_FEEDBACK.md](JUDGE_FEEDBACK.md)). What is left needs a person: the deck, the video, a check of the live site, and pressing submit.
+Use [JUDGE_FEEDBACK.md](JUDGE_FEEDBACK.md) to check what each demo feature proves and [EVALUATOR_ROADMAP.md](EVALUATOR_ROADMAP.md) for the remaining evidence and pilot work. The team lead owns the deck, video and submission.
 
 | Step | Who | Time | Done |
 | --- | --- | --- | --- |
@@ -24,6 +24,7 @@ Open https://kinsight-five.vercel.app in a private window.
 - [ ] `/report-compare` reads the fictional sample reports in `docs/samples/` (PDF for Partner A, PDF or PNG photo for Partner B); each field is confirmed before use.
 - [ ] `/prepare`, `/plan/scenarios`, `/cascade`, `/family` (edit the tree) and `/privacy` open without errors.
 - [ ] Switch to Arabic: layout flips right to left.
+- [ ] Open Family Planning from the homepage. Confirm the official Abu Dhabi and Saudi service links, if the judged release includes the guide.
 - [ ] On a phone: no sideways scroll; the bottom tab bar shows.
 
 Anything broken: note it, and say so honestly in the form rather than claiming it.
@@ -40,7 +41,7 @@ The deck is not in the repository; use the team's copy. Keep the existing title,
 6. **Family.** Editable family tree; cascade tracker where relatives get a condition-only invite, never the sender's result.
 7. **Guardrails.** Default-deny consent on every route with a tamper-evident audit; every figure labelled an educational estimate; counsellors approve every complex or high-risk result first.
 8. **Quality.** About 840 Python tests, 120 web unit tests, Playwright on desktop and phone, WCAG 2.2 AA with zero axe violations, CodeQL and secret scanning in CI.
-9. **Honest limits and next steps.** Synthetic data only. Comprehension study and expert review not yet run (protocol, tooling and review pack ready). Hosted FHIR and lab feed are documented but not switched on. SMART launch and a real lab partner need agreements.
+9. **Honest limits and next steps.** Synthetic data only. The hosted HAPI and signed HL7 walkthroughs used fictional fixtures. Recheck the deployed release before recording. SMART launch, provider onboarding, comprehension study and clinical and native-language review remain pending.
 
 Remove any slide that claims something not in this list. Export as PDF and check the size (File -> Export -> PDF, "Minimum size" if over 5 MB).
 
@@ -64,7 +65,7 @@ Upload where the form asks (unlisted YouTube or Drive, link open to anyone with 
 
 ## 4. Form text
 
-Paste from [SUBMISSION_TEXT.md](SUBMISSION_TEXT.md): the **Solution summary** (1,862 of 2,000 characters) and **What has been built** (1,178 of 1,500). If step 1 found something broken, edit the text to match. Add the live link, the repository link, the deck PDF and the video link.
+Paste from [SUBMISSION_TEXT.md](SUBMISSION_TEXT.md). The form allows 2,000 characters for **Solution summary** and 1,500 for **What has been built**. Adjust the claims to the verified release. Add the live link, the repository link, the deck PDF and the video link.
 
 ## 5. Submit
 
@@ -74,4 +75,4 @@ Read the whole form once more, then submit. Take a screenshot of the confirmatio
 
 - Close **#64** and **#65** on GitHub with a comment linking the confirmation (or ask Claude to).
 - **Do not push to `main` until results are out.** Late commits can be held against us. Work on branches only.
-- After judging: retire the unused Oregon API service (`docs/HOSTING.md`), and decide on switching on the hosted FHIR and lab feed (`docs/REAL_DATA_ROLLOUT.md`).
+- After judging: follow the [pilot roadmap](EVALUATOR_ROADMAP.md) and confirm the Oregon API dependency before retiring it ([hosting notes](HOSTING.md)).

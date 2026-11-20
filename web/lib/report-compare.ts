@@ -4,6 +4,7 @@ export const MAX_REPORT_ROWS = 1_000;
 export const MAX_REPORT_LENGTH = 400_000;
 
 export type Finding = { genes: string; condition: string; result: string; details: string };
+export type ReportSource = { pages: string[]; paginated: boolean };
 type ParseResult = { rows: Finding[]; error?: never } | { error: "empty" | "size" | "row"; line?: number; rows?: never };
 export type ComparisonRow = { genes: string; condition: string; first: Finding[]; second: Finding[] };
 
@@ -27,6 +28,24 @@ export function parseReport(text: string): ParseResult {
     if (rows.length > MAX_REPORT_ROWS) return { error: "size" };
   }
   return rows.length ? { rows } : { error: "empty" };
+}
+
+export function findingSourceKey({ genes, condition, result, details }: Finding) {
+  return JSON.stringify([genes, condition, result, details]);
+}
+
+export function indexReportSource({ pages, paginated }: ReportSource) {
+  const evidence = new Map<string, { text: string; page?: number } | null>();
+  for (const [index, page] of pages.entries()) {
+    for (const line of page.split(/\r\n|\r|\n/)) {
+      if (!/[|\t]/.test(line)) continue;
+      const row = parseReport(line).rows?.[0];
+      if (!row) continue;
+      const key = findingSourceKey(row);
+      evidence.set(key, evidence.has(key) ? null : { text: line.trim(), page: paginated ? index + 1 : undefined });
+    }
+  }
+  return evidence;
 }
 
 export function compareReports(first: Finding[], second: Finding[]): [string, ComparisonRow][] {
