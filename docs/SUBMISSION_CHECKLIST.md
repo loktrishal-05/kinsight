@@ -21,7 +21,7 @@ Open https://kinsight-five.vercel.app in a private window.
 - [ ] **Start the demo** works; **Viewing as** switches between Person A, Person B, Counsellor, Analyst and Auditor.
 - [ ] Every risk figure shows **"educational estimate, not a diagnosis"** (for example `/couple`, `/plan/scenarios`).
 - [ ] `/couple` shows the counsellor waiting notice until the counsellor approves in `/counsellor`.
-- [ ] `/report-compare`: comparing both sample reports shows the carrier row; choosing Recessive shows 25% with the estimate label, X-linked shows no figure.
+- [ ] `/report-compare`: try two fictional, unannotated carrier entries for the same single gene and condition. Choosing Recessive shows the standard example with its assumptions and estimate label. Choosing X-linked hides the figure.
 - [ ] `/report-compare` reads the fictional sample reports in `docs/samples/` (PDF for Partner A, PDF or PNG photo for Partner B); each field is confirmed before use.
 - [ ] `/prepare`, `/plan/scenarios`, `/cascade`, `/family` (edit the tree) and `/privacy` open without errors.
 - [ ] Switch to Arabic: layout flips right to left.
@@ -41,7 +41,7 @@ The deck is not in the repository; use the team's copy. Keep the existing title,
 5. **What-if scenarios.** Per pregnancy and "at least one of N"; the five routes described neutrally.
 6. **Family.** Editable family tree; cascade tracker where relatives get a condition-only invite, never the sender's result.
 7. **Guardrails.** Default-deny consent on every route with a tamper-evident audit; every figure labelled an educational estimate; counsellors approve every complex or high-risk result first.
-8. **Quality.** About 840 Python tests, 120 web unit tests, Playwright on desktop and phone, WCAG 2.2 AA with zero axe violations, CodeQL and secret scanning in CI.
+8. **Quality.** Use the CI run for the presented release. Report Python and web results, desktop and phone Playwright checks, automated axe results for the routes tested, CodeQL and secret scanning.
 9. **Honest limits and next steps.** Synthetic data only. The hosted HAPI and signed HL7 walkthroughs used fictional fixtures. Recheck the deployed release before recording. SMART launch, provider onboarding, comprehension study and clinical and native-language review remain pending.
 
 Remove any slide that claims something not in this list. Export as PDF and check the size (File -> Export -> PDF, "Minimum size" if over 5 MB).
@@ -53,7 +53,7 @@ Record the live site from step 1 with sound, in one take per scene. Say "all peo
 | # | Scene | What to show | Seconds |
 | --- | --- | --- | --- |
 | 1 | Start | Landing, status line online, **Start the demo** as Person A; switch to Arabic and back | 25 |
-| 2 | Upload a report | `/report-compare`: attach `docs/samples/demo-report-partner-a.pdf` and `-b.png`, confirm the fields, compare; on the shared carrier row choose Recessive and show the estimate, then X-linked and show that no figure appears | 50 |
+| 2 | Upload a report | `/report-compare`: attach `docs/samples/demo-report-partner-a.pdf` and `-b.png`, confirm the fields and compare. Use a separate pair of simple fictional carrier entries to show the assumptions on the recessive illustration. | 50 |
 | 3 | Share and wait | Person A and B share for couple planning; `/couple` shows the counsellor waiting notice | 30 |
 | 4 | Counsellor approves | Switch to Counsellor; open the review queue; approve | 30 |
 | 5 | The result | `/couple`: the figure with its educational-estimate label and method link | 20 |

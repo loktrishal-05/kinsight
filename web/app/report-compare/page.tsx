@@ -24,14 +24,15 @@ export default function ReportComparison() {
   const [drafts, setDrafts] = useState(EMPTY_REPORTS);
   const [parsed, setParsed] = useState<{ first: ReturnType<typeof parseReport>; second: ReturnType<typeof parseReport> }>();
   const [reset, setReset] = useState(0);
+  const [reading, setReading] = useState({ first: false, second: false });
   const first = useMemo(() => parseReport(drafts.first.text), [drafts.first.text]);
   const second = useMemo(() => parseReport(drafts.second.text), [drafts.second.text]);
   const pending = { first, second };
   const requiresReview = PARTNERS.some((side) => {
     const draft = drafts[side], rows = pending[side].rows;
-    return draft.source !== undefined && (!rows || draft.confirmed.size !== rows.reduce(
+    return reading[side] || (draft.source !== undefined && (!rows || draft.confirmed.size !== rows.reduce(
       (count, row) => count + FIELDS.filter((field) => row[field]).length, 0,
-    ));
+    )));
   });
   const comparison = parsed?.first.rows && parsed.second.rows ? compareReports(parsed.first.rows, parsed.second.rows) : undefined;
 
@@ -47,7 +48,7 @@ export default function ReportComparison() {
     </header>
     <PageHeader title={t("reportCompare.title")} lead={t("reportCompare.lead")} />
     <p className="note">{t("reportCompare.privacy")}</p>
-    {!drafts.first.text && !drafts.second.text && drafts.first.source === undefined && drafts.second.source === undefined && (
+    {!reading.first && !reading.second && !drafts.first.text && !drafts.second.text && drafts.first.source === undefined && drafts.second.source === undefined && (
       <button className="btn-quiet" type="button" onClick={() => { setParsed(undefined); setDrafts(SAMPLE_REPORTS); }}>
         {t("reportCompare.trySample")}
       </button>
@@ -65,14 +66,18 @@ export default function ReportComparison() {
           return <div className="card space-y-3" key={side}>
             <label htmlFor={`report-${side}`} className="block font-semibold">{t(`reportCompare.${side}`)}</label>
             <ReportAttachment key={`${side}:${reset}`} label={t(`reportCompare.${side}`)} hasDraft={!!draft.text.trim()}
+              onReading={(active) => {
+                if (active) setParsed(undefined);
+                setReading((previous) => ({ ...previous, [side]: active }));
+              }}
               onUse={(text, source: ReportSource) => {
                 setParsed(undefined);
                 const indexed = indexReportSource(source);
                 setDrafts((previous) => ({
-                  ...previous, [side]: { text: text ?? previous[side].text, source: indexed, confirmed: new Set() },
+                  ...previous, [side]: { text, source: indexed, confirmed: new Set() },
                 }));
               }} />
-            <textarea id={`report-${side}`} className="field min-h-36 w-full" dir="auto" rows={7} spellCheck={false}
+            <textarea id={`report-${side}`} className="field min-h-36 w-full" dir="auto" rows={7} spellCheck={false} readOnly={reading[side]}
               autoComplete="off" autoCapitalize="off" autoCorrect="off"
               placeholder={t("reportCompare.columns")}
               aria-invalid={!!error?.error} aria-describedby={error?.error ? `report-format report-${side}-error` : "report-format"}
@@ -116,7 +121,7 @@ export default function ReportComparison() {
       </details>
       <div className="flex flex-wrap gap-2">
         <button type="submit" className="btn" disabled={requiresReview}>{t("reportCompare.compare")}</button>
-        <button type="button" className="btn-quiet" onClick={() => { setDrafts(EMPTY_REPORTS); setParsed(undefined); setReset(reset + 1); }}>
+        <button type="button" className="btn-quiet" onClick={() => { setDrafts(EMPTY_REPORTS); setParsed(undefined); setReading({ first: false, second: false }); setReset(reset + 1); }}>
           {t("reportCompare.clear")}
         </button>
       </div>

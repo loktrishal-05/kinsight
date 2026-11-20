@@ -1,5 +1,50 @@
 import { expect, test } from "@playwright/test";
 
+test("replacement reading hides results and preserves the existing draft and its source until use", async ({ page }) => {
+  await page.addInitScript(() => {
+    const read = Blob.prototype.text;
+    Blob.prototype.text = async function () {
+      if (this instanceof File && this.name === "replacement.tsv") {
+        await new Promise<void>((resolve) => window.addEventListener("finish-report-read", () => resolve(), { once: true }));
+      }
+      return read.call(this);
+    };
+  });
+  await page.goto("/report-compare");
+  const first = page.getByRole("textbox", { name: "Partner A report" });
+  const file = page.getByLabel("Attach Partner A report");
+  const compare = page.getByRole("button", { name: "Compare findings" });
+  const original = "CFTR\tCystic fibrosis\tCarrier\tOriginal";
+  await file.setInputFiles({ name: "source.tsv", mimeType: "text/plain", buffer: Buffer.from(original) });
+  await page.getByRole("button", { name: "Use suggested findings" }).click();
+  await page.getByRole("textbox", { name: "Partner B report" }).fill("CFTR | Cystic fibrosis | Not detected");
+  for (const check of await page.getByRole("group", { name: "Finding 1" }).getByRole("checkbox").all()) await check.check();
+  await compare.click();
+  const heading = page.getByRole("heading", { name: "Reported findings" });
+  await expect(heading).toBeVisible();
+
+  await file.setInputFiles({ name: "invalid.pdf", mimeType: "application/pdf", buffer: Buffer.from("invalid") });
+  await expect(page.getByText("The PDF could not be read", { exact: false })).toBeVisible();
+  await expect(heading).toHaveCount(0);
+  await expect(first).toHaveValue(original);
+  await compare.click();
+  await expect(heading).toBeVisible();
+
+  const replacement = "HBB\tBeta thalassemia\tCarrier\tReplacement";
+  await file.setInputFiles({ name: "replacement.tsv", mimeType: "text/plain", buffer: Buffer.from(replacement) });
+  await expect(heading).toHaveCount(0);
+  await expect(compare).toBeDisabled();
+  await expect(first).toHaveValue(original);
+  await page.evaluate(() => window.dispatchEvent(new Event("finish-report-read")));
+  const useReplacement = page.getByRole("button", { name: "Replace current text with suggested findings" });
+  await expect(useReplacement).toBeVisible();
+  await expect(page.getByRole("group", { name: "Finding 1" })).toContainText(/Extracted text.*Original/);
+  await useReplacement.click();
+  await expect(first).toHaveValue(replacement);
+  await expect(page.getByRole("group", { name: "Finding 1" })).toContainText(/Extracted text.*Replacement/);
+  await expect(compare).toBeDisabled();
+});
+
 test("private comparison preserves lab findings and separates missing rows", async ({ page, browser }) => {
   const source = await browser.newPage();
   await source.setContent('<p style="break-after:page">CFTR review-only-marker</p><p>CFTR | Cystic fibrosis | Carrier | review-only-marker</p>');

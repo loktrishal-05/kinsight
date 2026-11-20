@@ -6,7 +6,7 @@ import { Estimate } from "@/components/ui";
 import { DATA } from "@/lib/fixtures";
 import { useI18n } from "@/lib/i18n";
 import { referenceLinks, reportedTerm, type ComparisonRow, type Finding } from "@/lib/report-compare";
-import { recessiveCarrierCouple } from "@/lib/scenario";
+import { illustrativeRecessiveScenario } from "@/lib/scenario";
 
 const PARTNERS = ["first", "second"] as const;
 const FILTERS = ["both", "first", "second"] as const;
@@ -115,14 +115,18 @@ function Guide({ row }: { row: ComparisonRow }) {
     </div>
     <a className="text-sm text-brand-700 underline" href="https://medlineplus.gov/genetics/understanding/testing/interpretingresults/"
       referrerPolicy="no-referrer" rel="noreferrer" target="_blank">{t("reportCompare.readingSource")}</a>
-    {bothCarriers(row) && <WhatIf />}
+    {bothCarriers(row) && (simpleCarrierPair(row) ? <WhatIf />
+      : <p className="note">{t("reportCompare.whatif.complex")}</p>)}
   </>;
 }
 
 const bothCarriers = (row: ComparisonRow) =>
   row.first.some((f) => reportedTerm(f.result) === "carrier") && row.second.some((f) => reportedTerm(f.result) === "carrier");
+const simpleCarrierPair = ({ genes, first, second }: ComparisonRow) =>
+  genes !== "-" && !genes.includes("/") && first.length === 1 && second.length === 1
+  && !first[0].details && !second[0].details;
 const RECESSIVE = DATA.cohort.carriers.find((c) => c.inheritance === "AR")?.condition_id ?? "";
-const pct = (x: number | null) => `${Math.round((x ?? 0) * 100)}%`;
+const pct = (x: number | null) => x === null ? "" : `${Math.round(x * 100)}%`;
 
 // Both reports list a carrier result for the same condition. Figures appear only after the person confirms the
 // inheritance their report states; X-linked or unsure gets no figure, only the counsellor route. Nothing leaves the device.
@@ -130,7 +134,7 @@ function WhatIf() {
   const { t, lang } = useI18n();
   const [kind, setKind] = useState<"" | "recessive" | "xlinked" | "unsure">("");
   const [children, setChildren] = useState(1);
-  const s = kind === "recessive" ? recessiveCarrierCouple(children, lang, RECESSIVE) : undefined;
+  const s = kind === "recessive" ? illustrativeRecessiveScenario(children, lang, RECESSIVE) : undefined;
   return <section className="space-y-3 rounded-lg border border-line p-4" aria-labelledby="report-whatif" data-demo="report-whatif">
     <h4 id="report-whatif" className="font-semibold">{t("reportCompare.whatif.title")}</h4>
     <p className="text-sm">{t("reportCompare.whatif.lead")}</p>
@@ -155,7 +159,7 @@ function WhatIf() {
       </dl>
       <p className="text-sm text-muted">{t("reportCompare.whatif.same")}</p>
     </>}
-    {(kind === "xlinked" || kind === "unsure") && <p className="note">{t("reportCompare.whatif.noFigure")}</p>}
+    {kind && !s && <p className="note">{t("reportCompare.whatif.noFigure")}</p>}
     {kind && <p className="text-sm">{t("reportCompare.whatif.counsellor")}{" "}
       <Link className="text-brand-700 underline" href="/plan">{t("reportCompare.whatif.book")}</Link>{" · "}
       <Link className="text-brand-700 underline" href="/prepare">{t("reportCompare.whatif.prepare")}</Link></p>}

@@ -10,8 +10,8 @@ import { readReportPdf } from "@/lib/report-pdf";
 type Attachment = { name?: string; text?: string; source?: ReportSource; suggested?: string; error?: string; loading?: boolean };
 const ATTACHMENT_ERRORS = ["pdfEmpty", "pdfLimit", "pdfScanLimit", "attachmentFormat", "size", "attachmentType", "imageLimit", "imageUnreadable"];
 
-export default function ReportAttachment({ label, hasDraft, onUse }: {
-  label: string; hasDraft: boolean; onUse: (rows: string | undefined, source: ReportSource) => void;
+export default function ReportAttachment({ label, hasDraft, onReading, onUse }: {
+  label: string; hasDraft: boolean; onReading: (reading: boolean) => void; onUse: (rows: string, source: ReportSource) => void;
 }) {
   const { t, lang } = useI18n();
   const request = useRef<AbortController | null>(null);
@@ -23,13 +23,14 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
     const current = new AbortController();
     request.current = current;
     setState({ name: file.name, loading: true });
+    onReading(true);
     try {
       const pdf = /\.pdf$/i.test(file.name);
       if (/\.(png|jpe?g)$/i.test(file.name)) {
         const text = await readReportImage(file, lang, current.signal);
         if (!current.signal.aborted) {
           const source = { pages: [text], paginated: false };
-          onUse(undefined, source);
+          if (!hasDraft) onUse("", source);
           setState({ name: file.name, text, source, suggested: parseReport(text).rows ? text : suggestPdfRows(text) });
         }
         return;
@@ -44,13 +45,15 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
       if (!pdf && !parsed.rows) throw new Error(parsed.error === "size" ? "size" : "attachmentFormat");
       const rows = parsed.rows ? document.text : suggestPdfRows(document.scanned ? document.text : document.pages[0]);
       const source = { pages: document.pages, paginated: pdf };
-      onUse(undefined, source);
+      if (!hasDraft) onUse("", source);
       setState({ name: file.name, text: document.text, source, suggested: rows });
     } catch (error) {
       if (current.signal.aborted) return;
       const code = error instanceof Error && ATTACHMENT_ERRORS.includes(error.message) ? error.message
         : /\.(png|jpe?g)$/i.test(file.name) ? "imageUnreadable" : "pdfUnreadable";
       setState({ name: file.name, error: code });
+    } finally {
+      if (!current.signal.aborted) onReading(false);
     }
   }
 
@@ -78,9 +81,10 @@ export default function ReportAttachment({ label, hasDraft, onUse }: {
       <LoaderCircle aria-hidden className="h-4 w-4 motion-safe:animate-spin" />{t("reportCompare.reading")}
     </p>}
     {state.error && <p role="alert" className="text-sm text-unsure-fg">{t(`reportCompare.error.${state.error}`)}</p>}
-    {state.suggested && <button type="button" className="btn-quiet" onClick={() => {
-      if (state.source) onUse(state.suggested, state.source);
-    }}>{t(hasDraft ? "reportCompare.replace" : "reportCompare.useSuggested")}</button>}
+    {state.source && (state.suggested || hasDraft) && <button type="button" className="btn-quiet" onClick={() => {
+      if (state.source) onUse(state.suggested ?? "", state.source);
+    }}>{t(!state.suggested ? "reportCompare.replaceManual"
+      : hasDraft ? "reportCompare.replace" : "reportCompare.useSuggested")}</button>}
     {state.text && <details className="rounded-lg bg-sunk p-2">
       <summary className="cursor-pointer text-sm font-semibold">{t("reportCompare.pdfPreview")}</summary>
       <p className="mt-2 text-sm text-muted">{t("reportCompare.previewHelp")}</p>

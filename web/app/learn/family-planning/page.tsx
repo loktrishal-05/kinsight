@@ -73,7 +73,7 @@ export default function FamilyPlanning() {
       <section className="card space-y-3" aria-labelledby="planning-prepare">
         <h2 id="planning-prepare" className="text-lg font-semibold">{text("next")}</h2>
         <p className="text-sm text-muted">{text("privacy")}</p>
-        <Link className="btn-quiet h-auto min-h-10 py-2" href="/prepare">{t("prep.link")}</Link>
+        <Link className="btn-quiet h-auto min-h-10 py-2" href="/prepare" lang={lang}>{t("prep.link")}</Link>
       </section>
 
       <section aria-labelledby="planning-sources" className="space-y-2 text-sm">

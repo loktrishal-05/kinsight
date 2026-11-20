@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Brand } from "@/components/PublicChrome";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
-import { clearResponses, loadResponses, summarise, toCSV, type StudyResponse } from "@/lib/study";
+import { clearResponses, readStudyStorage, summarise, toCSV } from "@/lib/study";
 
 const save = (name: string, body: string, type: string) => {
   const a = document.createElement("a");
@@ -18,10 +18,11 @@ const save = (name: string, body: string, type: string) => {
 
 export default function StudyResults() {
   const { t } = useI18n();
-  const [rows, setRows] = useState<StudyResponse[]>([]);
+  const [storage, setStorage] = useState<ReturnType<typeof readStudyStorage>>({ rows: [] });
   const [confirm, setConfirm] = useState(false);
   const [clearError, setClearError] = useState(false);
-  useEffect(() => setRows(loadResponses()), []);
+  useEffect(() => setStorage(readStudyStorage()), []);
+  const { rows, recovery, unavailable } = storage;
   const s = summarise(rows);
   const name = (code: string) => LANGUAGES.find((l) => l.code === code)?.name ?? code;
   const stamp = new Date().toISOString().slice(0, 10);
@@ -40,21 +41,26 @@ export default function StudyResults() {
           <p className="me-auto text-sm"><span className="text-2xl font-bold tabular-nums" data-testid="study-total">{s.total}</span> {t("study.responses")}</p>
           <button className={btn} disabled={!rows.length} onClick={() => save(`kinsight-study-${stamp}.csv`, toCSV(rows), "text/csv")} data-testid="study-csv"><Download aria-hidden className="h-4 w-4" />CSV</button>
           <button className={btn} disabled={!rows.length} onClick={() => save(`kinsight-study-${stamp}.json`, JSON.stringify(rows, null, 2), "application/json")}><Download aria-hidden className="h-4 w-4" />JSON</button>
+          {recovery !== undefined && <button className={btn} onClick={() => save(`kinsight-study-recovery-${stamp}.txt`, recovery, "text/plain")}>
+            <Download aria-hidden className="h-4 w-4" />{t("study.downloadRecovery")}
+          </button>}
           {confirm ? (
             <span className="inline-flex items-center gap-2 text-sm">
               {t("study.clearSure")}
               <button className={`${btn} border-unsure-fg text-unsure-fg`} onClick={() => {
                 const cleared = clearResponses();
                 setClearError(!cleared);
-                if (cleared) { setRows([]); setConfirm(false); }
+                if (cleared) { setStorage({ rows: [] }); setConfirm(false); }
               }} data-testid="study-clear-yes">{t("study.clearYes")}</button>
               <button className={btn} onClick={() => setConfirm(false)}>{t("study.clearNo")}</button>
             </span>
           ) : (
-            <button className={btn} disabled={!rows.length} onClick={() => setConfirm(true)}><Trash2 aria-hidden className="h-4 w-4" />{t("study.clear")}</button>
+            <button className={btn} disabled={!rows.length && recovery === undefined} onClick={() => setConfirm(true)}><Trash2 aria-hidden className="h-4 w-4" />{t("study.clear")}</button>
           )}
         </div>
         {clearError && <p role="alert" className="text-sm text-unsure-fg">{t("study.clearError")}</p>}
+        {recovery !== undefined && <p role="alert" className="text-sm text-unsure-fg">{t("study.recovery")}</p>}
+        {unavailable && <p role="alert" className="text-sm text-unsure-fg">{t("study.storageUnavailable")}</p>}
 
         <section className="card-flush" aria-labelledby="by">
           <h2 id="by" className="border-b border-line px-5 py-3 font-semibold">{t("study.byGroup")}</h2>

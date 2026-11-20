@@ -28,3 +28,25 @@ test("one carrier and one not detected: no couple figure is offered", async ({ p
   await expect(page.locator("#report-comparison")).toBeVisible();
   await expect(page.locator('[data-demo="report-whatif"]')).toHaveCount(0);
 });
+
+test("conflicting, annotated and multi-gene entries never offer an illustrative figure", async ({ page }) => {
+  await page.goto("/report-compare");
+  const first = page.getByRole("textbox", { name: "Partner A report" });
+  await page.getByRole("textbox", { name: "Partner B report" }).fill("CFTR | Cystic fibrosis | Carrier");
+  const compare = page.getByRole("button", { name: "Compare findings" });
+  for (const entry of [
+    "CFTR | Cystic fibrosis | Carrier\nCFTR | Cystic fibrosis | Not detected",
+    "CFTR | Cystic fibrosis | Carrier | Classification pending",
+  ]) {
+    await first.fill(entry);
+    await compare.click();
+    await expect(page.getByText(/these entries include extra findings/i)).toBeVisible();
+    await expect(page.locator('[data-demo="report-whatif"]')).toHaveCount(0);
+  }
+  const multiGene = "HBA1/HBA2 | Alpha thalassemia | Carrier";
+  await first.fill(multiGene);
+  await page.getByRole("textbox", { name: "Partner B report" }).fill(multiGene);
+  await compare.click();
+  await expect(page.getByText(/these entries include extra findings/i)).toBeVisible();
+  await expect(page.locator('[data-demo="report-whatif"]')).toHaveCount(0);
+});
