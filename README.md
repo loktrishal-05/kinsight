@@ -59,37 +59,16 @@ Narrated walkthrough of the problem, the product and the architecture. The files
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/02-home.jpg" alt="Person home" /><br /><sub><b>Journey home</b>: one calm next step and the state of each part of the journey</sub></td>
     <td width="50%"><img src="docs/screenshots/04-couple.jpg" alt="Couple view" /><br /><sub><b>Couple view</b>: released only after both share and a counsellor reviews; every figure is labelled</sub></td>
+    <td width="50%"><img src="docs/screenshots/05-report-compare.jpg" alt="Report comparison" /><br /><sub><b>Report reading</b>: PDFs or photos read on the device, each field confirmed, then explored</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/05-report-compare.jpg" alt="Report comparison" /><br /><sub><b>Report comparison</b>: PDFs or photos read on the device, each field confirmed, then explored</sub></td>
     <td><img src="docs/screenshots/06-scenarios.jpg" alt="What-if scenarios" /><br /><sub><b>What-if scenarios</b>: per pregnancy, at least one of N, untested partner, relationship</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/07-prepare.jpg" alt="Session preparation" /><br /><sub><b>Session preparation</b>: values, concerns and tailored neutral questions, shared only by choice</sub></td>
-    <td><img src="docs/screenshots/08-family.jpg" alt="Family circle" /><br /><sub><b>Family circle</b>: an editable, keyboard-accessible family tree</sub></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/11-counsellor.jpg" alt="Counsellor console" /><br /><sub><b>Counsellor console</b>: review queue, case brief, keyboard triage</sub></td>
-    <td><img src="docs/screenshots/15-arabic.jpg" alt="Arabic interface" /><br /><sub><b>Arabic, right to left</b>: one of seven languages</sub></td>
+    <td><img src="docs/screenshots/11-counsellor.jpg" alt="Counsellor console" /><br /><sub><b>Counsellor console</b>: one review queue for complex findings</sub></td>
   </tr>
 </table>
 
-<p align="center"><img src="docs/screenshots/16-phone.jpg" alt="KinSight on a phone" width="86%" /><br /><sub>Phone layout with a bottom tab bar; installable as an app</sub></p>
-
-<details>
-<summary>More screens: landing, result, family testing, Kin, analyst, privacy, governance</summary>
-
-| | |
-| --- | --- |
-| <img src="docs/screenshots/01-landing.jpg" alt="Landing page" /> | <img src="docs/screenshots/03-result.jpg" alt="My result" /> |
-| <img src="docs/screenshots/09-cascade.jpg" alt="Family testing" /> | <img src="docs/screenshots/10-kin.jpg" alt="Ask Kin" /> |
-| <img src="docs/screenshots/12-analyst.jpg" alt="Analyst dashboard" /> | <img src="docs/screenshots/13-privacy.jpg" alt="Privacy" /> |
-| <img src="docs/screenshots/14-governance.jpg" alt="Governance and audit" /> | |
-
-Screenshots are regenerated from the running app: `cd web && SHOTS=1 npx playwright test e2e/readme-shots.spec.ts --project=desktop`.
-</details>
+<p align="center"><img src="docs/screenshots/16-phone.jpg" alt="KinSight on a phone" width="80%" /><br /><sub>Phone layout in seven languages, installable as an app. More screens: <a href="https://kinsight-five.vercel.app/">open the live demo</a>.</sub></p>
 
 ## Features
 
