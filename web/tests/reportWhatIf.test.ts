@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { DATA } from "@/lib/fixtures";
-import { recessiveCarrierCouple } from "@/lib/scenario";
+import { illustrativeRecessiveScenario, recessiveCarrierCouple } from "@/lib/scenario";
 
 const AR = DATA.cohort.carriers.find((c) => c.inheritance === "AR")!.condition_id;
 
@@ -14,4 +14,9 @@ test("two carriers of a recessive condition: the engine's 1 in 4, and at least o
 test("the figures are the same for every recessive panel condition", () => {
   const per = DATA.cohort.carriers.filter((c) => c.inheritance === "AR").map((c) => recessiveCarrierCouple(3, "en", c.condition_id).chance_at_least_one.value);
   expect(new Set(per.map((x) => x?.toFixed(9))).size).toBe(1);
+});
+
+test("a missing fixture and unavailable pregnancy count yield no illustration", () => {
+  expect(illustrativeRecessiveScenario(2, "en", "")).toBeUndefined();
+  expect(illustrativeRecessiveScenario(7, "en", AR)).toBeUndefined();
 });

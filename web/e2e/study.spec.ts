@@ -1,6 +1,28 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
+test("partly unreadable storage preserves the original and exports readable rows", async ({ page }) => {
+  const raw = JSON.stringify([null, {
+    study_id: "S-00000001", language: "en", reading_level: "basic", case_id: "s3",
+    answers: {}, correct: 4, total: 5, passed: false, missed: ["q_a"], clarity: null,
+    started_at: "2026-11-20T05:00:00Z", finished_at: "2026-11-20T05:05:00Z",
+  }]);
+  await page.addInitScript((value) => localStorage.setItem("ks_study_responses", value), raw);
+  await page.goto("/study/results");
+  await expect(page.getByTestId("study-total")).toHaveText("1");
+  await expect(page.getByRole("alert").filter({ hasText: "Some of the stored data could not be read" })).toBeVisible();
+  const [csv] = await Promise.all([page.waitForEvent("download"), page.getByTestId("study-csv").click()]);
+  expect(readFileSync((await csv.path())!, "utf-8").trim().split("\n")).toHaveLength(2);
+  const [recovery] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Download original storage" }).click()]);
+  expect(readFileSync((await recovery.path())!, "utf-8")).toBe(raw);
+  expect(await page.evaluate(() => localStorage.getItem("ks_study_responses"))).toBe(raw);
+  await page.goto("/study");
+  await page.getByTestId("study-agree").check();
+  await page.getByTestId("study-start").click();
+  await expect(page.getByRole("alert").filter({ hasText: "browser’s study storage is unavailable" })).toBeVisible();
+  await expect(page.getByTestId("study-text")).toHaveCount(0);
+});
+
 // Volunteer study: consent in the participant's language, read, answer, rate; the facilitator page counts it and exports CSV.
 test("a participant completes the study in Hindi and the facilitator exports it", async ({ page }) => {
   await page.addInitScript(() => { if (!sessionStorage.getItem("seeded")) { localStorage.clear(); sessionStorage.setItem("seeded", "1"); } localStorage.setItem("ks_lang", "hi"); });

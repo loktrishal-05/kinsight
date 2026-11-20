@@ -3,11 +3,11 @@
 // case explanation, the five-question check (first attempt only, no re-explanation), an optional clarity rating. A facilitator runs
 // it on their own device; ?level=basic|standard fixes the reading level and ?case=s1..s7 the case.
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Paragraphs } from "@/components/ui";
 import { Brand, LangSwitch } from "@/components/PublicChrome";
 import { useI18n } from "@/lib/i18n";
-import { assignLevel, grade, newStudyId, saveResponse, studyCase, type Level } from "@/lib/study";
+import { assignLevel, grade, newStudyId, readStudyStorage, saveResponse, studyCase, type Level } from "@/lib/study";
 
 type Step = "consent" | "read" | "quiz" | "rate" | "done";
 
@@ -22,11 +22,15 @@ export default function Study() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [missing, setMissing] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const finished = useRef("");
   useEffect(() => { setCaseId(new URLSearchParams(location.search).get("case")); }, []);
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
   const c = studyCase(caseId, lang, level);
   const begin = () => {
+    const { recovery, unavailable } = readStudyStorage();
+    if (recovery !== undefined || unavailable) { setSaveError(true); return; }
+    finished.current = "";
     setId(newStudyId()); setLevel(assignLevel(lang, new URLSearchParams(location.search).get("level")));
     setStarted(new Date().toISOString()); setAnswers({}); setSaveError(false); setStep("read");
   };
@@ -35,8 +39,9 @@ export default function Study() {
     setMissing(false); setStep("rate");
   };
   const finish = (clarity: number | null) => {
+    finished.current ||= new Date().toISOString();
     const saved = saveResponse({ study_id: id, language: lang, reading_level: level, case_id: c.id, answers, ...grade(c.quiz, answers), clarity,
-      started_at: started, finished_at: new Date().toISOString() });
+      started_at: started, finished_at: finished.current });
     setSaveError(!saved);
     if (saved) setStep("done");
   };
@@ -65,6 +70,7 @@ export default function Study() {
               {t("study.agree")}
             </label>
             <div className="mt-6"><button className={primary} disabled={!agree} onClick={begin} data-testid="study-start">{t("study.start")}<ArrowRight aria-hidden className="h-4 w-4 rtl:rotate-180" /></button></div>
+            {saveError && <p role="alert" className="mt-3 text-sm text-unsure-fg">{t("study.storageUnavailable")}</p>}
           </section>
         )}
 

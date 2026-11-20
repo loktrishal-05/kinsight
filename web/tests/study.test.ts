@@ -1,5 +1,7 @@
-import { describe, expect, test } from "vitest";
-import { grade, studyCase, summarise, toCSV, type StudyResponse } from "../lib/study";
+import { describe, expect, test, vi } from "vitest";
+import { DATA } from "../lib/fixtures";
+import { LANGUAGES } from "../lib/i18n";
+import { grade, readStudyStorage, saveResponse, studyCase, summarise, toCSV, type StudyResponse } from "../lib/study";
 
 const row = (language: string, level: "basic" | "standard", passed: boolean, missed: string[] = []): StudyResponse => ({
   study_id: "S-0", language, reading_level: level, case_id: "s3", answers: {}, correct: passed ? 5 : 4, total: 5, passed, missed,
@@ -7,6 +9,26 @@ const row = (language: string, level: "basic" | "standard", passed: boolean, mis
 });
 
 describe("volunteer study", () => {
+  test("stored schema accepts every quiz fixture and preserves a conflicting duplicate", () => {
+    let stored: string | null = null;
+    vi.stubGlobal("localStorage", { getItem: () => stored, setItem: (_: string, value: string) => { stored = value; } });
+    try {
+      let count = 0;
+      for (const { code } of LANGUAGES) {
+        for (const scenario of DATA.scenarios) {
+          const { id, quiz } = studyCase(scenario.id, code, "basic");
+          const answers = Object.fromEntries(quiz.map((q) => [q.id, q.answer]));
+          const study_id = `S-${(++count).toString(16).toUpperCase().padStart(8, "0")}`;
+          const response = { ...row(code, "basic", true), ...grade(quiz, answers), study_id, case_id: id, answers };
+          expect(saveResponse(response), `${code}/${id}`).toBe(true);
+          expect(saveResponse(response)).toBe(true);
+          expect(saveResponse({ ...response, clarity: null })).toBe(false);
+        }
+      }
+      expect(readStudyStorage()).toMatchObject({ rows: expect.any(Array), recovery: undefined });
+      expect(readStudyStorage().rows).toHaveLength(count);
+    } finally { vi.unstubAllGlobals(); }
+  });
   test("every language has its own explanation and a five-question check", () => {
     for (const lang of ["en", "ar", "hi", "ta", "te", "kn", "ml"]) {
       const c = studyCase("s3", lang, "basic");

@@ -34,3 +34,12 @@ export function lookup(req: ScenarioRequest, inheritance: "AR" | "XLR"): Scenari
 export function recessiveCarrierCouple(children: number, lang: string, conditionId: string): Scenario {
   return lookup({ condition_id: conditionId, status_a: "carrier", status_b: "carrier", relation: "none", children, lang }, "AR");
 }
+
+export function illustrativeRecessiveScenario(children: number, lang: string, conditionId: string) {
+  try {
+    const scenario = recessiveCarrierCouple(children, lang, conditionId);
+    const values = [scenario.chance_per_pregnancy.value, scenario.chance_at_least_one.value];
+    if (values.every((value) => typeof value === "number" && value >= 0 && value <= 1)) return scenario;
+  } catch { /* a missing illustrative fixture leaves the counselling path available */ }
+  return undefined;
+}

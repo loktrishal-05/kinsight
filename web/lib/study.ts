@@ -1,29 +1,47 @@
 // Volunteer comprehension study (docs/study/protocol.md). Responses stay on the facilitator's device (localStorage) until the
 // facilitator exports them; nothing is sent to a server and no name, contact or health detail is ever asked for.
+import { z } from "zod";
 import { DATA, scenarioById, type QuizQ } from "./fixtures";
 
 export type Level = "basic" | "standard";
-export type StudyResponse = {
-  study_id: string; language: string; reading_level: Level; case_id: string;
-  answers: Record<string, string>; correct: number; total: number; passed: boolean; missed: string[];
-  clarity: number | null; started_at: string; finished_at: string;
-};
+const token = z.string().regex(/^[a-zA-Z0-9_-]+$/);
+const responseSchema = z.object({
+  study_id: z.string().regex(/^S-[0-9A-F]{8}$/),
+  language: z.string().regex(/^[a-z]{2}$/), reading_level: z.enum(["basic", "standard"]), case_id: token,
+  answers: z.record(token, token), correct: z.number().int().nonnegative(), total: z.number().int().positive(),
+  passed: z.boolean(), missed: z.array(token), clarity: z.number().int().min(1).max(5).nullable(),
+  started_at: z.iso.datetime(), finished_at: z.iso.datetime(),
+});
+export type StudyResponse = z.infer<typeof responseSchema>;
+type StudyStorage = { rows: StudyResponse[]; recovery?: string; unavailable?: boolean };
 
 const KEY = "ks_study_responses";
 
-export function loadResponses(): StudyResponse[] {
+export function readStudyStorage(): StudyStorage {
+  let raw: string | null;
+  try { raw = localStorage.getItem(KEY); } catch { return { rows: [], unavailable: true }; }
+  if (raw === null) return { rows: [] };
   try {
-    const rows = JSON.parse(localStorage.getItem(KEY) ?? "[]");
-    return Array.isArray(rows) ? rows : [];
-  } catch { return []; }
+    const input: unknown = JSON.parse(raw);
+    if (Array.isArray(input)) {
+      const rows = input.flatMap((row) => {
+        const parsed = responseSchema.safeParse(row);
+        return parsed.success ? [parsed.data] : [];
+      });
+      return { rows, recovery: rows.length === input.length ? undefined : raw };
+    }
+  } catch { /* give the facilitator the original storage for recovery */ }
+  return { rows: [], recovery: raw };
 }
 export function saveResponse(r: StudyResponse) {
+  const { rows, recovery, unavailable } = readStudyStorage();
+  if (recovery !== undefined || unavailable) return false;
+  const response = responseSchema.safeParse(r);
+  if (!response.success) return false;
+  const existing = rows.find((row) => row.study_id === r.study_id);
+  if (existing) return JSON.stringify(existing) === JSON.stringify(response.data);
   try {
-    const rows: unknown = JSON.parse(localStorage.getItem(KEY) ?? "[]");
-    if (!Array.isArray(rows)) return false;
-    if (!rows.some((row) => row?.study_id === r.study_id)) {
-      localStorage.setItem(KEY, JSON.stringify([...rows, r]));
-    }
+    localStorage.setItem(KEY, JSON.stringify([...rows, response.data]));
     return true;
   } catch { return false; }
 }
@@ -37,7 +55,7 @@ export const newStudyId = () => "S-" + Array.from(crypto.getRandomValues(new Uin
 /** Reading level: the facilitator may fix it (?level=); otherwise alternate so both levels fill evenly in each language. */
 export function assignLevel(language: string, fixed: string | null): Level {
   if (fixed === "basic" || fixed === "standard") return fixed;
-  const done = loadResponses().filter((r) => r.language === language);
+  const done = readStudyStorage().rows.filter((r) => r.language === language);
   return done.filter((r) => r.reading_level === "basic").length <= done.filter((r) => r.reading_level === "standard").length ? "basic" : "standard";
 }
 
@@ -76,7 +94,7 @@ export function summarise(rows: StudyResponse[], targetGap = 10) {
 
 const COLS = ["study_id", "language", "reading_level", "case_id", "correct", "total", "passed", "clarity", "missed", "started_at", "finished_at"] as const;
 export function toCSV(rows: StudyResponse[]) {
-  const cell = (v: unknown) => { const s = Array.isArray(v) ? v.join(" ") : v == null ? "" : String(v); return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; };
+  const cell = (v: unknown) => { const s = Array.isArray(v) ? v.join(" ") : v == null ? "" : String(v); return /[",\r\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s; };
   return [COLS.join(","), ...rows.map((r) => COLS.map((c) => cell(r[c])).join(","))].join("\n") + "\n";
 }
 
