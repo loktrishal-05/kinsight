@@ -6,16 +6,16 @@ The early review (18 Nov 2026) asked for the items below. Each row links the req
 
 | Request | Issue | Pull request | Where to see it | Tests | Status |
 | --- | --- | --- | --- | --- | --- |
-| Live laboratory interfaces | #30 | #85 and earlier HL7 work | `/journey` lab tracker, `/lab-sandbox` | `test_lab_feed.py`, `test_hl7_lab.py`, `e2e-live/lab-sandbox.spec.ts` | Built for a signed synthetic HL7 v2 and FHIR feed. A real laboratory connection needs a partner. |
-| Electronic health records (FHIR import) | #28 | #85 | `/result` "Health record preview", counsellor review | `test_fhir_preview.py`, `test_fhir_seed.py`, `e2e-live/fhir-preview.spec.ts` | Built against a seeded HAPI R4 sandbox. Hosted SMART launch is not done. |
+| Live laboratory interfaces | #30 | #85, #108 (hosted runbook) | `/journey` lab tracker, `/lab-sandbox` | `test_lab_feed.py`, `test_hl7_lab.py`, `e2e-live/lab-sandbox.spec.ts` | Built for a signed synthetic HL7 v2 and FHIR feed, running in the demo sandbox. The hosted rollout runbook is merged but not switched on before judging; a real laboratory connection needs a partner. |
+| Electronic health records (FHIR import) | #28 | #85, #107 (hosted runbook) | `/result` "Health record preview", counsellor review | `test_fhir_preview.py`, `test_fhir_seed.py`, `e2e-live/fhir-preview.spec.ts` | Built against a seeded HAPI R4 sandbox. Hosted configuration is documented but not switched on before judging; SMART launch with PKCE is not done. |
 | EHR referral write-back | #29 | #85 | counsellor console referral status | `test_fhir_referral.py`, `e2e-live/fhir-referral.spec.ts` | Built (ServiceRequest and Task, consented, idempotent). |
-| Automated lab-report parsing | #31 | #85 and earlier | `/report-compare` | `report-compare.test.ts`, `report-compare.spec.ts` | Built for text PDFs and structured text with PDF signature, size and page checks. Photo OCR is not done. |
-| Expand Kin | #35 | #85 | Kin on every page | `assistant.test.ts`, `assistant.spec.ts` | Built as a deterministic tool-using assistant (scenario and preparation actions). An optional model-backed mode is not done. |
+| Automated lab-report parsing | #31 | #85, #106 | `/report-compare` | `report-compare.test.ts`, `report-image.test.ts`, `report-compare.spec.ts` | Built for text PDFs, structured text and report photos (read in the browser, never uploaded); every extracted field is reviewed by the person before use. |
+| Expand Kin | #35 | #85, #105 | Kin on every page | `assistant.test.ts`, `test_kin_chooser.py`, `test_copilot_redteam.py`, `assistant.spec.ts` | Built: deterministic tool-using assistant (results, scenarios, preparation, counsellor request), with an opt-in model mode that may only choose tools; refusals and numbers stay with the engine. Off by default. |
 | Pre-counselling preparation suite | #36 | #81 | `/prepare` | `test_prep.py`, `prep.test.ts`, `prepare.spec.ts` | Built: values, concerns, suggested and own questions, bring-along list, printable sheet. |
 | Tailored questions ahead of consultations | #36 | #81 | `/prepare`, Questions step | `test_prep.py` (deterministic, neutral, ordered) | Built from a reviewed English and Arabic question bank; other languages show English and say so. |
 | What-if family-planning scenarios | #37 | #82 | `/plan/scenarios` | `test_scenarios.py` (Hypothesis and 10 golden cases), `scenario.test.ts`, `scenarios.spec.ts` | Built: per pregnancy, at least one of N, untested partner by relationship, neutral description of each route. |
 | Extended-family cascade screening | #38 | #86 | `/cascade`, relatives use `/invite` | `test_cascade_engine.py`, `test_cascade_tracker.py`, `cascade.spec.ts` | Built: kinship-based chance per relative, private invite, anonymous notice, outcomes reported back without revealing the sender. |
-| Family-circle tools | #39 | — | `/family` | `pedigreeLayout.test.ts` | The family tree view and question flow exist. The editable pedigree builder is planned for the finale. |
+| Family-circle tools | #39 | #103 | `/family` | `test_pedigree_editor.py`, `pedigreeBuilder.test.ts`, `pedigree-builder.spec.ts` | Built: editable, keyboard-accessible family tree; kinship computed by the engine (first cousins give 1/16). |
 | Default-deny consent and privacy guardrails | #42, #60 | #83 and earlier | `/consents`, `/privacy`, `/governance` | `test_route_consent_inventory.py`, `test_privacy.py`, `test_http_hardening.py`, `security-headers.spec.ts` | Built: every route classified and audited, CSP and CORS allow-list, threat model in `docs/THREAT_MODEL.md`. |
 | Risk shown as an educational estimate, not a diagnosis | #41 | #80 | every figure, for example `/couple` | `test_estimate_label.py`, `estimate-label.spec.ts` (every page, all 7 languages) | Built: the API cannot return a bare risk number; every figure on screen carries the label and a method link. |
 | Counsellors approve complex and high-risk findings | #40 | #84 | counsellor console "To review"; person sees a waiting notice | `test_review_queue.py`, `review-queue.spec.ts` | Built: one queue for couple results, imports, lab reports, requests and reclassifications; result-releasing items are approved only in their revision-bound review. |
@@ -24,6 +24,15 @@ The early review (18 Nov 2026) asked for the items below. Each row links the req
 
 | Area | Issue | Pull request | Evidence |
 | --- | --- | --- | --- |
+| Live reference data (MedlinePlus, ClinGen, Ensembl VEP) and nightly ClinVar re-check | #33 | #104 | `/clinic` reference panel, `test_refdata.py`, `reference.spec.ts` |
+| Person home as a journey dashboard; app shell with journey-stage menu | #48, #47 | #93, #101 | `dashboard.spec.ts`, `shell.spec.ts` |
+| Counsellor workspace (split pane, keyboard triage) | #49 | #94 | `workspace.spec.ts` |
+| Analyst charts with table views and aggregate CSV | #50 | #100 | `analyst-charts.spec.ts` |
+| Design system: shared loading, error and empty states; one h1 per page | #51 | #109 | `designRules.test.ts`, `structure.spec.ts` |
+| Mobile and installable app (PWA), offline page in 7 languages | #52 | #102 | `mobile.spec.ts` |
+| Linkage to services: calendar invites, video link, service directory | #54 | #95 | `booking-links.spec.ts` |
+| Content-free notifications, opt-in per type | #55 | #99 | `notifications.spec.ts` |
+| Hosting: health check with a real database round trip, public status line | #63 | #110 | `test_health.py`, `docs/HOSTING.md` |
 | Outcome measures (no marriage outcome, by design) | #46 | #89 | `docs/METRICS.md`, `/analyst` |
 | Accessibility, WCAG 2.2 AA verified in CI | #53 | #90 | `docs/ACCESSIBILITY.md`, `a11y.spec.ts` |
 | CI hardening (CodeQL, gitleaks, failing audits, coverage floors) | #58 | #87 | `.github/workflows/` |
@@ -32,6 +41,7 @@ The early review (18 Nov 2026) asked for the items below. Each row links the req
 
 ## Not done, and why
 
-- **Comprehension study (#44)** and **expert and native-speaker review (#45)** need real participants and reviewers. The study protocol and analysis code are in the repository (`docs/study/`, `/study`); no results are claimed.
-- **Hosted SMART on FHIR and a real laboratory partner** need a provider agreement; everything runs against seeded synthetic sandboxes.
-- **Photo OCR of reports** and an **optional model-backed Kin** are planned; the deterministic paths are what the demo uses.
+- **Comprehension study (#44)** and **expert and native-speaker review (#45)** need real participants and reviewers and have not been run. The study protocol and analysis code are in the repository (`docs/study/`, `/study`), and a 30-minute review pack is ready (`docs/REVIEW_PACK.md`). No results are claimed.
+- **Hosted FHIR import and lab feed** are configured in runbooks (#107, #108) but deliberately not switched on before judging, so the live site does not change during evaluation. Everything runs against seeded synthetic sandboxes.
+- **SMART on FHIR launch and a real laboratory partner** need a provider agreement.
+- **Retiring the unused Oregon API service** is a dashboard step for after judging (`docs/HOSTING.md`).
