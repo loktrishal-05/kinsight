@@ -210,7 +210,14 @@ export const real = {
   explanation: async () => json("/api/me/results/current/explanation"),
   async couple(): Promise<Couple> {
     const r = await raw(`/api/couples/${COUPLE}/assessment`, {}, partnerToken);
-    if (r.status === 403) return { tier: null, awaiting_counsellor: false, findings: null };
+    if (r.status === 403) {
+      // The server answers 403 both before sharing and while waiting, so the partner's choice is never revealed.
+      // Say only what this person knows: whether they themselves have shared.
+      const mine: Consent[] = await json("/api/me/consents").catch(() => []);
+      const now = Date.now() / 1000;
+      const you_shared = mine.some((g) => g.grantee_id === other() && g.scope === "couple_pooling" && !g.revoked_at && (!g.expires_at || g.expires_at > now));
+      return { tier: null, awaiting_counsellor: false, findings: null, you_shared };
+    }
     if (!r.ok) throw new Error(String(r.status));
     const d = await r.json();
     return { tier: d.tier, awaiting_counsellor: false, findings: d.findings?.map((f: any) => ({ ...f, ...conditionLabels(f.condition_id) })) ?? null };

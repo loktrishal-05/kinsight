@@ -4,12 +4,17 @@ import { real } from "../lib/real";
 afterEach(() => vi.unstubAllGlobals());
 
 test("keeps access denials distinct from request failures", async () => {
-  const fetchMock = vi.fn().mockResolvedValueOnce(new Response(null, { status: 403 }))
-    .mockResolvedValueOnce(new Response(null, { status: 401 }))
-    .mockResolvedValueOnce(new Response(null, { status: 503 }));
-  vi.stubGlobal("fetch", fetchMock);
-  await expect(real.couple()).resolves.toMatchObject({ tier: null, findings: null });
+  // 403: not shared or not released (a normal state); 401 that survives a quiet sign-in, and 503: real failures.
+  const respond = (assessment: number) => vi.fn(async (url: string) => {
+    if (url === "/api/me/consents") return Response.json([]);
+    if (url === "/api/auth/persona") return new Response(null, { status: 500 });
+    return new Response(null, { status: assessment });
+  });
+  vi.stubGlobal("fetch", respond(403));
+  await expect(real.couple()).resolves.toMatchObject({ tier: null, findings: null, you_shared: false });
+  vi.stubGlobal("fetch", respond(401));
   await expect(real.couple()).rejects.toThrow("401");
+  vi.stubGlobal("fetch", respond(503));
   await expect(real.couple()).rejects.toThrow("503");
 });
 

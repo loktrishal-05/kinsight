@@ -25,7 +25,8 @@ export default function CoupleView() {
       <div data-demo="steps"><Steps labels={[t("couple.s1"), t("couple.s2"), t("couple.s3")]} current={step} /></div>
       {couple.isPending && <Skeleton lines={4} />}
       {couple.isError && <ErrorState onRetry={() => couple.refetch()}>{t("couple.loadError")}</ErrorState>}
-      {c && !c.tier && (
+      {c && !c.tier && c.you_shared && <Notice>{t("couple.youShared")}</Notice>}
+      {c && !c.tier && !c.you_shared && (
         <div className="card flex flex-wrap items-center justify-between gap-4">
           <p className="max-w-read">{t(MOCK ? "couple.waiting" : "couple.unavailable")}</p>
           <button className="btn" data-demo="share" onClick={() => grant.mutate()}><Users aria-hidden className="h-4 w-4" />{t("couple.pooling")}</button>

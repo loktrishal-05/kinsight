@@ -28,3 +28,28 @@ test("a refusal that is not 401 is not retried", async () => {
   await expect(real.results()).rejects.toThrow("403");
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
+
+test("couple view: after sharing, the person is told so without revealing the partner's choice", async () => {
+  const future = Date.now() / 1000 + 3600;
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+    if (url === "/api/couples/demo-couple/assessment") return new Response("", { status: 403 });
+    if (url === "/api/me/consents") return new Response(JSON.stringify([
+      { id: "1", grantee_id: "synthetic-b", scope: "couple_pooling", purpose: "couple_planning", expires_at: future, revoked_at: null },
+    ]), { status: 200 });
+    return new Response("", { status: 404 });
+  }));
+  const { real } = await import("@/lib/real");
+  expect(await real.couple()).toMatchObject({ tier: null, you_shared: true });
+});
+
+test("couple view: an expired or revoked share does not count", async () => {
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+    if (url === "/api/couples/demo-couple/assessment") return new Response("", { status: 403 });
+    return new Response(JSON.stringify([
+      { id: "1", grantee_id: "synthetic-b", scope: "couple_pooling", purpose: "p", expires_at: 1, revoked_at: null },
+      { id: "2", grantee_id: "synthetic-b", scope: "couple_pooling", purpose: "p", expires_at: Date.now() / 1000 + 99, revoked_at: 5 },
+    ]), { status: 200 });
+  }));
+  const { real } = await import("@/lib/real");
+  expect(await real.couple()).toMatchObject({ tier: null, you_shared: false });
+});
