@@ -1199,5 +1199,6 @@
   "reportCompare.whatif.noFigure": "لا يتوفّر مثال رقمي لهذا الاختيار. يمكن لمستشار الوراثة مراجعة التقريرين الأصليين.",
   "reportCompare.whatif.counsellor": "يمكن لمستشار الوراثة أن يشرح ما يعنيه هذا لك والخيارات المتاحة.",
   "reportCompare.whatif.book": "احجز موعدا مع مستشار",
-  "reportCompare.whatif.prepare": "حضّر أسئلتك"
+  "reportCompare.whatif.prepare": "حضّر أسئلتك",
+  "states.loadError": "تعذّر التحميل. تحقّق من الاتصال وحاول مرة أخرى."
 }

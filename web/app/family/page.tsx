@@ -4,7 +4,7 @@ import { Check, Copy, Printer, UserPlus, UserX } from "lucide-react";
 import { useState } from "react";
 import Pedigree from "@/components/Pedigree";
 import PedigreeBuilder, { toDraft } from "@/components/PedigreeBuilder";
-import { Notice, PageHeader } from "@/components/ui";
+import { ErrorState, Notice, PageHeader, Skeleton } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { TALK_STARTERS } from "@/lib/learn";
@@ -24,7 +24,7 @@ export default function Family() {
     <section className="space-y-6">
       <PageHeader title={t("family.title")} lead={t("family.lead")} />
       <Notice>{t("family.hint")}</Notice>
-      <div className="card overflow-x-auto" data-demo="pedigree">{ped.data && <Pedigree data={ped.data} />}</div>
+      <div className="card overflow-x-auto" data-demo="pedigree">{ped.isPending && <Skeleton lines={4} />}{ped.isError && <ErrorState onRetry={() => ped.refetch()}>{t("states.loadError")}</ErrorState>}{ped.data && <Pedigree data={ped.data} />}</div>
       <button type="button" className="btn-quiet w-fit" aria-expanded={editing} onClick={() => setEditing(!editing)} data-demo="edit-tree">{t(editing ? "builder.close" : "builder.open")}</button>
       {editing && ped.data && <PedigreeBuilder initial={toDraft(ped.data)} onSaved={() => qc.invalidateQueries({ queryKey: ["pedigree"] })} />}
       <div className="card flex flex-wrap items-center justify-between gap-4">

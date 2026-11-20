@@ -1315,5 +1315,6 @@
   "reportCompare.whatif.noFigure": "An illustrative figure is unavailable for this selection. A genetic counsellor can review both original reports.",
   "reportCompare.whatif.counsellor": "A genetic counsellor can explain what this means for you and the choices available.",
   "reportCompare.whatif.book": "Book a counsellor",
-  "reportCompare.whatif.prepare": "Prepare your questions"
+  "reportCompare.whatif.prepare": "Prepare your questions",
+  "states.loadError": "This could not be loaded. Check your connection and try again."
 }
