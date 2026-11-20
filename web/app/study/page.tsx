@@ -21,22 +21,24 @@ export default function Study() {
   const [started, setStarted] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [missing, setMissing] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   useEffect(() => { setCaseId(new URLSearchParams(location.search).get("case")); }, []);
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
   const c = studyCase(caseId, lang, level);
   const begin = () => {
     setId(newStudyId()); setLevel(assignLevel(lang, new URLSearchParams(location.search).get("level")));
-    setStarted(new Date().toISOString()); setAnswers({}); setStep("read");
+    setStarted(new Date().toISOString()); setAnswers({}); setSaveError(false); setStep("read");
   };
   const submitQuiz = () => {
     if (c.quiz.some((q) => !answers[q.id])) { setMissing(true); return; }
     setMissing(false); setStep("rate");
   };
   const finish = (clarity: number | null) => {
-    saveResponse({ study_id: id, language: lang, reading_level: level, case_id: c.id, answers, ...grade(c.quiz, answers), clarity,
+    const saved = saveResponse({ study_id: id, language: lang, reading_level: level, case_id: c.id, answers, ...grade(c.quiz, answers), clarity,
       started_at: started, finished_at: new Date().toISOString() });
-    setStep("done");
+    setSaveError(!saved);
+    if (saved) setStep("done");
   };
   const reset = () => { setAgree(false); setStep("consent"); };
   const card = "w-full max-w-2xl rounded-3xl border border-line bg-surface p-6 shadow-card sm:p-9";
@@ -117,6 +119,7 @@ export default function Study() {
             </div>
             <p className="mt-2 flex justify-between text-xs text-muted" dir="ltr"><span>{t("study.rateLow")}</span><span>{t("study.rateHigh")}</span></p>
             <button className="mt-6 text-sm font-semibold text-brand-700 underline underline-offset-4" onClick={() => finish(null)} data-testid="study-skip">{t("study.skip")}</button>
+            {saveError && <p role="alert" className="mt-3 text-sm text-unsure-fg">{t("study.saveError")}</p>}
           </section>
         )}
 

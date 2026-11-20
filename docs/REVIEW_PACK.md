@@ -15,14 +15,16 @@ Live demo: https://kinsight-five.vercel.app. Choose **Start the demo**, then swi
 | 5 | Relatives who may want testing | `/cascade` | Are the 1/2, 1/4, 1/8 carrier chances by degree correct? Is anything missing for X-linked conditions? |
 | 6 | Counsellor tools | `/counsellor` as Counsellor | Does the brief and the review queue match how you would triage? What would you need that is not there? |
 | 7 | Live reference data | `/clinic`, Reference data panel | Are MedlinePlus, ClinGen and VEP the right sources to show, and is the provenance clear? |
+| 8 | Family planning education and referral | `/learn/family-planning`, both English and Arabic | Are contraception, preparation, inheritance, and fertility care described accurately and neutrally? Can someone distinguish local service information from personal eligibility? |
+| 9 | Uncertainty and source limits | `/report-compare` and the synthetic integration walkthrough | Test a negative within panel, a missing result, an uncertain result and an amendment. Are they distinguishable? Does each have the right next action? |
 
-The engine lives in `services/genetics/`; the reviewed wording in `templates/en/`. Every number in the app comes from the engine and is tested (`tests/unit/test_scenarios.py`, `tests/unit/test_cascade_engine.py`, `tests/golden/`).
+The engine lives in `services/genetics/`; the draft wording lives in `templates/en/`. Tests cover the educational genetics calculations (`tests/unit/test_scenarios.py`, `tests/unit/test_cascade_engine.py`, `tests/golden/`).
 
 ## B. Language review (native speakers), about 30 minutes per language
 
 Languages: Arabic, Hindi, Tamil, Telugu, Kannada, Malayalam. Arabic is the most complete; the others fall back to English for newer screens.
 
-1. Switch the language in the top bar, then read: `/home`, `/result`, `/couple`, `/prepare`, `/plan/scenarios`, `/cascade`, `/privacy`.
+1. Switch the language in the top bar, then read `/home`, `/result`, `/couple`, `/prepare`, `/plan/scenarios`, `/cascade`, `/privacy`, and `/learn/family-planning`. In Arabic, use a phone and check keyboard or screen-reader navigation around the location selector and topic details.
 2. For each screen, note: wrong or unnatural words, anything that sounds like advice or blame, anything that could upset a family, and right-to-left layout problems (Arabic).
 3. The strings are in `web/messages/<code>.json`; the explanation templates in `templates/<code>/`; the preparation questions in `templates/<code>/prep_questions.yaml`; the route descriptions in `templates/<code>/scenario_options.yaml`.
 
@@ -30,9 +32,9 @@ Wording rules the review checks against: no "should", no recommendation about ma
 
 ## C. Record (copy each row into `docs/REVIEWS.md`)
 
-| Item reviewed | Reviewer (name and role, only with permission) | Date | What was found | What we changed |
-| --- | --- | --- | --- | --- |
-| | | | | |
+| Item and revision reviewed | Reviewer (name and role, only with permission) | Date | Finding and severity | Fix and recheck | Decision and scope |
+| --- | --- | --- | --- | --- | --- |
+| | | | | | |
 
 After a language review, change `label_ar_status: placeholder` (and the matching rows in `docs/REVIEWS.md`) to `reviewed` only for the parts that were actually read.
 
