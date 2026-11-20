@@ -14,6 +14,10 @@ const FIELDS = ["genes", "condition", "result", "details"] as const;
 type Draft = { text: string; source?: string; confirmed: Set<string> };
 const EMPTY_DRAFT: Draft = { text: "", confirmed: new Set() };
 const EMPTY_REPORTS = { first: EMPTY_DRAFT, second: EMPTY_DRAFT };
+const SAMPLE_REPORTS = {
+  first: { ...EMPTY_DRAFT, text: "HBB | Beta thalassemia | Carrier finding" },
+  second: { ...EMPTY_DRAFT, text: "HBB | Beta thalassemia | Not detected | Limited panel" },
+};
 
 function sourceSnippet(source: string, low: string, row: Finding) {
   const offset = [row.condition, row.genes]
@@ -52,6 +56,11 @@ export default function ReportComparison() {
     </header>
     <PageHeader title={t("reportCompare.title")} lead={t("reportCompare.lead")} />
     <p className="note">{t("reportCompare.privacy")}</p>
+    {!drafts.first.text && !drafts.second.text && drafts.first.source === undefined && drafts.second.source === undefined && (
+      <button className="btn-quiet" type="button" onClick={() => { setParsed(undefined); setDrafts(SAMPLE_REPORTS); }}>
+        {t("reportCompare.trySample")}
+      </button>
+    )}
     <form className="space-y-4" onSubmit={(event) => {
       event.preventDefault();
       if (!requiresReview) setParsed(pending);

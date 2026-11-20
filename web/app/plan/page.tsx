@@ -37,7 +37,8 @@ function PlanCards({ persona }: { persona: string }) {
   const gcos = useMutation({ mutationFn: () => api.gcos({ answers: Array.from({ length: 24 }, (_, i) => Number(answers[i])) }) });
   const date = (seconds: number) => new Date(seconds * 1000).toLocaleString(lang);
   return <section className="space-y-6">
-    <PageHeader title={t("plan.title")} />
+    <PageHeader title={t("plan.title")}
+      action={<Link className="btn-quiet" href="/learn/family-planning">{t("familyPlanning.title")}</Link>} />
     {MOCK && <Notice>{t("plan.demo")}</Notice>}
     {[slots, book, cancel, gestation, reengagement, mmic, gcos].some((m) => m.isError) && <ErrorState>{t("plan.error")}</ErrorState>}
     <section className="card space-y-4" aria-labelledby="booking-title">
@@ -63,10 +64,9 @@ function PlanCards({ persona }: { persona: string }) {
         <label className="block" htmlFor="lmp">{t("plan.lmp")}<input id="lmp" className="field mt-1" type="number" min="0" max="300" required value={lmp} onChange={(e) => { setLmp(e.target.value); gestation.reset(); }} /></label>
         <button className="btn-quiet" disabled={gestation.isPending}>{t("plan.calculate")}</button>
       </form>
-      {gestation.data && <div role="status"><p>{gestation.data.weeks} {t("plan.weeks")} {gestation.data.days % 7} {t("plan.days")}</p>
-        <p>{t("plan.to120")}: {gestation.data.days_to_day_120}</p>
-        <p>{t(gestation.data.in_cvs_window ? "plan.inWindow" : "plan.outsideWindow")}</p>
-        {gestation.data.past_day_120 && <p>{t("plan.past120")}</p>}
+      {gestation.data && <div role="status">
+        <p>{gestation.data.weeks} {t("plan.weeks")} {gestation.data.days % 7} {t("plan.days")}</p>
+        <p className="text-sm text-muted">{t("familyPlanning.gestation")}</p>
       </div>}
     </section>
     <section className="card space-y-4" aria-labelledby="reengagement-title">

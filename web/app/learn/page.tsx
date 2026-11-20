@@ -1,5 +1,6 @@
 "use client";
 import { Search } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ABOUT_ESTIMATES, Estimate, hasFigure, PageHeader } from "@/components/ui";
 import { IconArray, Punnett } from "@/components/visuals";
@@ -15,7 +16,8 @@ export default function Learn() {
   useEffect(() => { if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: "center" }); }, []);
   return (
     <section className="space-y-8">
-      <PageHeader title={t("learn.title")} lead={t("learn.lead")} />
+      <PageHeader title={t("learn.title")} lead={t("learn.lead")}
+        action={<Link className="btn-quiet" href="/learn/family-planning">{t("familyPlanning.title")}</Link>} />
 
       <div className="card grid gap-8 md:grid-cols-2">
         <div className="space-y-3" data-demo="learn-inherit">

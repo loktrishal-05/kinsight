@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Design-system rules every page must keep (web/DESIGN.md): one h1 from PageHeader, one main landmark, no spinners.
 const PAGES: [string, string][] = [
-  ["person_a", "home"], ["person_a", "learn"], ["person_a", "result"], ["person_a", "couple"], ["person_a", "understand"],
+  ["person_a", "home"], ["person_a", "learn"], ["person_a", "learn/family-planning"], ["person_a", "result"], ["person_a", "couple"], ["person_a", "understand"],
   ["person_a", "next"], ["person_a", "access"], ["person_a", "summary"], ["person_a", "family"], ["person_a", "consents"],
   ["person_a", "privacy"], ["person_a", "ask"], ["person_a", "plan"], ["person_a", "plan/scenarios"], ["person_a", "prepare"],
   ["person_a", "cascade"], ["person_a", "nasab"], ["person_a", "checkin"], ["person_a", "journey"], ["person_a", "methods"],
