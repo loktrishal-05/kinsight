@@ -1,4 +1,5 @@
 import os
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -322,8 +323,14 @@ def test_break_glass_refusal_is_audited(api, attestors, reason):
         assert verify_chain(db)
 
 
+@pytest.fixture
+def fixed_rate_window(monkeypatch):
+    # Keep the initial request and the exhausted request in the same rate-limit window.
+    monkeypatch.setattr("services.api.main.time", SimpleNamespace(time=lambda: 1_700_000_000))
+
+
 @pytest.mark.parametrize("method,path,persona,body", [row for row in NEW_ROUTES if row[2] == "person_a"])
-def test_person_submissions_are_rate_limited(api, method, path, persona, body):
+def test_person_submissions_are_rate_limited(api, fixed_rate_window, method, path, persona, body):
     c, h, app = api
     c.post("/api/lifecycle/checkin", headers=h[persona], json={"instrument": "dcs", "answers": [0]})
     with app.state.sessions() as db:
@@ -575,7 +582,7 @@ def test_booking_survives_restart_and_database_enforces_one_active(monkeypatch, 
 
 
 @pytest.mark.parametrize("method,path,body", ADDED_ROUTES)
-def test_added_routes_rate_limit(api, method, path, body):
+def test_added_routes_rate_limit(api, fixed_rate_window, method, path, body):
     c, h, app = api
     c.get("/api/lifecycle/booking/slots", headers=h["person_a"])
     with app.state.sessions() as db:

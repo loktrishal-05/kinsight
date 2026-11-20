@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("private comparison preserves lab findings and separates missing rows", async ({ page, browser }) => {
   const source = await browser.newPage();
-  await source.setContent("<p>CFTR review-only-marker</p>");
+  await source.setContent('<p style="break-after:page">CFTR review-only-marker</p><p>CFTR | Cystic fibrosis | Carrier | review-only-marker</p>');
   const pdf = await source.pdf();
   await source.close();
 
@@ -17,6 +17,8 @@ test("private comparison preserves lab findings and separates missing rows", asy
   await expect(first).toBeEmpty();
 
   await first.fill("CFTR | Cystic fibrosis | Carrier | review-only-marker\nFMR1 | Fragile X syndrome | Intermediate allele");
+  await expect(page.getByRole("group", { name: "Finding 1" })).toContainText("Extracted text from PDF page 2");
+  await expect(page.getByRole("group", { name: "Finding 2" })).toContainText("No unique matching line");
   const drop = await page.evaluateHandle(() => {
     const files = new DataTransfer();
     files.items.add(new File(["Gene\tCondition\tResult\tDetails\nCFTR\tCystic fibrosis\tNot detected\tLimited panel"],
@@ -120,7 +122,7 @@ test("a synthetic report photo is read locally and awaits manual review", async 
   await page.getByRole("textbox", { name: "Partner B report" }).fill("CFTR | Cystic fibrosis | Not detected");
   const compare = page.getByRole("button", { name: "Compare findings" });
   const review = page.getByRole("group", { name: "Finding 1" });
-  await expect(review).toContainText("CFTR SYNTHETIC REPORT");
+  await expect(review).toContainText("No unique matching line");
   await expect(review.getByRole("checkbox")).toHaveCount(3);
   for (const check of await review.getByRole("checkbox").all()) {
     await expect(compare).toBeDisabled();
