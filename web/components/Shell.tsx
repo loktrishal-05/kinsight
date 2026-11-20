@@ -20,10 +20,12 @@ export default function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
-  // After a client-side navigation, move focus to the new page so screen-reader and keyboard users start at its content.
+  // After a client-side navigation, start at the top and move focus to the new page so screen-reader and keyboard users
+  // start at its content. preventScroll: focusing <main> must not scroll the page down past the header.
   useEffect(() => {
     if (first.current) { first.current = false; return; }
-    main.current?.focus();
+    window.scrollTo(0, 0);
+    main.current?.focus({ preventScroll: true });
   }, [path]);
   const router = useRouter();
   const [open, setOpen] = useState(false);

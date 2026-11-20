@@ -22,10 +22,18 @@ const other = () => (me === "synthetic-a" ? "synthetic-b" : "synthetic-a");
 // A fresh tab opened straight on a screen has no token yet: the quiet sign-in below runs first and every API call waits for it.
 let pendingLogin: Promise<unknown> | null = null;
 
+const savedPersona = () => { try { return sessionStorage.getItem("ks_persona") ?? localStorage.getItem("ks_persona") ?? "person_a"; } catch { return "person_a"; } };
+
 async function raw(path: string, init: RequestInit = {}, given?: string): Promise<Response> {
   if (pendingLogin && !path.startsWith("/api/auth/")) await pendingLogin;
-  const tok = given === undefined ? token : given; // read after the wait: the quiet sign-in may have just set it
-  return trackSlow(fetch(path, { ...init, headers: { "content-type": "application/json", ...(tok ? { authorization: `Bearer ${tok}` } : {}), ...init.headers } }));
+  const partner = given !== undefined && given !== "" && given === partnerToken;
+  const send = (tok: string) => trackSlow(fetch(path, { ...init, headers: { "content-type": "application/json", ...(tok ? { authorization: `Bearer ${tok}` } : {}), ...init.headers } }));
+  const r = await send(given === undefined ? token : given); // read after the wait: the quiet sign-in may have just set it
+  if (r.status !== 401 || path.startsWith("/api/auth/") || given === "") return r;
+  // Demo tokens last 15 minutes. Sign in again quietly as the same persona and retry once, instead of leaving every screen empty.
+  pendingLogin ??= real.login(savedPersona()).catch(() => { /* the screens show their own error */ }).finally(() => { pendingLogin = null; });
+  await pendingLogin;
+  return send(partner ? partnerToken : token);
 }
 async function json<T = any>(path: string, init: RequestInit = {}, tok?: string): Promise<T> {
   const r = await raw(path, init, tok);
@@ -256,7 +264,5 @@ export const real = {
 };
 
 if (process.env.NEXT_PUBLIC_MOCK === "0" && typeof window !== "undefined" && !token && !["/", "/signin", "/report-compare"].includes(window.location.pathname)) {
-  let persona = "person_a";
-  try { persona = sessionStorage.getItem("ks_persona") ?? localStorage.getItem("ks_persona") ?? persona; } catch { /* private mode */ }
-  pendingLogin = real.login(persona).catch(() => { /* the screens show their own error */ }).finally(() => { pendingLogin = null; });
+  pendingLogin = real.login(savedPersona()).catch(() => { /* the screens show their own error */ }).finally(() => { pendingLogin = null; });
 }

@@ -38,3 +38,13 @@ test("on a phone a person gets a bottom tab bar with four destinations", async (
   await bar.getByRole("link", { name: /result/i }).click();
   await expect(page).toHaveURL(/\/result$/);
 });
+
+test("a menu link opens the new page at the top, with focus on its content", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await page.goto("/home");
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await page.locator('nav a[href="/learn"]').first().click();
+  await expect(page).toHaveURL(/\/learn$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(page.locator("main")).toBeFocused();
+});

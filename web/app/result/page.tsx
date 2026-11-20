@@ -44,6 +44,8 @@ export default function MyResult() {
           <ReadAloud text={expl.data?.blocks.join(" ") ?? ""} />
         </div>
         <div className="max-w-read space-y-3" data-testid="explanation">
+          {expl.isPending && <Skeleton lines={4} />}
+          {expl.isError && <ErrorState onRetry={() => expl.refetch()}>{t("states.loadError")}</ErrorState>}
           <Paragraphs blocks={expl.data?.blocks ?? []} />
         </div>
       </div>
@@ -80,6 +82,8 @@ function FhirReportPreview() {
     onSuccess: () => { preview.reset(); saved.refetch(); },
   });
   const report = preview.data;
+  // The health-record sandbox is optional on the server; when it is not running there is nothing to preview.
+  if (saved.error?.message === "404") return null;
   return <section className="card space-y-3" aria-labelledby="fhir-preview-heading">
     <h2 id="fhir-preview-heading" className="text-lg font-semibold">{t("fhirPreview.title")}</h2>
     <p>{t("fhirPreview.description")}</p>

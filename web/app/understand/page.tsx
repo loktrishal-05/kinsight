@@ -2,7 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Heart } from "lucide-react";
 import { useState } from "react";
-import { ABOUT_ESTIMATES, Estimate, hasFigure, Notice, PageHeader } from "@/components/ui";
+import { ABOUT_ESTIMATES, ErrorState, Estimate, hasFigure, Notice, PageHeader, Skeleton } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
@@ -58,7 +58,8 @@ export default function Understand() {
           <span className="text-sm text-muted tabular-nums" aria-live="polite">{done} / {total} {t("quiz.progress")}</span>
         </div>
       </form>
-      {!quiz.data && <Notice>{t("loading")}</Notice>}
+      {quiz.isPending && <Skeleton lines={4} />}
+      {quiz.isError && <ErrorState onRetry={() => quiz.refetch()}>{t("states.loadError")}</ErrorState>}
     </section>
   );
 }
