@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from scripts.mock_lab import hl7_message
-from services.api.lab_feed import HL7_PATH, MAX_BODY_SIZE, PATH, SIGNING_SECRET, signature
 from services.api.main import create_app
+from services.api.routes.lab_feed import HL7_PATH, MAX_BODY_SIZE, PATH, SIGNING_SECRET, signature
 from services.cohort.fhir import SYSTEM, TAG
 from services.consent.audit import verify_chain
 from services.consent.models import AuditEvent

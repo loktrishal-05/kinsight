@@ -1,4 +1,4 @@
-# Neutral options explorer and values questions (P5-2). Placeholder wording pending reviewers (docs/REVIEWS.md).
+# Neutral options explorer and values questions (P5-2). Placeholder wording pending reviewers (docs/research/reviews.md).
 # No scores, no weights, no ordering signal: options are served in id order with identical fields.
 status: placeholder
 options:

@@ -20,4 +20,4 @@ npx vitest run
 npx playwright test
 ```
 
-For changes to lab or FHIR delivery, follow the [integration checks](docs/REAL_DATA_ROLLOUT.md). Use the [security reporting policy](SECURITY.md) for vulnerabilities.
+For changes to lab or FHIR delivery, follow the [integration checks](docs/operations/real-data-rollout.md). Use the [security reporting policy](SECURITY.md) for vulnerabilities.

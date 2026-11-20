@@ -487,7 +487,7 @@
   "methods.engine": "Engine",
   "methods.config": "Config hash",
   "methods.cohort": "Fictional couples / people",
-  "methods.review": "Review status: open. A genetics-trained reviewer and a native Arabic reviewer have not signed off yet (docs/REVIEWS.md).",
+  "methods.review": "Review status: open. A genetics-trained reviewer and a native Arabic reviewer have not signed off yet (docs/research/reviews.md).",
   "methods.limits": "These are standard textbook results on fictional data. They are not validated against a clinical source and must not be used for real decisions.",
   "toolkit.title": "Talking with family",
   "toolkit.lead": "Gentle ways to start the conversation. They never include the result itself.",

@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from services.api.demo_path import run_demo_path
+from services.api.demo.path import run_demo_path
 from services.api.main import create_app
 
 

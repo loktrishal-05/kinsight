@@ -1,5 +1,5 @@
 "use client";
-// Volunteer comprehension study, participant view (docs/study/protocol.md): consent in the participant's language, one fictional
+// Volunteer comprehension study, participant view (docs/research/study/protocol.md): consent in the participant's language, one fictional
 // case explanation, the five-question check (first attempt only, no re-explanation), an optional clarity rating. A facilitator runs
 // it on their own device; ?level=basic|standard fixes the reading level and ?case=s1..s7 the case.
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 from services.api.backend import A, B, DemoBackend
-from services.api.cascade_routes import build
+from services.api.routes.cascade import build
 from services.cohort.panel import load_panel
 from services.genetics.cascade import relatives
 

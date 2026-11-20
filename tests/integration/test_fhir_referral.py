@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from services.agents.quiz import build_quiz
 from services.api.main import create_app
-from services.api.referral_delivery import BASE_ENV
+from services.api.routes.referral import BASE_ENV
 from services.integrations import fhir_referral
 from tests.integration.test_lab_sandbox import auth, init
 

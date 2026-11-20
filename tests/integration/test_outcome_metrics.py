@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from services.analytics.events import EVENTS, outcomes
-from services.api.demo_path import _h
+from services.api.demo.path import _h
 from services.api.main import create_app
 from services.consent.models import Person
 from services.lifecycle.store import PrepSheet

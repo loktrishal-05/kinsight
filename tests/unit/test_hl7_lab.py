@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from services.api.hl7_lab import decode_event
-from services.api.lab_feed import EVENT
+from services.api.routes.lab_feed import EVENT
+from services.integrations.hl7_lab import decode_event
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "hl7"
 

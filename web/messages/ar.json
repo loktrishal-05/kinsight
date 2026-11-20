@@ -1,5 +1,5 @@
 {
-  "_status": "placeholder - needs native-speaker review before approval (docs/REVIEWS.md)",
+  "_status": "placeholder - needs native-speaker review before approval (docs/research/reviews.md)",
   "banner": "جميع الأشخاص والنتائج هنا خيالية.",
   "session.switch": "تبديل العرض",
   "api.waking": "نوقظ الخادم. قد يستغرق أول طلب بعد فترة خمول حتى دقيقة.",
@@ -369,7 +369,7 @@
   "methods.engine": "المحرك",
   "methods.config": "بصمة الإعدادات",
   "methods.cohort": "أزواج / أشخاص خياليون",
-  "methods.review": "حالة المراجعة: مفتوحة. لم يوقّع بعد مراجع مختص بالوراثة ولا مراجع ناطق بالعربية (docs/REVIEWS.md).",
+  "methods.review": "حالة المراجعة: مفتوحة. لم يوقّع بعد مراجع مختص بالوراثة ولا مراجع ناطق بالعربية (docs/research/reviews.md).",
   "methods.limits": "هذه نتائج معيارية من الكتب على بيانات خيالية. لم يتم التحقق منها مقابل مصدر سريري ولا يجوز استخدامها لقرارات حقيقية.",
   "toolkit.title": "الحديث مع العائلة",
   "toolkit.lead": "طرق لطيفة لبدء الحديث. لا تتضمن النتيجة نفسها أبدا.",

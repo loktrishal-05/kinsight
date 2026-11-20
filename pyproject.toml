@@ -33,12 +33,12 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Header", 
 # FastAPI dependency factories (`Depends(roles("person"))`) are evaluated once per route by design.
 "services/api/**" = ["B008"]
 # Route registries: complexity comes from the nested route definitions, each of which is simple on its own.
-"services/api/{main,lifecycle_routes,fhir_preview,referral_delivery}.py" = ["C901"]
+"services/api/{main,routes/lifecycle,routes/fhir_preview,routes/referral}.py" = ["C901"]
 # The demo path and scripts are executable checks: assert is the point.
-"services/api/demo_path.py" = ["S101"]
+"services/api/demo/path.py" = ["S101"]
 "scripts/**" = ["S101", "S311", "S603", "S607"]
 # Seeded pseudo-random numbers for synthetic cohorts and simulations, never for secrets.
-"services/{cohort/generate,api/demo_cases,analytics/capacity}.py" = ["S311"]
+"services/{cohort/generate,api/demo/cases,analytics/capacity}.py" = ["S311"]
 
 [tool.setuptools.packages.find]
 include = ["services*"]

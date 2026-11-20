@@ -3,7 +3,7 @@ couple means their child's inbreeding is 1/16), impossible trees are refused, an
 import pytest
 from fastapi.testclient import TestClient
 
-from services.api.demo_path import _h
+from services.api.demo.path import _h
 from services.api.main import create_app
 
 PEOPLE = [{"id": i, "sex": s} for i, s in [("gf", "male"), ("gm", "female"), ("u1", "male"), ("u2", "female"),

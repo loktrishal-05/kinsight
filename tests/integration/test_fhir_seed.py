@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from scripts.export_fhir_bundles import MEDIA, TAG, build_bundles, upload
-from services.api.fhir_preview import read_preview
+from services.api.routes.fhir_preview import read_preview
 from services.cohort.panel import load_panel
 
 

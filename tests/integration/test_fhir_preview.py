@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from scripts.export_fhir_bundles import build_bundles
-from services.api import fhir_preview
 from services.api.main import create_app
+from services.api.routes import fhir_preview
 from services.consent.audit import verify_chain
 from services.consent.models import AuditEvent
 from services.lifecycle.store import FhirImport, ReviewItem

@@ -3,7 +3,7 @@
 // It answers from reviewed text only (the person's own verified explanation, the glossary, the consent summary) and refuses
 // anything about other people, decisions, clinical advice, bulk data, or attempts to change its rules.
 // Its text comes from the language packs in content/<lang>.json (translations are placeholders pending native-speaker review,
-// docs/REVIEWS.md). English and Arabic use the regex rules below; other languages add their pack's keyword lists, and the English and
+// docs/research/reviews.md). English and Arabic use the regex rules below; other languages add their pack's keyword lists, and the English and
 // Arabic safety guards always run as well, so a mixed-language question is still refused.
 import { CONTENT, GLOSSARY, MYTHS, type Pack } from "./learn";
 

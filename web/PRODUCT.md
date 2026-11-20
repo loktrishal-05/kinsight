@@ -31,7 +31,7 @@ Premarital screening programmes in the Gulf; a shortage of genetic counsellors; 
 - Neutral, non-directive, non-stigmatising voice: "found / not found", never "positive/negative"; never red/green for carrier status; "an estimate, not a diagnosis".
 
 ## Evidence on Hand
-- The [generated scorecard](../docs/internal/SCORECARD.md) records synthetic cohort, explanation, assistant guard, and capacity simulation results.
+- The [generated scorecard](../docs/research/scorecard.md) records synthetic cohort, explanation, assistant guard, and capacity simulation results.
 - Comprehension study NOT run: never claim comprehension results. No testimonials, customers, partners or deployments exist; do not fabricate them.
 
 ## Product Principles

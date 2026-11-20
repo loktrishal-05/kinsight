@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from fastapi.testclient import TestClient
 
-from services.api.demo_path import _h
+from services.api.demo.path import _h
 from services.api.main import create_app
 from services.consent.audit import verify_chain
 

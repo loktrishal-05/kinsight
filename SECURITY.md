@@ -12,4 +12,4 @@ Security fixes target the current default branch. Report a vulnerability private
 
 | Browser attacks (framing, injected scripts, cross-site reads) | Content-Security-Policy, HSTS, `frame-ancestors 'none'`, Permissions-Policy, COOP/CORP; API CORS allow-list (none by default) and a 1 MiB body cap |
 
-The full STRIDE and LINDDUN analysis, with the test for each control, is in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+The full STRIDE and LINDDUN analysis, with the test for each control, is in [docs/architecture/threat-model.md](docs/architecture/threat-model.md).
