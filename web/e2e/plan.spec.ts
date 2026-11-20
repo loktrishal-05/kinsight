@@ -18,8 +18,8 @@ test("demo care plan: book and cancel, calculate gestation, answer family questi
   await calendar.getByLabel("Days since last period").fill("71");
   await calendar.getByRole("button", { name: "Calculate", exact: true }).click();
   await expect(calendar.getByRole("status")).toContainText("10 weeks 1 days");
-  await expect(calendar.getByRole("status")).toContainText("Days to day 120: 49");
-  await expect(calendar.getByRole("status")).toContainText("In the 10");
+  await expect(calendar.getByRole("status")).toContainText("A clinician can confirm pregnancy dating");
+  await expect(calendar.getByRole("status")).not.toContainText("Days to day 120");
   await page.goto("/nasab");
   await page.getByRole("button", { name: "First cousins", exact: true }).click();
   await page.getByRole("button", { name: "Show estimate" }).click();
