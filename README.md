@@ -28,7 +28,7 @@ Built for the **Future Health Digital Innovation Challenge, Challenge 03**.
 > **Fictional demo.** The demo’s people, families and results are synthetic. The separate **Compare your lab reports** page lets you open text-based PDFs and compare the findings you enter in your browser. See [report comparison](docs/REAL_DATA_ROLLOUT.md#compare-existing-lab-reports).
 
 
-**For reviewers:** [what we built from the early-review feedback](docs/JUDGE_FEEDBACK.md), with the issue, pull request, screen and tests for each request.
+**For reviewers:** [what we built from the early-review feedback](docs/JUDGE_FEEDBACK.md), with the issue, pull request, screen and tests for each request. Team: [final submission checklist](docs/SUBMISSION_CHECKLIST.md).
 
 </div>
 
