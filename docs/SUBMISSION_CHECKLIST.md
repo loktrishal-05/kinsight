@@ -21,6 +21,7 @@ Open https://kinsight-five.vercel.app in a private window.
 - [ ] **Start the demo** works; **Viewing as** switches between Person A, Person B, Counsellor, Analyst and Auditor.
 - [ ] Every risk figure shows **"educational estimate, not a diagnosis"** (for example `/couple`, `/plan/scenarios`).
 - [ ] `/couple` shows the counsellor waiting notice until the counsellor approves in `/counsellor`.
+- [ ] `/report-compare`: comparing both sample reports shows the carrier row; choosing Recessive shows 25% with the estimate label, X-linked shows no figure.
 - [ ] `/report-compare` reads the fictional sample reports in `docs/samples/` (PDF for Partner A, PDF or PNG photo for Partner B); each field is confirmed before use.
 - [ ] `/prepare`, `/plan/scenarios`, `/cascade`, `/family` (edit the tree) and `/privacy` open without errors.
 - [ ] Switch to Arabic: layout flips right to left.
@@ -52,7 +53,7 @@ Record the live site from step 1 with sound, in one take per scene. Say "all peo
 | # | Scene | What to show | Seconds |
 | --- | --- | --- | --- |
 | 1 | Start | Landing, status line online, **Start the demo** as Person A; switch to Arabic and back | 25 |
-| 2 | Upload a report | `/report-compare`: attach `docs/samples/demo-report-partner-a.pdf` and `-b.png`, confirm the fields | 40 |
+| 2 | Upload a report | `/report-compare`: attach `docs/samples/demo-report-partner-a.pdf` and `-b.png`, confirm the fields, compare; on the shared carrier row choose Recessive and show the estimate, then X-linked and show that no figure appears | 50 |
 | 3 | Share and wait | Person A and B share for couple planning; `/couple` shows the counsellor waiting notice | 30 |
 | 4 | Counsellor approves | Switch to Counsellor; open the review queue; approve | 30 |
 | 5 | The result | `/couple`: the figure with its educational-estimate label and method link | 20 |
