@@ -1,0 +1,79 @@
+# Final submission checklist (issues #64 and #65)
+
+**Deadline: 20 Nov 2026, 23:59 IST** on the Hack2Skill dashboard (Submissions). The team lead submits. Evaluation runs 21-30 Nov.
+
+Use [JUDGE_FEEDBACK.md](judge-feedback.md) to check what each demo feature proves and [EVALUATOR_ROADMAP.md](evaluator-roadmap.md) for the remaining evidence and pilot work. The team lead owns the deck, video and submission.
+
+| Step | Who | Time | Done |
+| --- | --- | --- | --- |
+| 1. Check the live site | anyone | 15 min | [ ] |
+| 2. Update the deck, export PDF | anyone | 60 min | [ ] |
+| 3. Record the demo video | anyone | 45 min | [ ] |
+| 4. Paste the form text | team lead | 10 min | [ ] |
+| 5. Submit | team lead | 5 min | [ ] |
+| 6. Close #64 and #65, then freeze `main` | team lead | 2 min | [ ] |
+
+## 1. Check the live site (do this first; the video depends on it)
+
+Open https://kinsight-five.vercel.app in a private window.
+
+- [ ] Landing page footer says **Live service: online**. If it says *waking up*, wait a minute or run **Actions -> keepalive -> Run workflow** on GitHub.
+- [ ] **Start the demo** works; **Viewing as** switches between Person A, Person B, Counsellor, Analyst and Auditor.
+- [ ] Every risk figure shows **"educational estimate, not a diagnosis"** (for example `/couple`, `/plan/scenarios`).
+- [ ] `/couple` shows the counsellor waiting notice until the counsellor approves in `/counsellor`.
+- [ ] `/report-compare`: try two fictional, unannotated carrier entries for the same single gene and condition. Choosing Recessive shows the standard example with its assumptions and estimate label. Choosing X-linked hides the figure.
+- [ ] `/report-compare` reads the fictional sample reports in `docs/submission/samples/` (PDF for Partner A, PDF or PNG photo for Partner B); each field is confirmed before use.
+- [ ] `/prepare`, `/plan/scenarios`, `/cascade`, `/family` (edit the tree) and `/privacy` open without errors.
+- [ ] Switch to Arabic: layout flips right to left.
+- [ ] Open Family Planning from the homepage. Confirm the official Abu Dhabi and Saudi service links, if the judged release includes the guide.
+- [ ] On a phone: no sideways scroll; the bottom tab bar shows.
+
+Anything broken: note it, and say so honestly in the form rather than claiming it.
+
+## 2. Deck (`KinSight_Submission_Deck.pptx`, PDF at most 5 MB)
+
+The deck is not in the repository; use the team's copy. Keep the existing title, problem and team slides. Add or replace with these, one idea per slide, a screenshot on each (screenshots are in `docs/screenshots/`, or take new ones in step 1):
+
+1. **What the judges asked, what we built.** The review quote, then four ticks: integrations, pre-counselling suite, guardrails, evidence plan. Point to `docs/submission/judge-feedback.md`.
+2. **Lab and health-record integration.** Signed HL7 v2 and FHIR lab feed, FHIR R4 import and referral write-back (synthetic HAPI sandbox), report reading from PDF or photo with field-by-field confirmation.
+3. **Kin, the preparation assistant.** Answers from the person's own result through fixed tools; refuses partner data; optional model mode can only choose tools, never invent numbers.
+4. **Pre-counselling suite.** Preparation sheet with tailored neutral questions, shared per section only by choice.
+5. **What-if scenarios.** Per pregnancy and "at least one of N"; the five routes described neutrally.
+6. **Family.** Editable family tree; cascade tracker where relatives get a condition-only invite, never the sender's result.
+7. **Guardrails.** Default-deny consent on every route with a tamper-evident audit; every figure labelled an educational estimate; counsellors approve every complex or high-risk result first.
+8. **Quality.** Use the CI run for the presented release. Report Python and web results, desktop and phone Playwright checks, automated axe results for the routes tested, CodeQL and secret scanning.
+9. **Honest limits and next steps.** Synthetic data only. The hosted HAPI and signed HL7 walkthroughs used fictional fixtures. Recheck the deployed release before recording. SMART launch, provider onboarding, comprehension study and clinical and native-language review remain pending.
+
+Remove any slide that claims something not in this list. Export as PDF and check the size (File -> Export -> PDF, "Minimum size" if over 5 MB).
+
+## 3. Demo video (check the event's length limit; aim for 4-5 minutes)
+
+Record the live site from step 1 with sound, in one take per scene. Say "all people and results are fictional" at the start.
+
+| # | Scene | What to show | Seconds |
+| --- | --- | --- | --- |
+| 1 | Start | Landing, status line online, **Start the demo** as Person A; switch to Arabic and back | 25 |
+| 2 | Upload a report | `/report-compare`: attach `docs/submission/samples/demo-report-partner-a.pdf` and `-b.png`, confirm the fields and compare. Use a separate pair of simple fictional carrier entries to show the assumptions on the recessive illustration. | 50 |
+| 3 | Share and wait | Person A and B share for couple planning; `/couple` shows the counsellor waiting notice | 30 |
+| 4 | Counsellor approves | Switch to Counsellor; open the review queue; approve | 30 |
+| 5 | The result | `/couple`: the figure with its educational-estimate label and method link | 20 |
+| 6 | What-if | `/plan/scenarios`: change the number of pregnancies; the routes in neutral words | 35 |
+| 7 | Prepare | `/prepare`: pick concerns, add a question, print the sheet; ask Kin one question | 40 |
+| 8 | Family | `/family` edit the tree; `/cascade` invite a relative | 35 |
+| 9 | Privacy | `/privacy` and `/governance`: verify the audit chain; ask Kin for the partner's result and show the refusal | 35 |
+
+Upload where the form asks (unlisted YouTube or Drive, link open to anyone with it). Check the link in a private window.
+
+## 4. Form text
+
+Paste from [SUBMISSION_TEXT.md](form-text.md). The form allows 2,000 characters for **Solution summary** and 1,500 for **What has been built**. Adjust the claims to the verified release. Add the live link, the repository link, the deck PDF and the video link.
+
+## 5. Submit
+
+Read the whole form once more, then submit. Take a screenshot of the confirmation.
+
+## 6. After submitting
+
+- Close **#64** and **#65** on GitHub with a comment linking the confirmation (or ask Claude to).
+- **Do not push to `main` until results are out.** Late commits can be held against us. Work on branches only.
+- After judging: follow the [pilot roadmap](evaluator-roadmap.md) and confirm the Oregon API dependency before retiring it ([hosting notes](../operations/hosting.md)).

@@ -2,7 +2,7 @@
 import re
 from pathlib import Path
 
-TEXT = (Path(__file__).resolve().parents[2] / "docs" / "SUBMISSION_TEXT.md").read_text(encoding="utf-8")
+TEXT = (Path(__file__).resolve().parents[2] / "docs" / "submission" / "form-text.md").read_text(encoding="utf-8")
 
 
 def section(name: str) -> str:

@@ -30,7 +30,7 @@ from services.cohort.panel import CONFIGS, load_panel, load_rules
 from services.consent.models import CaseAccess, Couple, Person
 from services.genetics import CoupleAssessment, assess_couple
 
-from . import demo_cases
+from .demo import cases as demo_cases
 from .interfaces import Unavailable
 from .schemas import estimate
 

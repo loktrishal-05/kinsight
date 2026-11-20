@@ -1,4 +1,4 @@
-// Volunteer comprehension study (docs/study/protocol.md). Responses stay on the facilitator's device (localStorage) until the
+// Volunteer comprehension study (docs/research/study/protocol.md). Responses stay on the facilitator's device (localStorage) until the
 // facilitator exports them; nothing is sent to a server and no name, contact or health detail is ever asked for.
 import { z } from "zod";
 import { DATA, scenarioById, type QuizQ } from "./fixtures";

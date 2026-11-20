@@ -53,20 +53,7 @@ from services.consent.settings import settings
 from services.lifecycle import review
 from services.lifecycle.store import FhirImport, LcSample, LifecycleBase, SandboxReport
 
-from . import (
-    cascade_routes,
-    fhir_preview,
-    kin_tools,
-    lab_feed,
-    lifecycle_routes,
-    pedigree_routes,
-    pilot_routes,
-    prep_routes,
-    refdata_routes,
-    referral_delivery,
-    review_routes,
-    scenario_routes,
-)
+from . import routes
 from .auth import Identity, issue_token, secret, verify_token
 from .backend import DemoBackend
 from .interfaces import Backend, Unavailable, UnwiredBackend
@@ -184,14 +171,14 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
     sessions = sessionmaker(engine, expire_on_commit=False)
     demo = os.environ.get("KINSIGHT_DEMO") == "1"
     sandbox = demo and os.environ.get("KINSIGHT_LAB_SANDBOX") == "1"
-    signed_feed = sandbox and bool(os.environ.get(lab_feed.SIGNING_SECRET))
+    signed_feed = sandbox and bool(os.environ.get(routes.lab_feed.SIGNING_SECRET))
     adapter = backend or (DemoBackend() if demo else UnwiredBackend())
 
     @asynccontextmanager
     async def lifespan(app):
         secret("KINSIGHT_TOKEN_SECRET")
         secret("KINSIGHT_AUDIT_SALT")
-        if signed_feed and secret(lab_feed.SIGNING_SECRET) in {secret("KINSIGHT_TOKEN_SECRET"), secret("KINSIGHT_AUDIT_SALT")}:
+        if signed_feed and secret(routes.lab_feed.SIGNING_SECRET) in {secret("KINSIGHT_TOKEN_SECRET"), secret("KINSIGHT_AUDIT_SALT")}:
             raise RuntimeError("The lab signing secret must be distinct from the token and audit secrets")
         Base.metadata.create_all(engine)
         LifecycleBase.metadata.create_all(engine)
@@ -869,7 +856,7 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         return endpoint
 
     if enabled("lifecycle"):
-        lifecycle_routes.register(app, roles, db_session, limit, own=own, check=check, signed_feed=signed_feed)
+        routes.lifecycle.register(app, roles, db_session, limit, own=own, check=check, signed_feed=signed_feed)
 
     for operation in ("reset", "load-cohort"):
         app.add_api_route(
@@ -877,23 +864,23 @@ def create_app(database_url: str | None = None, backend: Backend | None = None) 
         )
 
     if enabled("lifecycle"):
-        prep_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
-        scenario_routes.register(app, db_session=db_session, roles=roles, limit=limit)
-        pedigree_routes.register(app, db_session=db_session, roles=roles, limit=limit)
-        refdata_routes.register(app, db_session=db_session, roles=roles, limit=limit)
-        kin_tools.register(app, db_session=db_session, roles=roles, own=own, limit=limit,
+        routes.prep.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
+        routes.scenario.register(app, db_session=db_session, roles=roles, limit=limit)
+        routes.pedigree.register(app, db_session=db_session, roles=roles, limit=limit)
+        routes.refdata.register(app, db_session=db_session, roles=roles, limit=limit)
+        routes.kin.register(app, db_session=db_session, roles=roles, own=own, limit=limit,
                            backend=adapter if isinstance(adapter, DemoBackend) else None)
-        review_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
-        cascade_routes.register(app, adapter=adapter, db_session=db_session, roles=roles, own=own, limit=limit)
+        routes.review.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit)
+        routes.cascade.register(app, adapter=adapter, db_session=db_session, roles=roles, own=own, limit=limit)
 
     if sandbox:
-        pilot_routes.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit, signed_feed=signed_feed)
+        routes.pilot.register(app, db_session=db_session, roles=roles, check=check, own=own, limit=limit, signed_feed=signed_feed)
     if signed_feed:
-        lab_feed.register(app, db_session, limit)
-    if demo and (fhir_url := os.environ.get(fhir_preview.BASE_ENV)):
-        fhir_preview.register(app, base_url=fhir_url, db_session=db_session, roles=roles, own=own, check=check, limit=limit)
-    if isinstance(adapter, DemoBackend) and (referral_url := os.environ.get(referral_delivery.BASE_ENV)):
-        referral_delivery.register(app, backend=adapter, base_url=referral_url, db_session=db_session,
+        routes.lab_feed.register(app, db_session, limit)
+    if demo and (fhir_url := os.environ.get(routes.fhir_preview.BASE_ENV)):
+        routes.fhir_preview.register(app, base_url=fhir_url, db_session=db_session, roles=roles, own=own, check=check, limit=limit)
+    if isinstance(adapter, DemoBackend) and (referral_url := os.environ.get(routes.referral.BASE_ENV)):
+        routes.referral.register(app, backend=adapter, base_url=referral_url, db_session=db_session,
                                    roles=roles, case_check=case_check, limit=limit)
     return app
 

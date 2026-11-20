@@ -1,3 +1,4 @@
+"""Deterministic genetics engine: kinship, carrier and couple risk, scenarios and cascade chances. Pure: no network, database or model."""
 from .assess import ENGINE_VERSION, assess_couple, config_hash
 from .kinship import inbreeding, kinship
 from .models import Condition, CoupleAssessment, Finding, Panel

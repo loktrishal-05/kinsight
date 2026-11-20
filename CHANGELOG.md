@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Architecture: API route modules moved into `services/api/routes/` (one per feature) and demo data into `services/api/demo/`; HL7 v2 parsing moved to `services/integrations/`. A new test enforces the layer stack (api, workflow, data, core) and keeps the genetics engine free of network, database and model imports.
+- Documentation regrouped into `docs/architecture`, `product`, `operations`, `research` and `submission`, with an index; agent hand-off notes removed. New architecture overview with context, container, layer and request diagrams; README rewritten.
 - Added an optional local model that selects Kin tools. Replies show their sources and use reviewed text or consent-checked data. The existing deterministic assistant remains the default.
 - Added on-device OCR for lab-report photos and scanned PDFs. Each imported field must be reviewed before report comparison.
 

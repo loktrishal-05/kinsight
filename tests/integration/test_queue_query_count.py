@@ -2,7 +2,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import event
 
-from services.api.demo_path import _h
+from services.api.demo.path import _h
 from services.api.main import create_app
 
 

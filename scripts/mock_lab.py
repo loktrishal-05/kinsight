@@ -9,8 +9,8 @@ from uuid import uuid4
 import httpx
 
 from services.api.auth import secret
-from services.api.hl7_lab import PANEL
-from services.api.lab_feed import HL7_PATH, PATH, SIGNING_SECRET, signature
+from services.api.routes.lab_feed import HL7_PATH, PATH, SIGNING_SECRET, signature
+from services.integrations.hl7_lab import PANEL
 
 
 def demo_report(subject, revision, corrected=False):

@@ -1,5 +1,5 @@
 # Fictional panel. Frequencies are illustrative only, never real prevalence.
-# label_ar values are PLACEHOLDERS pending native-speaker review (docs/REVIEWS.md).
+# label_ar values are PLACEHOLDERS pending native-speaker review (docs/research/reviews.md).
 panel_version: "2026.1-demo"
 conditions:
   - id: COND_001

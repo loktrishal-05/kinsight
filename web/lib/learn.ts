@@ -1,6 +1,6 @@
 // Plain-language learning content: one pack per language in content/<lang>.json (glossary, myths, talk starters, and Kin's text).
 // Wording follows the approved-template rules (no directives, no blame, carrier is not a disease). Translations other than English
-// are placeholders pending native-speaker and genetics review (docs/REVIEWS.md). A language without a pack falls back to English.
+// are placeholders pending native-speaker and genetics review (docs/research/reviews.md). A language without a pack falls back to English.
 import ar from "@/content/ar.json";
 import en from "@/content/en.json";
 import hi from "@/content/hi.json";

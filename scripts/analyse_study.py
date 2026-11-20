@@ -1,10 +1,10 @@
-"""Analyse the volunteer comprehension study (docs/study/protocol.md).
+"""Analyse the volunteer comprehension study (docs/research/study/protocol.md).
 
 Input: the CSV exported from /study/results (one row per participant, no names). Output: a descriptive Markdown report with
 n and pass rate per language x reading level, the largest gap against the 10-point target, the questions missed most often,
 and the mean clarity rating. Descriptive only, as the protocol requires.
 
-    python scripts/analyse_study.py kinsight-study-2026-11-01.csv [--out docs/study/results.md]
+    python scripts/analyse_study.py kinsight-study-2026-11-01.csv [--out docs/research/study/results.md]
 """
 from __future__ import annotations
 

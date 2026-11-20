@@ -25,7 +25,7 @@ os.environ.update(KINSIGHT_DEMO="1", KINSIGHT_DEMO_AUTH="1",
 sys.path.insert(0, str(D.parents[1]))
 from fastapi.testclient import TestClient  # noqa: E402
 
-from services.api.demo_path import run_demo_path  # noqa: E402
+from services.api.demo.path import run_demo_path  # noqa: E402
 from services.api.main import create_app  # noqa: E402
 
 with TestClient(create_app("sqlite://")) as client:
