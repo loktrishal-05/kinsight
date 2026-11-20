@@ -1,6 +1,6 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Users } from "lucide-react";
+import { MessageSquareText, Users } from "lucide-react";
 import { ErrorState, Estimate, Notice, PageHeader, Paragraphs, Skeleton, Steps } from "@/components/ui";
 import { IconArray, Punnett, TierChip } from "@/components/visuals";
 import { ReadAloud } from "@/components/Voice";
@@ -15,6 +15,8 @@ export default function CoupleView() {
   const couple = useQuery({ queryKey: ["couple"], queryFn: () => api.couple() });
   const expl = useQuery({ queryKey: ["expl", lang, level], queryFn: () => api.explanation(lang, level) });
   const grant = useMutation({ mutationFn: api.grantPooling, onSuccess: () => qc.invalidateQueries() });
+  // A counsellor can open the case only after the person asks for one (default deny), so offer it where they wait.
+  const talk = useMutation({ mutationFn: () => api.requestCounselling(), onSuccess: () => qc.invalidateQueries({ queryKey: ["review-items"] }) });
   const c = couple.isSuccess ? couple.data : undefined;
   const released = !!c?.tier && !c.awaiting_counsellor;
   const step = !c?.tier ? 0 : c.awaiting_counsellor ? 1 : 2;
@@ -25,7 +27,17 @@ export default function CoupleView() {
       <div data-demo="steps"><Steps labels={[t("couple.s1"), t("couple.s2"), t("couple.s3")]} current={step} /></div>
       {couple.isPending && <Skeleton lines={4} />}
       {couple.isError && <ErrorState onRetry={() => couple.refetch()}>{t("couple.loadError")}</ErrorState>}
-      {c && !c.tier && (
+      {c && !c.tier && c.you_shared && (
+        <div className="card space-y-3">
+          <p className="max-w-read">{t("couple.youShared")}</p>
+          <p className="max-w-read text-sm text-muted">{t("couple.askCounsellor")}</p>
+          <button className="btn" data-demo="talk-couple" disabled={talk.isPending || talk.isSuccess} onClick={() => talk.mutate()}>
+            <MessageSquareText aria-hidden className="h-4 w-4" />{t(talk.isSuccess ? "result.talkDone" : "result.talk")}
+          </button>
+          {talk.isError && <ErrorState onRetry={() => talk.mutate()}>{t("states.loadError")}</ErrorState>}
+        </div>
+      )}
+      {c && !c.tier && !c.you_shared && (
         <div className="card flex flex-wrap items-center justify-between gap-4">
           <p className="max-w-read">{t(MOCK ? "couple.waiting" : "couple.unavailable")}</p>
           <button className="btn" data-demo="share" onClick={() => grant.mutate()}><Users aria-hidden className="h-4 w-4" />{t("couple.pooling")}</button>

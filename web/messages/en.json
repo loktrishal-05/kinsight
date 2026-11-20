@@ -1316,5 +1316,7 @@
   "reportCompare.whatif.counsellor": "A genetic counsellor can explain what this means for you and the choices available.",
   "reportCompare.whatif.book": "Book a counsellor",
   "reportCompare.whatif.prepare": "Prepare your questions",
-  "states.loadError": "This could not be loaded. Check your connection and try again."
+  "states.loadError": "This could not be loaded. Check your connection and try again.",
+  "couple.youShared": "You have shared for couple planning. The couple view opens when your partner has shared too and a genetic counsellor has reviewed it.",
+  "couple.askCounsellor": "A genetic counsellor can see your case only after you ask for one. Asking lets them see the case brief and your referral, nothing more."
 }
