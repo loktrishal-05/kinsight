@@ -37,6 +37,13 @@ test("a storage failure keeps the current response available for retry", async (
       }
       return original.call(this, key, value);
     };
+    const remove = Storage.prototype.removeItem;
+    Storage.prototype.removeItem = function (key) {
+      if (key === "ks_study_responses" && !sessionStorage.getItem("study-can-clear")) {
+        throw new DOMException("Synthetic storage error", "SecurityError");
+      }
+      return remove.call(this, key);
+    };
   });
   await page.goto("/study");
   await page.getByTestId("study-agree").check();
@@ -45,11 +52,20 @@ test("a storage failure keeps the current response available for retry", async (
   for (const group of await page.locator("fieldset").all()) await group.getByRole("radio").first().check();
   await page.getByTestId("study-submit").click();
   await page.getByTestId("study-rate-4").click();
-  await expect(page.getByRole("alert")).toContainText("The answers could not be saved");
+  await expect(page.getByRole("alert").filter({ hasText: "The answers could not be saved" })).toBeVisible();
   await expect(page.getByTestId("study-id")).toHaveCount(0);
   await page.evaluate(() => sessionStorage.setItem("study-can-save", "1"));
   await page.getByTestId("study-rate-4").click();
   await expect(page.getByTestId("study-id")).toBeVisible();
   await page.goto("/study/results");
   await expect(page.getByTestId("study-total")).toHaveText("1");
+  await page.getByRole("button", { name: "Clear all" }).click();
+  await page.getByTestId("study-clear-yes").click();
+  await expect(page.getByRole("alert").filter({ hasText: "The responses could not be deleted" })).toBeVisible();
+  await expect(page.getByTestId("study-total")).toHaveText("1");
+  await page.evaluate(() => sessionStorage.setItem("study-can-clear", "1"));
+  await page.getByTestId("study-clear-yes").click();
+  await expect(page.getByTestId("study-total")).toHaveText("0");
+  await page.reload();
+  await expect(page.getByTestId("study-csv")).toBeDisabled();
 });
