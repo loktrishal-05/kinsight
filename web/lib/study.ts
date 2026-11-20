@@ -12,13 +12,23 @@ export type StudyResponse = {
 const KEY = "ks_study_responses";
 
 export function loadResponses(): StudyResponse[] {
-  try { return JSON.parse(localStorage.getItem(KEY) ?? "[]"); } catch { return []; }
+  try {
+    const rows = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+    return Array.isArray(rows) ? rows : [];
+  } catch { return []; }
 }
 export function saveResponse(r: StudyResponse) {
-  try { localStorage.setItem(KEY, JSON.stringify([...loadResponses(), r])); } catch { /* private mode: the facilitator is warned on the results page */ }
+  try {
+    const rows: unknown = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+    if (!Array.isArray(rows)) return false;
+    if (!rows.some((row) => row?.study_id === r.study_id)) {
+      localStorage.setItem(KEY, JSON.stringify([...rows, r]));
+    }
+    return true;
+  } catch { return false; }
 }
 export function clearResponses() {
-  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+  try { localStorage.removeItem(KEY); return true; } catch { return false; }
 }
 
 /** Random, meaningless id (no link to a person). */

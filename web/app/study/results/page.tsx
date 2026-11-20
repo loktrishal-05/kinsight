@@ -20,6 +20,7 @@ export default function StudyResults() {
   const { t } = useI18n();
   const [rows, setRows] = useState<StudyResponse[]>([]);
   const [confirm, setConfirm] = useState(false);
+  const [clearError, setClearError] = useState(false);
   useEffect(() => setRows(loadResponses()), []);
   const s = summarise(rows);
   const name = (code: string) => LANGUAGES.find((l) => l.code === code)?.name ?? code;
@@ -42,13 +43,18 @@ export default function StudyResults() {
           {confirm ? (
             <span className="inline-flex items-center gap-2 text-sm">
               {t("study.clearSure")}
-              <button className={`${btn} border-unsure-fg text-unsure-fg`} onClick={() => { clearResponses(); setRows([]); setConfirm(false); }} data-testid="study-clear-yes">{t("study.clearYes")}</button>
+              <button className={`${btn} border-unsure-fg text-unsure-fg`} onClick={() => {
+                const cleared = clearResponses();
+                setClearError(!cleared);
+                if (cleared) { setRows([]); setConfirm(false); }
+              }} data-testid="study-clear-yes">{t("study.clearYes")}</button>
               <button className={btn} onClick={() => setConfirm(false)}>{t("study.clearNo")}</button>
             </span>
           ) : (
             <button className={btn} disabled={!rows.length} onClick={() => setConfirm(true)}><Trash2 aria-hidden className="h-4 w-4" />{t("study.clear")}</button>
           )}
         </div>
+        {clearError && <p role="alert" className="text-sm text-unsure-fg">{t("study.clearError")}</p>}
 
         <section className="card-flush" aria-labelledby="by">
           <h2 id="by" className="border-b border-line px-5 py-3 font-semibold">{t("study.byGroup")}</h2>

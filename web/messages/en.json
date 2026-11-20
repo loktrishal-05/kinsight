@@ -765,6 +765,8 @@
   "study.rateHigh": "Very clear",
   "study.skip": "Skip this question",
   "study.thanks": "Thank you",
+  "study.saveError": "The answers could not be saved. Ask the facilitator to check this browser’s storage before you try again.",
+  "study.clearError": "The responses could not be deleted. Check this browser’s storage settings and try again.",
   "study.thanksLead": "Your answers are saved without your name. Please hand the device back to the study team.",
   "study.yourId": "Study number:",
   "study.next": "Next participant",
