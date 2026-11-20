@@ -11,6 +11,10 @@ updates:
     directory: /web
     schedule:
       interval: weekly
+    ignore:
+      # Node types must match the Node major the app runs on (22 in CI and on Vercel); bump both together by hand.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       web-runtime:
         dependency-type: production
