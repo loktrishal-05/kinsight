@@ -54,6 +54,20 @@ def test_couple_result_creates_one_item_and_the_counsellor_decision_resolves_it(
     assert items(client, "couple_result")[0].state == "approved"
 
 
+def test_demo_reset_clears_the_demo_couples_review_items(client):
+    ha, _ = pool(client)
+    for scope, fields in (("couple_summary", ["brief", "referral"]), ("quiz_status", ["status"])):
+        _grant(client, ha, "synthetic-counsellor", "case", CASE, scope, fields, "counselling")
+    hc = _h(client, "counsellor")
+    client.post(f"/api/counsellor/cases/{CASE}/decision", headers=hc, json={"decision": "approve", "reason_code": "reviewed"})
+    assert {i.kind: i.state for i in items(client)} == {"couple_result": "approved", "counselling_request": "pending"}
+    client.post("/api/demo/reset", headers=_h(client, "demo_operator"))
+    assert items(client) == []  # the queue matches the restarted case: no stale "approved" or old request
+    pool(client)  # sharing again starts a fresh review
+    [item] = items(client, "couple_result")
+    assert item.state == "pending"
+
+
 def test_counselling_request_creates_exactly_one_item(client):
     ha = _h(client, "person_a")
     for _ in range(2):

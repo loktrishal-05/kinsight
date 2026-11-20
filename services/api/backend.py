@@ -16,7 +16,7 @@ from uuid import uuid4
 
 import yaml
 from langgraph.checkpoint.sqlite import SqliteSaver
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from services.agents.case_graph import Deps, build_case_graph, cfg_of, pending, record_referral, resume_case, start_case
@@ -29,6 +29,7 @@ from services.analytics.capacity import compare
 from services.cohort.panel import CONFIGS, load_panel, load_rules
 from services.consent.models import CaseAccess, Couple, Person
 from services.genetics import CoupleAssessment, assess_couple
+from services.lifecycle.store import ReviewItem
 
 from .demo import cases as demo_cases
 from .interfaces import Unavailable
@@ -246,6 +247,11 @@ class DemoBackend:
         self.reset_state()
         for c in session.scalars(select(Couple).where(Couple.id == COUPLE)):
             c.released = False
+        # Clear the demo couple's review items too, so the counsellor's queue matches the restarted case instead of
+        # still showing an earlier "Approved" couple result or a request to talk from a previous session.
+        session.execute(delete(ReviewItem).where(
+            ((ReviewItem.kind == "couple_result") & (ReviewItem.subject_id == COUPLE))
+            | ((ReviewItem.kind == "counselling_request") & ReviewItem.subject_id.in_([A, B]))))
         return {"status": "reset"}
 
     def op_load_cohort(self, subject, payload, session):
